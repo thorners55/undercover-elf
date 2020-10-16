@@ -1,31 +1,40 @@
 <template>
   <div id="app">
     <h1>Undercover Elf</h1>
-    <amplify-authenticator v-if="authState !== 'signedin'">
-      <amplify-sign-up
-        header-text="Create Account"
-        slot="sign-up"
-        username-alias="email"
-        :form-fields.prop="formFieldsSignUp"
-      ></amplify-sign-up>
-      <amplify-sign-in slot="sign-in" username-alias="email" :form-fields.prop="formFieldsSignIn"></amplify-sign-in>
-      <div v-if="authState === 'signedin'">
-        <amplify-sign-out></amplify-sign-out>
-        <div>Hello, "curlybracketsx2 user.username"</div>
-      </div>
-    </amplify-authenticator>
-
-    <Home v-bind:name="name" />
+    <SignIn />
+    <NavBar />
   </div>
 </template>
 
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+h3 {
+  margin: 40px 0 0;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+li {
+  display: inline-block;
+  margin: 0 10px;
+}
+a {
+  color: #42b983;
+}
+</style>
+
+
+  
 <script>
-import Home from "./components/Home.vue";
+import SignIn from "./components/SignIn.vue";
+import NavBar from "./components/NavBar.vue";
 
 export default {
   name: "App",
   components: {
-    Home
+    SignIn,
+    NavBar
   },
   data() {
     return {
@@ -34,13 +43,13 @@ export default {
         {
           type: "name",
           label: "Full name *",
-          placeholder: "e.g. Kris Kringle",
+          placeholder: "e.g. Nicholas Claus",
           required: true
         },
         {
           type: "email",
           label: "Email *",
-          placeholder: "kris@northpole.com",
+          placeholder: "nick@northpole.com",
           required: true
         },
         { type: "password", label: "Password *", required: true }
@@ -49,7 +58,7 @@ export default {
         {
           type: "email",
           label: "Email",
-          placeholder: "kris@northpole.com",
+          placeholder: "nick@northpole.com",
           required: true
         },
         { type: "password", label: "Password", required: true }

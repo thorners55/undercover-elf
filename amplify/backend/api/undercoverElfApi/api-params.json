@@ -1,0 +1,42 @@
+{
+    "paths": [
+        {
+            "name": "/users/{id}/profile",
+            "lambdaFunction": "undercoverElfLambda",
+            "privacy": {
+                "private": true,
+                "auth": [
+                    "/POST",
+                    "/GET",
+                    "/PUT",
+                    "/PATCH",
+                    "/DELETE"
+                ]
+            },
+            "policyResourceName": "/users/*/profile"
+        }
+    ],
+    "resourceName": "undercoverElfApi",
+    "apiName": "undercoverElfApi",
+    "functionArns": [
+        {
+            "lambdaFunction": "undercoverElfLambda"
+        }
+    ],
+    "privacy": {
+        "auth": 1,
+        "unauth": 0,
+        "authRoleName": "amplify-undercoverelf-dev-123607-authRole",
+        "unAuthRoleName": "amplify-undercoverelf-dev-123607-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "undercoverElfLambda",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}
