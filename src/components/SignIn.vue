@@ -1,32 +1,36 @@
 <template>
-  <div>
-    <p>Hi {{ name }}</p>
-    <button v-on:click="signIn">Sign in</button>
-    <button v-on:click="signOut">Sign out</button>
-    <button v-on:click="signUp">Sign up</button>
-    <button v-on:click="confirmSignUp">Confirm sign in</button>
-  </div>
+  <div></div>
 </template>
 
 <script>
 import { Auth } from "aws-amplify";
 var aws = require("aws-sdk");
-var ddb = new aws.DynamoDB({ apiVersion: "2012-10-08" });
+aws.config.update({ region: "eu-west-2" });
+//var ddb = new aws.DynamoDB({ apiVersion: "2012-10-08" });
+import { onAuthUIStateChange } from "@aws-amplify/ui-components";
 
 aws.config.update({ region: "eu-west-2" });
 
 export default {
   name: "SignIn",
   props: {},
+  created() {
+    onAuthUIStateChange((authState, user) => {
+      this.user = user;
+      this.authState = authState;
+      console.log(user, "<---- user");
+    });
+  },
   methods: {
     async signIn() {
       try {
-        const user = await Auth.signIn("SIGN IN EMAIL", "SIGN IN PASSWORD");
+        aws.config.update({ region: "eu-west-2" });
+        const user = await Auth.signIn("EMAIL HERE", "PASSWORD HERE!");
         // hardcoded for dev purposes
         console.log(user, user.username, user.attributes.name);
         //name = user.attributes.name;
 
-        let ddbParams = {
+        /*let ddbParams = {
           TableName: "undercover-elf-test",
           Key: {
             PK: { S: `user_${user.username}` },
@@ -39,7 +43,7 @@ export default {
           console.log(response);
         } catch (err) {
           console.log("Error", err);
-        }
+        }*/
       } catch (error) {
         console.log("error signing in", error);
       }
@@ -47,10 +51,10 @@ export default {
     async signUp() {
       try {
         const { user } = await Auth.signUp({
-          username: "ENTER EMAIL",
-          password: "ENTER PASSWORD",
+          username: "EMAIL HERE",
+          password: "PASSWORD HERE",
           attributes: {
-            name: "ENTER NAME e.g. Steven Banks",
+            name: "NAME HERE",
           },
           // hardcoded for testing lambda
         });
@@ -63,8 +67,8 @@ export default {
     async confirmSignUp() {
       try {
         const userConfirm = await Auth.confirmSignUp(
-          "stephanieeeet@hotmail.com",
-          "641514"
+          "EMAIL HERE",
+          "VERIFICATION CODE HERE"
         );
         console.log(userConfirm, "user confirm");
       } catch (error) {
@@ -82,7 +86,8 @@ export default {
   },
   data() {
     return {
-      name: "Stephanie",
+      user: undefined,
+      authState: undefined,
     };
   },
 };

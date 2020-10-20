@@ -14,6 +14,19 @@
                 ]
             },
             "policyResourceName": "/users/*/profile"
+        },
+        {
+            "name": "/groups/{id}",
+            "lambdaFunction": "undercoverElfGroups",
+            "privacy": {
+                "private": true,
+                "auth": [
+                    "/POST",
+                    "/GET",
+                    "/PUT",
+                    "/PATCH"
+                ]
+            }
         }
     ],
     "resourceName": "undercoverElfApi",
@@ -21,10 +34,13 @@
     "functionArns": [
         {
             "lambdaFunction": "undercoverElfLambda"
+        },
+        {
+            "lambdaFunction": "undercoverElfGroups"
         }
     ],
     "privacy": {
-        "auth": 1,
+        "auth": 2,
         "unauth": 0,
         "authRoleName": "amplify-undercoverelf-dev-123607-authRole",
         "unAuthRoleName": "amplify-undercoverelf-dev-123607-unauthRole"
@@ -37,6 +53,15 @@
                 "Name",
                 "Arn"
             ]
+        },
+        {
+            "category": "function",
+            "resourceName": "undercoverElfGroups",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
         }
-    ]
+    ],
+    "uuid": "a1e2b0f4"
 }

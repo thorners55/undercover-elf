@@ -1,71 +1,158 @@
 <template>
   <div id="app">
     <h1>Undercover Elf</h1>
-    <SignIn />
+    <p>Hi {{ this.user }}</p>
+    <button v-on:click="signIn">Sign in</button>
+    <button v-on:click="signOut">Sign out</button>
+    <button v-on:click="signUp">Sign up</button>
+    <button v-on:click="confirmSignUp">Confirm sign in</button>
+    <button v-on:click="currentState">Current state</button>
+    <button v-on:click="getUserData">Get user data</button>
     <NavBar />
   </div>
 </template>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>
-
-
-  
 <script>
-import SignIn from "./components/SignIn.vue";
+import { API } from "aws-amplify";
+//import SignIn from "./components/SignIn.vue";
 import NavBar from "./components/NavBar.vue";
+import { Auth } from "aws-amplify";
+
+var aws = require("aws-sdk");
 
 export default {
   name: "App",
   components: {
-    SignIn,
-    NavBar
+    // SignIn,
+    NavBar,
   },
+
+  methods: {
+    getUserData: function() {
+      console.log("getUserData");
+      API.get("undercoverElfApi", "/users/1234/profile", {})
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    async currentState() {
+      try {
+        let user = await Auth.currentAuthenticatedUser();
+        console.log(user);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async signIn() {
+      try {
+        aws.config.update({ region: "eu-west-2" });
+        let user = await Auth.signIn(
+          "SIGN IN EMAIL HERE",
+          "SIGN IN PASSWORD HERE"
+        );
+        // hardcoded for dev purposes
+        console.log(user, user.username, user.attributes.name);
+        this.user = user.attributes.name;
+
+        /*let ddbParams = {
+          TableName: "undercover-elf-test",
+          Key: {
+            PK: { S: `user_${user.username}` },
+            SK: { S: "group_1" },
+          },
+        };
+        try {
+          const response = await ddb.getItem(ddbParams).promise();
+          console.log("Success");
+          console.log(response);
+        } catch (err) {
+          console.log("Error", err);
+        }*/
+      } catch (error) {
+        console.log("error signing in", error);
+      }
+    },
+    async signUp() {
+      try {
+        const { user } = await Auth.signUp({
+          username: "EMAIL HERE",
+          password: "PASSWORD HERE",
+          attributes: {
+            name: "NAME HERE",
+          },
+          // hardcoded for testing lambda
+        });
+        console.log(user, "sign up");
+      } catch (error) {
+        console.log("error signing up:", error);
+      }
+    },
+
+    async confirmSignUp() {
+      try {
+        const userConfirm = await Auth.confirmSignUp(
+          "EMAIL HERE",
+          "VERIFICATION CODE HERE"
+        );
+        console.log(userConfirm, "user confirm");
+      } catch (error) {
+        console.log("error confirming sign up", error);
+      }
+    },
+    async signOut() {
+      try {
+        await Auth.signOut();
+        console.log("signed out");
+      } catch (error) {
+        console.log("error signing out: ", error);
+      }
+    },
+  },
+
   data() {
     return {
-      authState: "",
-      formFieldsSignUp: [
+      user: {},
+
+      /*formFieldsSignUp: [
         {
           type: "name",
           label: "Full name *",
           placeholder: "e.g. Nicholas Claus",
-          required: true
+          required: true,
         },
         {
           type: "email",
           label: "Email *",
           placeholder: "nick@northpole.com",
-          required: true
+          required: true,
         },
-        { type: "password", label: "Password *", required: true }
+        { type: "password", label: "Password *", required: true },
       ],
       formFieldsSignIn: [
         {
           type: "email",
           label: "Email",
           placeholder: "nick@northpole.com",
-          required: true
+          required: true,
         },
-        { type: "password", label: "Password", required: true }
-      ],
-      name: "Stephanie"
+        { type: "password", label: "Password", required: true },
+      ], */
     };
-  }
+  },
+  /* created() {
+    onAuthUIStateChange((state, user) => {
+      if (state === AuthState.SignedIn) {
+        this.user = user;
+        console.log(user, "<---- user");
+      }
+      if (!user) {
+        console.log("user is not signed in...");
+      }
+    });
+  },*/
 };
 </script>
 
