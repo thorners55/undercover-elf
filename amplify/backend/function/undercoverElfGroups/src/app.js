@@ -49,6 +49,15 @@ const convertUrlType = (param, type) => {
 app.get("/groups", function(request, response) {
   console.log(request.query.id, "<---- REQUEST");
   const groupId = `group_${request.query.id}`;
+
+  if (typeof request.query.id === "undefined") {
+    response.json({
+      statusCode: 404,
+      error: "Not found: Request requires a query with group ID",
+    });
+    return;
+  }
+
   let params = {
     TableName: tableName,
     Key: {
@@ -72,6 +81,13 @@ app.get("/groups", function(request, response) {
 
 app.post("/groups", function(request, response) {
   // NEED TO ALSO POST A USER GROUP PAIR WITH EMPTY WISHLIST AND ADMIN OF 1
+
+  const groupId = request.body.pk;
+
+  request.body.pk = `group_${request.body.pk}`;
+  request.body.sk = "meta";
+  request.body.closed = 0;
+
   let params = {
     TableName: tableName,
     Item: request.body,
@@ -84,7 +100,10 @@ app.post("/groups", function(request, response) {
       response.json({
         statusCode: 200,
         url: request.url,
-        body: JSON.stringify(result.Item),
+        body: {
+          admin: request.body.admin,
+          group: groupId,
+        },
       });
     }
   });

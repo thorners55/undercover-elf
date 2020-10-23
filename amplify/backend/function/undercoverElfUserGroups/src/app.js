@@ -123,12 +123,17 @@ app.get("/users/:id/groups", function(request, response) {
 });
 
 app.post("/users/:id/groups", function(request, response) {
-  const userId = `user_${request.params.id}`;
-  const groupId = `group_${request.query.groupId}`;
-  request.body.pk = userId;
-  request.body.sk = groupId;
+  const userId = request.params.id;
+  const groupId = request.query.groupId;
+  request.body.pk = `user_${userId}`;
+  request.body.sk = `group_${groupId}`;
 
   if (request.body.name === undefined) {
+    if (request.query.groupId.length < 1) {
+      response.json({ statusCode: 405, error: "Method not allowed" });
+      return;
+    }
+
     let params = {
       TableName: tableName,
       Key: {
@@ -179,6 +184,11 @@ app.delete("/users/:id/groups", function(request, response) {
   request.body.pk = userId;
   request.body.sk = groupId;
 
+  if (request.query.groupId.length > 1) {
+    response.json({ statusCode: 405, error: "Method not allowed" });
+    return;
+  }
+
   let params = {
     TableName: tableName,
     Key: request.body,
@@ -189,7 +199,7 @@ app.delete("/users/:id/groups", function(request, response) {
       response.json({ statusCode: 500, error: error.message });
     } else {
       response.json({
-        statusCode: 200,
+        statusCode: 204,
         url: request.url,
       });
     }

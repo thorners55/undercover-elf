@@ -28,6 +28,7 @@ import { API } from "aws-amplify";
 //import SignIn from "./components/SignIn.vue";
 import NavBar from "./components/NavBar.vue";
 import { Auth } from "aws-amplify";
+import { v4 as uuidv4 } from "uuid";
 
 var aws = require("aws-sdk");
 
@@ -81,32 +82,43 @@ export default {
     },
     postNewGroup: function() {
       console.log("postNewGroup");
+      const groupId = uuidv4();
+      console.log(groupId);
       API.post("undercoverElfApi", "/groups", {
         body: {
           name: "Gym pals",
-          closed: 0,
           admin: "Kathryn Thornley",
           exchange: "26/12/20",
           members: [{ id: "user_1235", name: "Kathryn Thornley" }],
-          pk: "group_3",
-          sk: "meta",
+          pk: groupId,
         },
       })
         .then((response) => {
           console.log(response);
+          this.postUserInGroup(
+            response.body.admin,
+            "1235",
+            `${response.body.group}`
+          );
         })
         .catch((err) => {
           console.log(err);
         });
     },
-    postUserInGroup: function() {
-      API.post("undercoverElfApi", "/users/1234/groups?groupId=3", {
-        body: {
-          admin: 0,
-          name: "David Thornley",
-          wishlist: [],
-        },
-      })
+    postUserInGroup: function(name, userId, groupId) {
+      console.log("postUserInGroup");
+      console.log(name, userId, groupId);
+      API.post(
+        "undercoverElfApi",
+        `/users/${userId}/groups?groupId=${groupId}`,
+        {
+          body: {
+            admin: 0,
+            name,
+            wishlist: [],
+          },
+        }
+      )
         .then((response) => {
           console.log(response);
         })
