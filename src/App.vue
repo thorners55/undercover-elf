@@ -8,6 +8,9 @@
     <button v-on:click="confirmSignUp">Confirm sign in</button>
     <button v-on:click="currentState">Current state</button>
     <button v-on:click="getUserData">Get user data</button>
+    <button v-on:click="getGroupData">Get group data</button>
+    <button v-on:click="getUserGroupData">Get user group data</button>
+    <button v-on:click="postNewGroup">Post new group</button>
     <NavBar />
   </div>
 </template>
@@ -30,7 +33,47 @@ export default {
   methods: {
     getUserData: function() {
       console.log("getUserData");
-      API.get("undercoverElfApi", "/users/1234/profile", {})
+      API.get("undercoverElfApi", "/users/1234/profile?scope=internal", {})
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    getGroupData: function() {
+      console.log("getGroupData");
+      API.get("undercoverElfApi", "/groups?id=1", {})
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    getUserGroupData: function() {
+      console.log("getUserGroupData");
+      API.get("undercoverElfApi", "/users/1234/groups", {})
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    postNewGroup: function() {
+      console.log("postNewGroup");
+      API.post("undercoverElfApi", "/groups", {
+        body: {
+          name: "Gym pals",
+          closed: 0,
+          admin: "Kathryn Thornley",
+          exchange: "26/12/20",
+          members: [{ id: "user_1235", name: "Kathryn Thornley" }],
+          pk: "group_3",
+          sk: "meta",
+        },
+      })
         .then((response) => {
           console.log(response);
         })
@@ -49,10 +92,7 @@ export default {
     async signIn() {
       try {
         aws.config.update({ region: "eu-west-2" });
-        let user = await Auth.signIn(
-          "SIGN IN EMAIL HERE",
-          "SIGN IN PASSWORD HERE"
-        );
+        let user = await Auth.signIn("EMAIL HERE", "PASSWORD HERE");
         // hardcoded for dev purposes
         console.log(user, user.username, user.attributes.name);
         this.user = user.attributes.name;

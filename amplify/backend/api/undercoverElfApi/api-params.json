@@ -6,17 +6,23 @@
             "privacy": {
                 "private": true,
                 "auth": [
-                    "/POST",
-                    "/GET",
-                    "/PUT",
-                    "/PATCH",
-                    "/DELETE"
+                    "/GET"
                 ]
-            },
-            "policyResourceName": "/users/*/profile"
+            }
         },
         {
-            "name": "/groups/{id}",
+            "name": "/users/{id}/groups",
+            "lambdaFunction": "undercoverElfUserGroups",
+            "privacy": {
+                "private": true,
+                "auth": [
+                    "/POST",
+                    "/GET"
+                ]
+            }
+        },
+        {
+            "name": "/groups",
             "lambdaFunction": "undercoverElfGroups",
             "privacy": {
                 "private": true,
@@ -24,7 +30,8 @@
                     "/POST",
                     "/GET",
                     "/PUT",
-                    "/PATCH"
+                    "/PATCH",
+                    "/DELETE"
                 ]
             }
         }
@@ -36,11 +43,14 @@
             "lambdaFunction": "undercoverElfLambda"
         },
         {
+            "lambdaFunction": "undercoverElfUserGroups"
+        },
+        {
             "lambdaFunction": "undercoverElfGroups"
         }
     ],
     "privacy": {
-        "auth": 2,
+        "auth": 3,
         "unauth": 0,
         "authRoleName": "amplify-undercoverelf-dev-123607-authRole",
         "unAuthRoleName": "amplify-undercoverelf-dev-123607-unauthRole"
@@ -56,6 +66,14 @@
         },
         {
             "category": "function",
+            "resourceName": "undercoverElfUserGroups",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        },
+        {
+            "category": "function",
             "resourceName": "undercoverElfGroups",
             "attributes": [
                 "Name",
@@ -63,5 +81,5 @@
             ]
         }
     ],
-    "uuid": "a1e2b0f4"
+    "uuid": "caa6f548"
 }

@@ -47,6 +47,7 @@ const convertUrlType = (param, type) => {
 
 // ME //
 app.get("/users/:id/profile", function(request, response) {
+  console.log(request, "<---- REQUEST");
   const userId = `user_${request.params.id}`;
   let params = {
     TableName: tableName,
@@ -57,8 +58,8 @@ app.get("/users/:id/profile", function(request, response) {
   };
 
   dynamodb.get(params, (error, result) => {
-    console.log(response, response.body);
     if (error) {
+      console.log(error), "<--- ERROR";
       response.json({ statusCode: 500, error: error.message });
     } else {
       response.json({

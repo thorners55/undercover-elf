@@ -28,22 +28,6 @@ export default {
         const user = await Auth.signIn("EMAIL HERE", "PASSWORD HERE!");
         // hardcoded for dev purposes
         console.log(user, user.username, user.attributes.name);
-        //name = user.attributes.name;
-
-        /*let ddbParams = {
-          TableName: "undercover-elf-test",
-          Key: {
-            PK: { S: `user_${user.username}` },
-            SK: { S: "group_1" },
-          },
-        };
-        try {
-          const response = await ddb.getItem(ddbParams).promise();
-          console.log("Success");
-          console.log(response);
-        } catch (err) {
-          console.log("Error", err);
-        }*/
       } catch (error) {
         console.log("error signing in", error);
       }

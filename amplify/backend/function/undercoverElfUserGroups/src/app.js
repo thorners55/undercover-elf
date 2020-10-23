@@ -20,6 +20,16 @@ if (process.env.ENV && process.env.ENV !== "NONE") {
   tableName = tableName + "-" + process.env.ENV;
 }
 
+const userIdPresent = false; // TODO: update in case is required to use that definition
+const partitionKeyName = "pk";
+const partitionKeyType = "S";
+const sortKeyName = "sk";
+const sortKeyType = "S";
+const hasSortKey = sortKeyName !== "";
+const path = "/users/:id/groups";
+const UNAUTH = "UNAUTH";
+const hashKeyPath = "/:" + partitionKeyName;
+const sortKeyPath = hasSortKey ? "/:" + sortKeyName : "";
 // declare a new express app
 var app = express();
 app.use(bodyParser.json());
@@ -45,47 +55,46 @@ const convertUrlType = (param, type) => {
   }
 };
 
-// ME //
-app.get("/groups", function(request, response) {
-  console.log(request.query.id, "<---- REQUEST");
-  const groupId = `group_${request.query.id}`;
-  let params = {
+/*****************************************
+ * HTTP Get method for get single object *
+ *****************************************/
+
+app.get("/users/:id/groups", function(req, res) {
+  const userId = `user_${req.params.id}`;
+  /*if (userIdPresent && req.apiGateway) {
+    params[partitionKeyName] =
+      req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH;
+  } else {
+    params[partitionKeyName] = req.params[partitionKeyName];
+    try {
+      params[partitionKeyName] = convertUrlType(
+        req.params[partitionKeyName],
+        partitionKeyType
+      );
+    } catch (err) {
+      res.statusCode = 500;
+      res.json({ error: "Wrong column type " + err });
+    }
+  }*/
+  var params = {
     TableName: tableName,
-    Key: {
-      pk: groupId,
-      sk: "meta",
+    KeyConditionExpression: "pk = :pk AND begins_with ( sk , :sk )",
+    ExpressionAttributeValues: {
+      ":pk": userId,
+      ":sk": "group_",
     },
   };
 
-  dynamodb.get(params, (error, result) => {
-    if (error) {
-      response.json({ statusCode: 500, error: error.message });
+  dynamodb.query(params, (err, data) => {
+    if (err) {
+      res.statusCode = 500;
+      res.json({ error: "Could not load items: " + err.message });
     } else {
-      response.json({
-        statusCode: 200,
-        url: request.url,
-        body: JSON.stringify(result.Item),
-      });
-    }
-  });
-});
-
-app.post("/groups", function(request, response) {
-  console.log(request, "<--- REQUEST", request.body, "<---- BODY");
-  let params = {
-    TableName: tableName,
-    Item: request.body,
-  };
-
-  dynamodb.put(params, (error, result) => {
-    if (error) {
-      response.json({ statusCode: 500, error: error.message });
-    } else {
-      response.json({
-        statusCode: 200,
-        url: request.url,
-        body: JSON.stringify(result.Item),
-      });
+      if (data.Item) {
+        res.json(data.Item);
+      } else {
+        res.json(data);
+      }
     }
   });
 });
