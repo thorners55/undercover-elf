@@ -57,7 +57,20 @@ app.get("/users/:id/profile", function(request, response) {
     },
   };
 
+  if (request.params.id === "" || typeof request.params.id !== "number") {
+    response.json({ statusCode: 400, error: "Bad request" });
+    return;
+  }
+
   dynamodb.get(params, (error, result) => {
+    if (result.Item === undefined) {
+      response.json({
+        statusCode: 400,
+        error: "Bad request",
+      });
+      return;
+    }
+
     if (error) {
       console.log(error), "<--- ERROR";
       response.json({ statusCode: 500, error: error.message });
@@ -68,6 +81,15 @@ app.get("/users/:id/profile", function(request, response) {
         body: JSON.stringify(result.Item),
       });
     }
+  });
+});
+
+const invalidMethods = ["post", "put", "delete", "head", "patch"];
+
+// All methods other than GET - error handling
+invalidMethods.forEach((method) => {
+  app[method]("/users/:id/profile", function(request, response) {
+    response.json({ statusCode: 405, error: "Method not allowed" });
   });
 });
 

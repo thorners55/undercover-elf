@@ -33,7 +33,7 @@ export default {
   methods: {
     getUserData: function() {
       console.log("getUserData");
-      API.get("undercoverElfApi", "/users/1234/profile?scope=internal", {})
+      API.get("undercoverElfApi", "/users/hello/profile", {})
         .then((response) => {
           console.log(response);
         })

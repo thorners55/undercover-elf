@@ -1,16 +1,6 @@
 {
     "paths": [
         {
-            "name": "/users/{id}/profile",
-            "lambdaFunction": "undercoverElfLambda",
-            "privacy": {
-                "private": true,
-                "auth": [
-                    "/GET"
-                ]
-            }
-        },
-        {
             "name": "/users/{id}/groups",
             "lambdaFunction": "undercoverElfUserGroups",
             "privacy": {
@@ -34,19 +24,29 @@
                     "/DELETE"
                 ]
             }
+        },
+        {
+            "name": "/users/{id}/profile",
+            "lambdaFunction": "undercoverElfUserProfile",
+            "privacy": {
+                "private": true,
+                "auth": [
+                    "/GET"
+                ]
+            }
         }
     ],
     "resourceName": "undercoverElfApi",
     "apiName": "undercoverElfApi",
     "functionArns": [
         {
-            "lambdaFunction": "undercoverElfLambda"
-        },
-        {
             "lambdaFunction": "undercoverElfUserGroups"
         },
         {
             "lambdaFunction": "undercoverElfGroups"
+        },
+        {
+            "lambdaFunction": "undercoverElfUserProfile"
         }
     ],
     "privacy": {
@@ -56,14 +56,6 @@
         "unAuthRoleName": "amplify-undercoverelf-dev-123607-unauthRole"
     },
     "dependsOn": [
-        {
-            "category": "function",
-            "resourceName": "undercoverElfLambda",
-            "attributes": [
-                "Name",
-                "Arn"
-            ]
-        },
         {
             "category": "function",
             "resourceName": "undercoverElfUserGroups",
@@ -79,7 +71,15 @@
                 "Name",
                 "Arn"
             ]
+        },
+        {
+            "category": "function",
+            "resourceName": "undercoverElfUserProfile",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
         }
     ],
-    "uuid": "caa6f548"
+    "uuid": "9f169a91"
 }

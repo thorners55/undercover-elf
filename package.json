@@ -5,14 +5,12 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "test": "jest /home/stephanie/Coding/undercover-elf/amplify/backend/function/undercoverElfLambda/src/__tests__/undercoverElfLambda-tests.js"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "@aws-amplify/ui-vue": "^0.2.22",
     "aws-amplify": "^3.3.3",
     "aws-sdk": "^2.773.0",
-    "axios": "^0.20.0",
     "core-js": "^3.6.5",
     "vue": "^2.6.11"
   },
@@ -24,7 +22,6 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
-    "jest": "^26.6.0",
     "supertest": "^5.0.0",
     "vue-template-compiler": "^2.6.11"
   },
