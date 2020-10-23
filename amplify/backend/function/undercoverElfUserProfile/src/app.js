@@ -46,8 +46,20 @@ const convertUrlType = (param, type) => {
 };
 
 // ME //
+
 app.get("/users/:id/profile", function(request, response) {
   console.log(request, "<---- REQUEST");
+
+  for (let i = 0; i < request.params.id.length; i++) {
+    if (typeof i !== "number") {
+      response.json({
+        statusCode: 400,
+        error: "Bad request",
+      });
+      return;
+    }
+  }
+
   const userId = `user_${request.params.id}`;
   let params = {
     TableName: tableName,
@@ -56,11 +68,6 @@ app.get("/users/:id/profile", function(request, response) {
       sk: "profile",
     },
   };
-
-  if (request.params.id === "" || typeof request.params.id !== "number") {
-    response.json({ statusCode: 400, error: "Bad request" });
-    return;
-  }
 
   dynamodb.get(params, (error, result) => {
     if (result.Item === undefined) {
@@ -73,7 +80,10 @@ app.get("/users/:id/profile", function(request, response) {
 
     if (error) {
       console.log(error), "<--- ERROR";
-      response.json({ statusCode: 500, error: error.message });
+      response.json({
+        statusCode: 500,
+        error: error.message,
+      });
     } else {
       response.json({
         statusCode: 200,

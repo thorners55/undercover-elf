@@ -55,46 +55,143 @@ const convertUrlType = (param, type) => {
   }
 };
 
-/*****************************************
- * HTTP Get method for get single object *
- *****************************************/
+app.get("/users/:id/groups", function(request, response) {
+  const userId = `user_${request.params.id}`;
+  const groupId = `group_${request.query.groupId}`;
 
-app.get("/users/:id/groups", function(req, res) {
-  const userId = `user_${req.params.id}`;
-  /*if (userIdPresent && req.apiGateway) {
-    params[partitionKeyName] =
-      req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH;
-  } else {
-    params[partitionKeyName] = req.params[partitionKeyName];
-    try {
-      params[partitionKeyName] = convertUrlType(
-        req.params[partitionKeyName],
-        partitionKeyType
-      );
-    } catch (err) {
-      res.statusCode = 500;
-      res.json({ error: "Wrong column type " + err });
+  for (let i = 0; i < request.params.id.length; i++) {
+    if (typeof i !== "number") {
+      response.json({
+        statusCode: 400,
+        error: "Bad request",
+      });
+      return;
     }
-  }*/
-  var params = {
+  }
+
+  if (request.query.groupId) {
+    var params = {
+      TableName: tableName,
+      Key: {
+        pk: userId,
+        sk: groupId,
+      },
+    };
+
+    dynamodb.get(params, (error, result) => {
+      if (error) {
+        response.json({ statusCode: 500, error: error.message });
+      } else {
+        response.json({
+          statusCode: 200,
+          url: request.url,
+          body: JSON.stringify(result.Item),
+        });
+      }
+    });
+  } else {
+    var params = {
+      TableName: tableName,
+      KeyConditionExpression: "pk = :pk AND begins_with ( sk , :sk )",
+      ExpressionAttributeValues: {
+        ":pk": userId,
+        ":sk": "group_",
+      },
+    };
+
+    dynamodb.query(params, (error, result) => {
+      if (error) {
+        response.statusCode = 500;
+        response.json({ error: "Could not load items: " + err.message });
+      } else {
+        if (result.Items) {
+          if (result.Items.length < 1) {
+            response.statusCode = 404;
+            response.json({
+              error:
+                "Not found: User does not exist or is not a member of any groups",
+            });
+          } else {
+            response.json(result.Items);
+          }
+        } else {
+          response.json(result);
+        }
+      }
+    });
+  }
+});
+
+app.post("/users/:id/groups", function(request, response) {
+  const userId = `user_${request.params.id}`;
+  const groupId = `group_${request.query.groupId}`;
+  request.body.pk = userId;
+  request.body.sk = groupId;
+
+  if (request.body.name === undefined) {
+    let params = {
+      TableName: tableName,
+      Key: {
+        pk: userId,
+        sk: groupId,
+      },
+      UpdateExpression: "set wishlist = :wishlist",
+      ExpressionAttributeValues: {
+        ":wishlist": request.body.wishlist,
+      },
+      ReturnValues: "UPDATED_NEW",
+    };
+
+    dynamodb.update(params, (error, result) => {
+      if (error) {
+        response.json({ statusCode: 500, error: error.message });
+      } else {
+        response.json({
+          statusCode: 200,
+          url: request.url,
+          body: JSON.stringify(result.Item),
+        });
+      }
+    });
+  } else {
+    let params = {
+      TableName: tableName,
+      Item: request.body,
+    };
+
+    dynamodb.put(params, (error, result) => {
+      if (error) {
+        response.json({ statusCode: 500, error: error.message });
+      } else {
+        response.json({
+          statusCode: 200,
+          url: request.url,
+          body: JSON.stringify(result.Item),
+        });
+      }
+    });
+  }
+});
+
+app.delete("/users/:id/groups", function(request, response) {
+  const userId = `user_${request.params.id}`;
+  const groupId = `group_${request.query.groupId}`;
+  request.body.pk = userId;
+  request.body.sk = groupId;
+
+  let params = {
     TableName: tableName,
-    KeyConditionExpression: "pk = :pk AND begins_with ( sk , :sk )",
-    ExpressionAttributeValues: {
-      ":pk": userId,
-      ":sk": "group_",
-    },
+    Key: request.body,
   };
 
-  dynamodb.query(params, (err, data) => {
-    if (err) {
-      res.statusCode = 500;
-      res.json({ error: "Could not load items: " + err.message });
+  dynamodb.delete(params, function(error, result) {
+    if (error) {
+      response.json({ statusCode: 500, error: error.message });
     } else {
-      if (data.Item) {
-        res.json(data.Item);
-      } else {
-        res.json(data);
-      }
+      response.json({
+        statusCode: 200,
+        url: request.url,
+      });
     }
   });
 });

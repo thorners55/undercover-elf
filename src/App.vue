@@ -9,8 +9,16 @@
     <button v-on:click="currentState">Current state</button>
     <button v-on:click="getUserData">Get user data</button>
     <button v-on:click="getGroupData">Get group data</button>
-    <button v-on:click="getUserGroupData">Get user group data</button>
+    <button v-on:click="getUserAllGroupsData">
+      Get user all groups data
+    </button>
+    <button v-on:click="getUserSpecificGroupData">
+      Get user specific group data
+    </button>
     <button v-on:click="postNewGroup">Post new group</button>
+    <button v-on:click="postUserInGroup">Post user in group</button>
+    <button v-on:click="deleteUserInGroup">Delete user in group</button>
+    <button v-on:click="updateUserInGroup">Update user in group</button>
     <NavBar />
   </div>
 </template>
@@ -33,7 +41,7 @@ export default {
   methods: {
     getUserData: function() {
       console.log("getUserData");
-      API.get("undercoverElfApi", "/users/hello/profile", {})
+      API.get("undercoverElfApi", "/users/1234/profile", {})
         .then((response) => {
           console.log(response);
         })
@@ -51,11 +59,21 @@ export default {
           console.log(err);
         });
     },
-    getUserGroupData: function() {
-      console.log("getUserGroupData");
+    getUserAllGroupsData: function() {
+      console.log("getUserAllGroupsData");
       API.get("undercoverElfApi", "/users/1234/groups", {})
-        .then((response) => {
-          console.log(response);
+        .then((items) => {
+          console.log(items);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    getUserSpecificGroupData: function() {
+      console.log("getUserSpecificGroup");
+      API.get("undercoverElfApi", "/users/1234/groups?groupId=2", {})
+        .then((items) => {
+          console.log(items);
         })
         .catch((err) => {
           console.log(err);
@@ -72,6 +90,47 @@ export default {
           members: [{ id: "user_1235", name: "Kathryn Thornley" }],
           pk: "group_3",
           sk: "meta",
+        },
+      })
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    postUserInGroup: function() {
+      API.post("undercoverElfApi", "/users/1234/groups?groupId=3", {
+        body: {
+          admin: 0,
+          name: "David Thornley",
+          wishlist: [],
+        },
+      })
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    deleteUserInGroup: function() {
+      console.log("deleteUserInGroup");
+      API.del("undercoverElfApi", "/users/1234/groups?groupId=3")
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    updateUserInGroup: function() {
+      console.log("updateUserInGroup");
+      API.post("undercoverElfApi", "/users/1234/groups?groupId=3", {
+        body: {
+          wishlist: [
+            { description: "Green helmet", url: "thehelmetstore.co.uk" },
+          ],
         },
       })
         .then((response) => {

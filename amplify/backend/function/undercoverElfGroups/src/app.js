@@ -71,7 +71,7 @@ app.get("/groups", function(request, response) {
 });
 
 app.post("/groups", function(request, response) {
-  console.log(request, "<--- REQUEST", request.body, "<---- BODY");
+  // NEED TO ALSO POST A USER GROUP PAIR WITH EMPTY WISHLIST AND ADMIN OF 1
   let params = {
     TableName: tableName,
     Item: request.body,
