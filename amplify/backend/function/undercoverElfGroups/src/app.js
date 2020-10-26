@@ -80,8 +80,6 @@ app.get("/groups", function(request, response) {
 });
 
 app.post("/groups", function(request, response) {
-  // NEED TO ALSO POST A USER GROUP PAIR WITH EMPTY WISHLIST AND ADMIN OF 1
-
   const groupId = request.body.pk;
 
   request.body.pk = `group_${request.body.pk}`;
@@ -107,6 +105,59 @@ app.post("/groups", function(request, response) {
       });
     }
   });
+});
+
+app.patch("/groups", function(request, response) {
+  const groupId = request.query.id;
+
+  if (groupId.length < 1) {
+    response.json({
+      statusCode: 400,
+      error: "Bad request - must specify valid group to delete",
+    });
+  }
+
+  let params = {
+    TableName: tableName,
+    Key: {
+      pk: `group_${groupId}`,
+      sk: "meta",
+    },
+    KeyConditionExpression: "#n = :n",
+    ConditionExpression: "attribute_exists(pk)",
+    ExpressionAttributeNames: {
+      "#n": "name",
+    },
+    UpdateExpression: "set #n = :n, exchange = :exchange",
+    ExpressionAttributeValues: {
+      ":n": request.body.name,
+      ":exchange": request.body.exchange,
+    },
+    ReturnValues: "UPDATED_NEW",
+  };
+
+  dynamodb.update(params, (error, result) => {
+    if (error) {
+      if (error.message === "The conditional request failed") {
+        response.json({
+          statusCode: 404,
+          error: "Not found: Group does not exist",
+        });
+        return;
+      }
+      response.json({ statusCode: 500, error: error.message });
+    } else {
+      response.json({
+        statusCode: 200,
+        url: request.url,
+        body: JSON.stringify(result.Item),
+      });
+    }
+  });
+});
+
+app.delete("/groups", function(request, response) {
+  response.json({ statusCode: 405, error: "Method not allowed" });
 });
 
 app.listen(3000, function() {

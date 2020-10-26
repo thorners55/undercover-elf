@@ -9,9 +9,7 @@
     <button v-on:click="currentState">Current state</button>
     <button v-on:click="getUserData">Get user data</button>
     <button v-on:click="getGroupData">Get group data</button>
-    <button v-on:click="getUserAllGroupsData">
-      Get user all groups data
-    </button>
+    <button v-on:click="getUserAllGroupsData">Get user all groups data</button>
     <button v-on:click="getUserSpecificGroupData">
       Get user specific group data
     </button>
@@ -19,6 +17,8 @@
     <button v-on:click="postUserInGroup">Post user in group</button>
     <button v-on:click="deleteUserInGroup">Delete user in group</button>
     <button v-on:click="updateUserInGroup">Update user in group</button>
+    <button v-on:click="updateGroup">Update group info</button>
+    <button v-on:click="deleteGroup">Delete group</button>
     <NavBar />
   </div>
 </template>
@@ -102,7 +102,7 @@ export default {
           );
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err, "postNewGroup error");
         });
     },
     postUserInGroup: function(name, userId, groupId) {
@@ -113,7 +113,7 @@ export default {
         `/users/${userId}/groups?groupId=${groupId}`,
         {
           body: {
-            admin: 0,
+            admin: 1,
             name,
             wishlist: [],
           },
@@ -123,7 +123,7 @@ export default {
           console.log(response);
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err, "postUserInGroup error");
         });
     },
     deleteUserInGroup: function() {
@@ -145,6 +145,30 @@ export default {
           ],
         },
       })
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    updateGroup: function() {
+      console.log("updateGroup");
+      API.patch("undercoverElfApi", "/groups?id=7", {
+        body: {
+          name: "Updated name",
+          exchange: "31/12/20",
+        },
+      })
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    deleteGroup: function() {
+      API.del("undercoverElfApi", "/groups", {})
         .then((response) => {
           console.log(response);
         })
