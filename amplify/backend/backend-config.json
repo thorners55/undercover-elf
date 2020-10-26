@@ -76,6 +76,25 @@
           }
         }
       ]
+    },
+    "undercoverElfDrawGroups": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "storage",
+          "resourceName": "undercoverElfTable",
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "attributeEnvMap": {
+            "Name": "TABLE_NAME",
+            "Arn": "TABLE_ARN"
+          }
+        }
+      ]
     }
   },
   "api": {
@@ -102,6 +121,14 @@
         {
           "category": "function",
           "resourceName": "undercoverElfUserProfile",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        },
+        {
+          "category": "function",
+          "resourceName": "undercoverElfDrawGroups",
           "attributes": [
             "Name",
             "Arn"

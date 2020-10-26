@@ -19,6 +19,7 @@
     <button v-on:click="updateUserInGroup">Update user in group</button>
     <button v-on:click="updateGroup">Update group info</button>
     <button v-on:click="deleteGroup">Delete group</button>
+    <button v-on:click="drawGroups">Draw groups</button>
     <NavBar />
   </div>
 </template>
@@ -169,6 +170,16 @@ export default {
     },
     deleteGroup: function() {
       API.del("undercoverElfApi", "/groups", {})
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    drawGroups: function() {
+      console.log("drawGroups");
+      API.get("undercoverElfApi", "/draw-groups?id=2", {})
         .then((response) => {
           console.log(response);
         })
