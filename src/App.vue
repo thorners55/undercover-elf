@@ -19,7 +19,8 @@
     <button v-on:click="updateUserInGroup">Update user in group</button>
     <button v-on:click="updateGroup">Update group info</button>
     <button v-on:click="deleteGroup">Delete group</button>
-    <button v-on:click="drawGroups">Draw groups</button>
+    <button v-on:click="drawNames">Draw names</button>
+
     <NavBar />
   </div>
 </template>
@@ -177,9 +178,48 @@ export default {
           console.log(err);
         });
     },
-    drawGroups: function() {
-      console.log("drawGroups");
+    drawNames: function() {
+      console.log("drawNames");
       API.get("undercoverElfApi", "/draw-groups?id=2", {})
+        .then(({ body }) => {
+          console.log(body, typeof body);
+          let copyResponse = body.map((x) => x);
+          this.assignNames(body, copyResponse, "2");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    assignNames: async function(response, copyResponse, groupId) {
+      console.log("assignNames");
+
+      function randomNum(length) {
+        return Math.floor(Math.random() * (length - 0) + 0);
+      }
+
+      function pickNames() {
+        let length = copyResponse.length;
+        for (let i = 0; i < response.length; i++) {
+          let index = randomNum(length);
+          let buyFor = copyResponse[index];
+          if (response[i].name === buyFor.name) {
+            i = i - 1;
+            continue;
+          }
+          response[i].buyingForName = buyFor.name;
+          response[i].buyingForUserId = buyFor.pk;
+          copyResponse.splice(index, 1);
+          length = length - 1;
+        }
+        console.log(response);
+        return;
+      }
+
+      await pickNames();
+      console.log("patch");
+      API.patch("undercoverElfApi", `/draw-names?id=${groupId}`, {
+        body: response,
+      })
         .then((response) => {
           console.log(response);
         })

@@ -44,6 +44,16 @@
                     "/GET"
                 ]
             }
+        },
+        {
+            "name": "/draw-names",
+            "lambdaFunction": "undercoverElfDrawNames",
+            "privacy": {
+                "private": true,
+                "auth": [
+                    "/GET"
+                ]
+            }
         }
     ],
     "resourceName": "undercoverElfApi",
@@ -60,10 +70,13 @@
         },
         {
             "lambdaFunction": "undercoverElfDrawGroups"
+        },
+        {
+            "lambdaFunction": "undercoverElfDrawNames"
         }
     ],
     "privacy": {
-        "auth": 4,
+        "auth": 5,
         "unauth": 0,
         "authRoleName": "amplify-undercoverelf-dev-123607-authRole",
         "unAuthRoleName": "amplify-undercoverelf-dev-123607-unauthRole"
@@ -100,7 +113,15 @@
                 "Name",
                 "Arn"
             ]
+        },
+        {
+            "category": "function",
+            "resourceName": "undercoverElfDrawNames",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
         }
     ],
-    "uuid": "d6bfb7b2"
+    "uuid": "1e5fc81d"
 }

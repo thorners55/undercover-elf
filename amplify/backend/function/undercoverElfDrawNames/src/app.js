@@ -15,11 +15,22 @@ AWS.config.update({ region: process.env.TABLE_REGION });
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
+let indexName = "sk-pk-index";
 let tableName = "undercoverElfTable";
 if (process.env.ENV && process.env.ENV !== "NONE") {
   tableName = tableName + "-" + process.env.ENV;
 }
 
+const userIdPresent = false; // TODO: update in case is required to use that definition
+const partitionKeyName = "pk";
+const partitionKeyType = "S";
+const sortKeyName = "sk";
+const sortKeyType = "S";
+const hasSortKey = sortKeyName !== "";
+const path = "/draw-groups";
+const UNAUTH = "UNAUTH";
+const hashKeyPath = "/:" + partitionKeyName;
+const sortKeyPath = hasSortKey ? "/:" + sortKeyName : "";
 // declare a new express app
 var app = express();
 app.use(bodyParser.json());
@@ -45,60 +56,64 @@ const convertUrlType = (param, type) => {
   }
 };
 
-// ME //
-
-app.get("/users/:id/profile", function(request, response) {
-  console.log(request, "<---- REQUEST");
-
-  for (let i = 0; i < request.params.id.length; i++) {
-    if (typeof i !== "number") {
-      response.json({
-        statusCode: 400,
-        error: "Bad request",
-      });
-      return;
-    }
+app.patch("/draw-names", async function(request, response) {
+  if (request.query.id.length < 1) {
+    response.json({
+      statusCode: 400,
+      error: "Invalid group ID",
+    });
+    return;
   }
 
-  const userId = `user_${request.params.id}`;
+  console.log(request.body, "<----- REQUEST BODY");
+  const groupId = `group_${request.query.id}`;
+  const drawGroupsResponse = request.body;
+
   let params = {
     TableName: tableName,
     Key: {
-      pk: userId,
-      sk: "profile",
+      pk: "",
+      sk: groupId,
     },
+    UpdateExpression: "set buyingForName = :bf, buyingForUserId = :bfuid",
+    ReturnValues: "UPDATED_NEW",
   };
 
-  dynamodb.get(params, (error, result) => {
-    if (result.Item === undefined) {
-      response.json({
-        statusCode: 400,
-        error: "Bad request",
-      });
-      return;
-    }
+  let postedResponse = [];
 
-    if (error) {
-      console.log(error), "<--- ERROR";
+  for (let i = 0; i < drawGroupsResponse.length; i++) {
+    params.Key.pk = drawGroupsResponse[i].pk;
+    params.ExpressionAttributeValues = {
+      ":bf": drawGroupsResponse[i].buyingForName,
+      ":bfuid": drawGroupsResponse[i].buyingForUserId,
+    };
+    try {
+      const update = await dynamodb.update(params).promise();
+      console.log(update, "<---- RESULT");
+      let buyFor = update.Attributes;
+      buyFor.name = drawGroupsResponse[i].name;
+      buyFor.id = drawGroupsResponse[i].pk;
+      postedResponse.push(buyFor);
+      if (i === drawGroupsResponse.length - 1) {
+        response.json({ statusCode: 200, body: postedResponse });
+        return;
+      }
+      continue;
+    } catch (err) {
+      console.log(err);
       response.json({
         statusCode: 500,
-        error: error.message,
-      });
-    } else {
-      response.json({
-        statusCode: 200,
-        url: request.url,
-        body: JSON.stringify(result.Item),
+        error: err.message + " - names not drawn! Please try again!",
       });
     }
-  });
+  }
 });
 
-// All methods other than GET - error handling
-const invalidMethods = ["post", "put", "delete", "head", "patch"];
+// All methods other than PATCH - error handling
+const invalidMethods = ["delete", "post", "get", "head", "put"];
 
 invalidMethods.forEach((method) => {
-  app[method]("/users/:id/profile", function(request, response) {
+  app[method]("/draw-names", function(request, response) {
     response.json({ statusCode: 405, error: "Method not allowed" });
   });
 });

@@ -88,9 +88,18 @@ app.get("/draw-groups", function(request, response) {
       response.json({
         statusCode: 200,
         url: request.url,
-        body: JSON.stringify(result.Items),
+        body: result.Items,
       });
     }
+  });
+});
+
+// All methods other than GET - error handling
+const invalidMethods = ["delete", "post", "patch", "head", "put"];
+
+invalidMethods.forEach((method) => {
+  app[method]("/draw-names", function(request, response) {
+    response.json({ statusCode: 405, error: "Method not allowed" });
   });
 });
 
