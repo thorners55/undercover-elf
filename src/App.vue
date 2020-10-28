@@ -10,9 +10,7 @@
     <button v-on:click="getUserData">Get user data</button>
     <button v-on:click="getGroupData">Get group data</button>
     <button v-on:click="getUserAllGroupsData">Get user all groups data</button>
-    <button v-on:click="getUserSpecificGroupData">
-      Get user specific group data
-    </button>
+    <button v-on:click="getUserSpecificGroupData">Get user specific group data</button>
     <button v-on:click="postNewGroup">Post new group</button>
     <button v-on:click="postUserInGroup">Post user in group</button>
     <button v-on:click="deleteUserInGroup">Delete user in group</button>
@@ -38,47 +36,47 @@ export default {
   name: "App",
   components: {
     // SignIn,
-    NavBar,
+    NavBar
   },
 
   methods: {
     getUserData: function() {
       console.log("getUserData");
       API.get("undercoverElfApi", "/users/1234/profile", {})
-        .then((response) => {
+        .then(response => {
           console.log(response);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
     getGroupData: function() {
       console.log("getGroupData");
       API.get("undercoverElfApi", "/groups?id=1", {})
-        .then((response) => {
+        .then(response => {
           console.log(response);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
     getUserAllGroupsData: function() {
       console.log("getUserAllGroupsData");
       API.get("undercoverElfApi", "/users/1234/groups", {})
-        .then((items) => {
+        .then(items => {
           console.log(items);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
     getUserSpecificGroupData: function() {
       console.log("getUserSpecificGroup");
       API.get("undercoverElfApi", "/users/1234/groups?groupId=2", {})
-        .then((items) => {
+        .then(items => {
           console.log(items);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -92,10 +90,10 @@ export default {
           admin: "Kathryn Thornley",
           exchange: "26/12/20",
           members: [{ id: "user_1235", name: "Kathryn Thornley" }],
-          pk: groupId,
-        },
+          pk: groupId
+        }
       })
-        .then((response) => {
+        .then(response => {
           console.log(response);
           this.postUserInGroup(
             response.body.admin,
@@ -103,7 +101,7 @@ export default {
             `${response.body.group}`
           );
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err, "postNewGroup error");
         });
     },
@@ -117,24 +115,24 @@ export default {
           body: {
             admin: 1,
             name,
-            wishlist: [],
-          },
+            wishlist: []
+          }
         }
       )
-        .then((response) => {
+        .then(response => {
           console.log(response);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err, "postUserInGroup error");
         });
     },
     deleteUserInGroup: function() {
       console.log("deleteUserInGroup");
       API.del("undercoverElfApi", "/users/1234/groups?groupId=3")
-        .then((response) => {
+        .then(response => {
           console.log(response);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -143,14 +141,14 @@ export default {
       API.post("undercoverElfApi", "/users/1234/groups?groupId=3", {
         body: {
           wishlist: [
-            { description: "Green helmet", url: "thehelmetstore.co.uk" },
-          ],
-        },
+            { description: "Green helmet", url: "thehelmetstore.co.uk" }
+          ]
+        }
       })
-        .then((response) => {
+        .then(response => {
           console.log(response);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -159,22 +157,22 @@ export default {
       API.patch("undercoverElfApi", "/groups?id=7", {
         body: {
           name: "Updated name",
-          exchange: "31/12/20",
-        },
+          exchange: "31/12/20"
+        }
       })
-        .then((response) => {
+        .then(response => {
           console.log(response);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
     deleteGroup: function() {
       API.del("undercoverElfApi", "/groups", {})
-        .then((response) => {
+        .then(response => {
           console.log(response);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -183,10 +181,10 @@ export default {
       API.get("undercoverElfApi", "/draw-groups?id=2", {})
         .then(({ body }) => {
           console.log(body, typeof body);
-          let copyResponse = body.map((x) => x);
+          let copyResponse = body.map(x => x);
           this.assignNames(body, copyResponse, "2");
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -198,32 +196,72 @@ export default {
       }
 
       function pickNames() {
+        console.log("pickNames");
         let length = copyResponse.length;
+        let count = 0;
         for (let i = 0; i < response.length; i++) {
           let index = randomNum(length);
           let buyFor = copyResponse[index];
-          if (response[i].name === buyFor.name) {
-            i = i - 1;
-            continue;
+          // here to make sure there are no infinite loops
+          if (count > 15) {
+            console.log("exceed max call");
+            break;
           }
-          response[i].buyingForName = buyFor.name;
-          response[i].buyingForUserId = buyFor.pk;
-          copyResponse.splice(index, 1);
-          length = length - 1;
+          //
+
+          // if person picks their own name and it is NOT the last iteration, try again
+          // if person picks their own name and it IS the last iteration, pick a random person in the array who has already been assigned a person to buy for, take this assigned person and give it to the person who had picked their own name. Then, the random person who was picked is now buying for the person who picked their own name
+          if (response[i].pk === buyFor.pk) {
+            console.log("inside if");
+
+            if (i === response.length - 1) {
+              console.log("inside nested if");
+
+              // swap two assignments
+              const random = randomNum(response.length - 1);
+
+              let randomBF = response[random].buyingForUserId;
+              let currentIterationName = response[i].name;
+
+              if (randomBF === currentIterationName) {
+                console.log("inside second nested if");
+                i = i - 1;
+                count++;
+                continue;
+              } else {
+                console.log(response[random].buyingForName);
+                console.log(random, response[random]);
+                // Last person to pick someone buying for whoever random person had
+                response[i].buyingForName = response[random].buyingForName;
+                response[i].buyingForUserId = response[random].buyingForUserId;
+                // Random person now buying for last person to pick someone
+                response[random].buyingForName = response[i].name;
+                response[random].buyingForUserId = response[i].pk;
+              }
+            } else {
+              i = i - 1;
+              count++;
+              continue;
+            }
+          } else {
+            response[i].buyingForName = buyFor.name;
+            response[i].buyingForUserId = buyFor.pk;
+            copyResponse.splice(index, 1);
+            length = length - 1;
+          }
         }
-        console.log(response);
         return;
       }
 
       await pickNames();
       console.log("patch");
       API.patch("undercoverElfApi", `/draw-names?id=${groupId}`, {
-        body: response,
+        body: response
       })
-        .then((response) => {
+        .then(response => {
           console.log(response);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -267,8 +305,8 @@ export default {
           username: "EMAIL HERE",
           password: "PASSWORD HERE",
           attributes: {
-            name: "NAME HERE",
-          },
+            name: "NAME HERE"
+          }
           // hardcoded for testing lambda
         });
         console.log(user, "sign up");
@@ -295,12 +333,12 @@ export default {
       } catch (error) {
         console.log("error signing out: ", error);
       }
-    },
+    }
   },
 
   data() {
     return {
-      user: {},
+      user: {}
 
       /*formFieldsSignUp: [
         {
@@ -327,7 +365,7 @@ export default {
         { type: "password", label: "Password", required: true },
       ], */
     };
-  },
+  }
   /* created() {
     onAuthUIStateChange((state, user) => {
       if (state === AuthState.SignedIn) {
