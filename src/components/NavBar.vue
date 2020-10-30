@@ -1,18 +1,23 @@
 <template>
   <div>
-    <p>Hi {{name}}</p>
+    <p>Hello {{ name }}</p>
+    <ul>
+      <li v-for="group in groups" :key="group.sk">{{ group.sk }}</li>
+    </ul>
   </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   name: "NavBar",
   props: {
-    name: String
+    name: String,
   },
+  computed: mapGetters(["getGroups"]), // this returns the groups from state
   data() {
     return {};
-  }
+  },
 };
 </script>
 
