@@ -1,4 +1,6 @@
 import Vue from "vue";
+import "es6-promise/auto";
+import Vuex from "vuex";
 import App from "./App.vue";
 import Amplify from "aws-amplify";
 import "@aws-amplify/ui-vue";

@@ -65,7 +65,6 @@ app.patch("/draw-names", async function(request, response) {
     return;
   }
 
-  console.log(request.body, "<----- REQUEST BODY");
   const groupId = `group_${request.query.id}`;
   const drawGroupsResponse = request.body;
 
@@ -89,7 +88,6 @@ app.patch("/draw-names", async function(request, response) {
     };
     try {
       const update = await dynamodb.update(params).promise();
-      console.log(update, "<---- RESULT");
       let buyFor = update.Attributes;
       buyFor.name = drawGroupsResponse[i].name;
       buyFor.id = drawGroupsResponse[i].pk;

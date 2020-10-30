@@ -38,7 +38,6 @@ export default {
     // SignIn,
     NavBar
   },
-
   methods: {
     getUserData: function() {
       console.log("getUserData");
