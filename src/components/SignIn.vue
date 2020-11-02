@@ -1,33 +1,51 @@
 <template>
-  <div></div>
+  <div>
+    <p v-if="loggedIn">Hello, {{ name }}!</p>
+    <p v-if="loggedIn">You are logged in</p>
+    <button v-if="loggedIn" v-on:click="signOut">Sign out</button>
+    <p v-if="!loggedIn">Sign in</p>
+    <button v-if="!loggedIn" v-on:click="signIn">Sign in</button>
+    <p v-if="!loggedIn">Don't have an account?</p>
+    <button v-if="!loggedIn">Sign up here</button>
+  </div>
 </template>
 
 <script>
 import { Auth } from "aws-amplify";
 var aws = require("aws-sdk");
-aws.config.update({ region: "eu-west-2" });
-//var ddb = new aws.DynamoDB({ apiVersion: "2012-10-08" });
-import { onAuthUIStateChange } from "@aws-amplify/ui-components";
+import { mapState, mapActions } from "vuex";
 
-aws.config.update({ region: "eu-west-2" });
+//  <button v-on:click="confirmSignUp">Confirm sign up</button>
 
 export default {
   name: "SignIn",
   props: {},
-  created() {
-    onAuthUIStateChange((authState, user) => {
-      this.user = user;
-      this.authState = authState;
-      console.log(user, "<---- user");
-    });
-  },
+  created() {},
+  computed: mapState(["isLoggedIn", "userId"]),
+  mounted() {
+    if (localStorage.userId) {
+      this.userId = localStorage.userId;
+      this.loggedIn = true;
+      this.name = localStorage.name;
+    }
+  }, // NEED TO UPDATE STATE WHEN LOG IN
   methods: {
+    ...mapActions(["logIn"]),
     async signIn() {
       try {
         aws.config.update({ region: "eu-west-2" });
-        const user = await Auth.signIn("EMAIL HERE", "PASSWORD HERE!");
+        let user = await Auth.signIn("ENTER EMAIL HERE", "ENTER PASSWORD HERE");
         // hardcoded for dev purposes
         console.log(user, user.username, user.attributes.name);
+        this.name = user.attributes.name;
+        this.userId = user.username;
+        this.loggedIn = true;
+        //this.fetchGroups(user.username);
+
+        // prod
+        console.log(this.name);
+        let payload = { userId: this.userId, name: this.name };
+        this.logIn(payload);
       } catch (error) {
         console.log("error signing in", error);
       }
@@ -62,6 +80,7 @@ export default {
     async signOut() {
       try {
         await Auth.signOut();
+        this.loggedIn = false;
         console.log("signed out");
       } catch (error) {
         console.log("error signing out: ", error);
@@ -70,8 +89,9 @@ export default {
   },
   data() {
     return {
-      user: undefined,
-      authState: undefined,
+      userId: "",
+      loggedIn: "",
+      name: "",
     };
   },
 };

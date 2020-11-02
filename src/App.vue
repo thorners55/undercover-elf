@@ -1,12 +1,7 @@
 <template>
   <div id="app">
     <h1>Undercover Elf</h1>
-    <p v-if="loggedIn">You are logged in</p>
-    <p v-if="userId">{{ userId }}</p>
-    <button v-on:click="signIn">Sign in</button>
-    <button v-on:click="signOut">Sign out</button>
-    <button v-on:click="signUp">Sign up</button>
-    <button v-on:click="confirmSignUp">Confirm sign in</button>
+
     <button v-on:click="currentState">Current state</button>
     <button v-on:click="getUserData">Get user data</button>
     <button v-on:click="getGroupData">Get group data</button>
@@ -23,28 +18,27 @@
     <button v-on:click="drawNames">Draw names</button>
 
     <NavBar v-if="loggedIn" v-bind:userId="userId" />
+    <SignIn v-if="!loggedIn" />
   </div>
 </template>
 
 <script>
 import { API } from "aws-amplify";
-//import SignIn from "./components/SignIn.vue";
+import SignIn from "./components/SignIn.vue";
 import NavBar from "./components/NavBar.vue";
 import { Auth } from "aws-amplify";
 import { v4 as uuidv4 } from "uuid";
-import { mapState, mapActions } from "vuex";
-
-var aws = require("aws-sdk");
+import { mapState } from "vuex";
 
 export default {
   name: "App",
   components: {
-    // SignIn,
+    SignIn,
     NavBar,
   },
-  computed: mapState(["isLoggedIn", "userId"]), // NEED TO UPDATE STATE WHEN LOG IN
+
+  computed: mapState(["loggedIn"]),
   methods: {
-    ...mapActions(["fetchGroups"]),
     getUserData: function() {
       console.log("getUserData");
       API.get("undercoverElfApi", "/users/1234/profile", {})
@@ -279,90 +273,11 @@ export default {
         console.log(err);
       }
     },
-    async signIn() {
-      try {
-        aws.config.update({ region: "eu-west-2" });
-        let user = await Auth.signIn(
-          "stephanieeeet@hotmail.com",
-          "ThisIsAT3st!"
-        );
-        // hardcoded for dev purposes
-        console.log(user, user.username, user.attributes.name);
-        this.user = user.attributes.name;
-        this.userId = user.username;
-        this.loggedIn = true;
-        this.fetchGroups(user.username);
-      } catch (error) {
-        console.log("error signing in", error);
-      }
-    },
-    async signUp() {
-      try {
-        const { user } = await Auth.signUp({
-          username: "EMAIL HERE",
-          password: "PASSWORD HERE",
-          attributes: {
-            name: "NAME HERE",
-          },
-          // hardcoded for testing lambda
-        });
-        console.log(user, "sign up");
-      } catch (error) {
-        console.log("error signing up:", error);
-      }
-    },
-
-    async confirmSignUp() {
-      try {
-        const userConfirm = await Auth.confirmSignUp(
-          "EMAIL HERE",
-          "VERIFICATION CODE HERE"
-        );
-        console.log(userConfirm, "user confirm");
-      } catch (error) {
-        console.log("error confirming sign up", error);
-      }
-    },
-    async signOut() {
-      try {
-        await Auth.signOut();
-        this.loggedIn = false;
-        console.log("signed out");
-      } catch (error) {
-        console.log("error signing out: ", error);
-      }
-    },
   },
-
   data() {
     return {
       loggedIn: false,
       userId: "",
-
-      /*formFieldsSignUp: [
-        {
-          type: "name",
-          label: "Full name *",
-          placeholder: "e.g. Nicholas Claus",
-          required: true,
-        },
-        {
-          type: "email",
-          label: "Email *",
-          placeholder: "nick@northpole.com",
-          required: true,
-        },
-        { type: "password", label: "Password *", required: true },
-      ],
-      formFieldsSignIn: [
-        {
-          type: "email",
-          label: "Email",
-          placeholder: "nick@northpole.com",
-          required: true,
-        },
-        { type: "password", label: "Password", required: true },
-      ], */
     };
   },
   /* created() {

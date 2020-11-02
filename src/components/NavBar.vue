@@ -3,7 +3,7 @@
     <p>Hello</p>
     <ul id="groupNav">
       <li v-for="group in allGroups" :key="group.sk">
-        {{ group.groupName }}
+        {{ group.groupName ? group.groupName : "You have no groups yet!" }}
       </li>
     </ul>
   </div>
@@ -19,6 +19,7 @@ export default {
   methods: {
     ...mapActions(["fetchGroups"]),
   },
+
   computed: mapGetters(["allGroups"]), // this returns the groups from state
   created() {
     this.fetchGroups(this.userId);
