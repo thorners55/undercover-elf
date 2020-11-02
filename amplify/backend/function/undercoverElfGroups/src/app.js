@@ -16,6 +16,7 @@ AWS.config.update({ region: process.env.TABLE_REGION });
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 let tableName = "undercoverElfTable";
+let indexName = "sk-pk-index";
 if (process.env.ENV && process.env.ENV !== "NONE") {
   tableName = tableName + "-" + process.env.ENV;
 }
@@ -47,7 +48,6 @@ const convertUrlType = (param, type) => {
 
 // ME //
 app.get("/groups", function(request, response) {
-  console.log(request.query.id, "<---- REQUEST");
   const groupId = `group_${request.query.id}`;
 
   if (typeof request.query.id === "undefined") {
@@ -107,7 +107,7 @@ app.post("/groups", function(request, response) {
   });
 });
 
-app.patch("/groups", function(request, response) {
+app.patch("/groups", async function(request, response) {
   const groupId = request.query.id;
 
   if (groupId.length < 1) {
@@ -117,7 +117,7 @@ app.patch("/groups", function(request, response) {
     });
   }
 
-  let params = {
+  let paramsUpdateGroupInfo = {
     TableName: tableName,
     Key: {
       pk: `group_${groupId}`,
@@ -136,24 +136,63 @@ app.patch("/groups", function(request, response) {
     ReturnValues: "UPDATED_NEW",
   };
 
-  dynamodb.update(params, (error, result) => {
-    if (error) {
-      if (error.message === "The conditional request failed") {
-        response.json({
-          statusCode: 404,
-          error: "Not found: Group does not exist",
-        });
-        return;
-      }
-      response.json({ statusCode: 500, error: error.message });
-    } else {
+  let paramsGetUsersInGroup = {
+    TableName: tableName,
+    Key: {
+      pk: `group_${groupId}`,
+      sk: "meta",
+    },
+  };
+
+  let paramsUpdateUserGroup = {
+    TableName: tableName,
+    Key: {},
+    ConditionExpression: "attribute_exists(pk)",
+    UpdateExpression: "set groupName = :gn, exchange = :exchange",
+    ExpressionAttributeValues: {
+      ":gn": request.body.name,
+      ":exchange": request.body.exchange,
+    },
+    ReturnValues: "ALL_NEW",
+  };
+
+  try {
+    // call first func updateGroupInfo
+    await dynamodb.update(paramsUpdateGroupInfo).promise();
+    // get members
+    const members = await dynamodb.get(paramsGetUsersInGroup).promise();
+
+    // call second fun updateUserGroups - map through the array and make calls
+    const memberIds = members.Item.members.map((member) => {
+      return member.id;
+    });
+
+    //wait for DynamoDB to update each user item with the group name and exchange date
+    const updatedUserGroups = await Promise.all(
+      memberIds.map((id) => {
+        paramsUpdateUserGroup.Key.pk = id;
+        paramsUpdateUserGroup.Key.sk = `group_${groupId}`;
+        const updatedUserGroup = dynamodb
+          .update(paramsUpdateUserGroup)
+          .promise();
+        return updatedUserGroup;
+      })
+    );
+
+    // send updated user group items with exchange date and groupName updated
+    response.json({ statusCode: 200, body: updatedUserGroups });
+  } catch (err) {
+    console.log(err);
+    if (err.message === "The conditional request failed") {
       response.json({
-        statusCode: 200,
-        url: request.url,
-        body: JSON.stringify(result.Item),
+        statusCode: 404,
+        error: "Not found: Group does not exist",
       });
+      return;
+    } else {
+      response.json({ statusCode: 500, error: err.message });
     }
-  });
+  }
 });
 
 app.delete("/groups", function(request, response) {

@@ -1,7 +1,8 @@
 <template>
   <div id="app">
     <h1>Undercover Elf</h1>
-    <p v-if="loggedIn">Hi! :)</p>
+    <p v-if="loggedIn">You are logged in</p>
+    <p v-if="userId">{{ userId }}</p>
     <button v-on:click="signIn">Sign in</button>
     <button v-on:click="signOut">Sign out</button>
     <button v-on:click="signUp">Sign up</button>
@@ -21,7 +22,7 @@
     <button v-on:click="deleteGroup">Delete group</button>
     <button v-on:click="drawNames">Draw names</button>
 
-    <NavBar />
+    <NavBar v-if="loggedIn" v-bind:userId="userId" />
   </div>
 </template>
 
@@ -31,7 +32,7 @@ import { API } from "aws-amplify";
 import NavBar from "./components/NavBar.vue";
 import { Auth } from "aws-amplify";
 import { v4 as uuidv4 } from "uuid";
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 var aws = require("aws-sdk");
 
@@ -41,8 +42,9 @@ export default {
     // SignIn,
     NavBar,
   },
-  computed: mapState(["isLoggedIn"]), // NEED TO UPDATE STATE WHEN LOG IN
+  computed: mapState(["isLoggedIn", "userId"]), // NEED TO UPDATE STATE WHEN LOG IN
   methods: {
+    ...mapActions(["fetchGroups"]),
     getUserData: function() {
       console.log("getUserData");
       API.get("undercoverElfApi", "/users/1234/profile", {})
@@ -124,6 +126,7 @@ export default {
       )
         .then((response) => {
           console.log(response);
+          /* response is an array of items that have been updated */
         })
         .catch((err) => {
           console.log(err, "postUserInGroup error");
@@ -157,10 +160,10 @@ export default {
     },
     updateGroup: function() {
       console.log("updateGroup");
-      API.patch("undercoverElfApi", "/groups?id=7", {
+      API.patch("undercoverElfApi", "/groups?id=2", {
         body: {
-          name: "Updated name",
-          exchange: "31/12/20",
+          name: "Thornley Family",
+          exchange: "9/12/20",
         },
       })
         .then((response) => {
@@ -279,27 +282,16 @@ export default {
     async signIn() {
       try {
         aws.config.update({ region: "eu-west-2" });
-        let user = await Auth.signIn("ENTER EMAIL HERE", "ENTER PASSWORD HERE");
+        let user = await Auth.signIn(
+          "stephanieeeet@hotmail.com",
+          "ThisIsAT3st!"
+        );
         // hardcoded for dev purposes
         console.log(user, user.username, user.attributes.name);
         this.user = user.attributes.name;
+        this.userId = user.username;
         this.loggedIn = true;
-        // store.dispatch("logInOrOut");
-
-        /*let ddbParams = {
-          TableName: "undercover-elf-test",
-          Key: {
-            PK: { S: `user_${user.username}` },
-            SK: { S: "group_1" },
-          },
-        };
-        try {
-          const response = await ddb.getItem(ddbParams).promise();
-          console.log("Success");
-          console.log(response);
-        } catch (err) {
-          console.log("Error", err);
-        }*/
+        this.fetchGroups(user.username);
       } catch (error) {
         console.log("error signing in", error);
       }
@@ -345,6 +337,7 @@ export default {
   data() {
     return {
       loggedIn: false,
+      userId: "",
 
       /*formFieldsSignUp: [
         {

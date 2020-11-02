@@ -1,20 +1,28 @@
 <template>
   <div>
-    <p>Hello {{ name }}</p>
-    <ul>
-      <li v-for="group in groups" :key="group.sk">{{ group.sk }}</li>
+    <p>Hello</p>
+    <ul id="groupNav">
+      <li v-for="group in allGroups" :key="group.sk">
+        {{ group.groupName }}
+      </li>
     </ul>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 export default {
   name: "NavBar",
   props: {
-    name: String,
+    userId: String,
   },
-  computed: mapGetters(["getGroups"]), // this returns the groups from state
+  methods: {
+    ...mapActions(["fetchGroups"]),
+  },
+  computed: mapGetters(["allGroups"]), // this returns the groups from state
+  created() {
+    this.fetchGroups(this.userId);
+  },
   data() {
     return {};
   },

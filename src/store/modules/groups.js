@@ -1,15 +1,36 @@
 //import axios from "axios";
+import { API } from "aws-amplify";
 
 const state = {
   groups: [],
+  userId: "",
 };
 
 const getters = {
-  getGroups: (state) => state.groups,
+  /*getGroups: (state) => {
+    console.log(state), state.groups;
+  },*/
+  allGroups: (state) => state.groups,
 };
 
-const actions = {};
+const mutations = {
+  setGroups(state, groups) {
+    state.groups = groups;
+  },
+};
 
-const mutations = {};
+const actions = {
+  fetchGroups({ commit }, userId) {
+    console.log(userId);
+    API.get("undercoverElfApi", `/users/${userId}/groups`, {})
+      .then((groups) => {
+        console.log(groups);
+        commit("setGroups", groups);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
+};
 
 export default { state, getters, actions, mutations };
