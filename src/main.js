@@ -12,5 +12,17 @@ Vue.config.productionTip = false;
 
 new Vue({
   store,
+  beforeCreate() {
+    console.log("main.js before create");
+    this.$store.commit("loggedIn/isLoggedIn");
+  },
+  modules: {
+    groups: {
+      namespaced: true,
+    },
+    loggedIn: {
+      namespaced: true,
+    },
+  },
   render: (h) => h(App),
 }).$mount("#app");

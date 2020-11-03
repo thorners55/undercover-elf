@@ -104,19 +104,7 @@ app.get("/users/:id/groups", function(request, response) {
         response.statusCode = 500;
         response.json({ error: "Could not load items: " + err.message });
       } else {
-        if (result.Items) {
-          if (result.Items.length < 1) {
-            response.statusCode = 404;
-            response.json({
-              error:
-                "Not found: User does not exist or is not a member of any groups",
-            });
-          } else {
-            response.json(result.Items);
-          }
-        } else {
-          response.json(result);
-        }
+        response.json(result.Items);
       }
     });
   }

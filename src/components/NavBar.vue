@@ -1,29 +1,35 @@
 <template>
   <div>
-    <p>Hello</p>
+    <p>NavBar</p>
+    <div v-if="groups.length === 0">
+      <p>You have no groups yet!</p>
+      <button>Join group</button>
+    </div>
     <ul id="groupNav">
-      <li v-for="group in allGroups" :key="group.sk">
-        {{ group.groupName ? group.groupName : "You have no groups yet!" }}
+      <li v-for="group in groups" :key="group.sk">
+        {{ group.groupName }}
       </li>
     </ul>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 export default {
   name: "NavBar",
-  props: {
-    userId: String,
-  },
   methods: {
-    ...mapActions(["fetchGroups"]),
+    ...mapActions("groups", ["fetchGroups"]),
   },
-
-  computed: mapGetters(["allGroups"]), // this returns the groups from state
-  created() {
+  computed: {
+    ...mapState("loggedIn", ["userId"]),
+    ...mapState("groups", ["groups"]),
+    ...mapActions("groups", ["getInitialGroups"]),
+  },
+  async created() {
+    console.log("NavBar created");
     this.fetchGroups(this.userId);
   },
+
   data() {
     return {};
   },

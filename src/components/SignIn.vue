@@ -1,65 +1,98 @@
 <template>
   <div>
-    <p v-if="loggedIn">Hello, {{ name }}!</p>
-    <p v-if="loggedIn">You are logged in</p>
-    <button v-if="loggedIn" v-on:click="signOut">Sign out</button>
-    <p v-if="!loggedIn">Sign in</p>
-    <button v-if="!loggedIn" v-on:click="signIn">Sign in</button>
-    <p v-if="!loggedIn">Don't have an account?</p>
-    <button v-if="!loggedIn">Sign up here</button>
+    <div v-if="loggedIn">
+      <p>Hello, {{ name }}!</p>
+      <p>You are logged in</p>
+      <button v-on:click="signOut">Sign out</button>
+    </div>
+    <div v-if="!loggedIn">
+      <button v-on:click="signIn">click</button>
+      <div v-if="!signingUp">
+        <p>Sign in</p>
+        <form id="sign-in" v-on:keyup.enter="signIn">
+          <label for="email">Email:</label>
+          <input type="email" id="email" v-model="signInEmail" />
+          <label for="password">Password:</label>
+          <input type="password" id="password" v-model="signInPassword" />
+        </form>
+        <button type="submit" v-on:click="signIn">Sign in</button>
+
+        <p>Don't have an account?</p>
+      </div>
+      <button v-if="!signingUp" v-on:click="signUpForm">Create an account</button>
+      <div v-if="signingUp">
+        <form v-on:keyup.enter="signIn">
+          <label for="name">Name:</label>
+          <input type="text" id="name" v-model="signUpName" />
+          <label for="email">Email:</label>
+          <input type="email" id="email" v-model="signUpEmail" />
+          <label for="password">Password:</label>
+          <input type="password" id="password" v-model="signUpPassword" />
+        </form>
+        <button v-on:click="createAccount">Create account</button>
+
+        <button v-on:click="signUpForm">Back to sign in</button>
+      </div>
+      <div v-if="confirmingSignUp">
+        <form v-on:keyup.enter="signIn">
+          <label for="email">Email:</label>
+          <input type="email" id="email" v-model="confirmSignUpEmail" />
+          <label for="password">Password:</label>
+          <input type="password" id="password" v-model="confimSignUpCode" />
+          <button v-on:click="confirmSignUp">Confirm sign up</button>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { Auth } from "aws-amplify";
 var aws = require("aws-sdk");
-import { mapState, mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 //  <button v-on:click="confirmSignUp">Confirm sign up</button>
 
 export default {
   name: "SignIn",
   props: {},
-  created() {},
-  computed: mapState(["isLoggedIn", "userId"]),
-  mounted() {
-    if (localStorage.userId) {
-      this.userId = localStorage.userId;
-      this.loggedIn = true;
-      this.name = localStorage.name;
-    }
-  }, // NEED TO UPDATE STATE WHEN LOG IN
+  computed: {
+    ...mapState("loggedIn", ["loggedIn"]),
+    ...mapState("loggedIn", ["name"])
+  },
+  // NEED TO UPDATE STATE WHEN LOG IN
   methods: {
-    ...mapActions(["logIn"]),
+    ...mapActions("loggedIn", ["logIn", "logOut"]),
     async signIn() {
+      console.log("beginning of signIn");
       try {
         aws.config.update({ region: "eu-west-2" });
-        let user = await Auth.signIn("ENTER EMAIL HERE", "ENTER PASSWORD HERE");
-        // hardcoded for dev purposes
-        console.log(user, user.username, user.attributes.name);
-        this.name = user.attributes.name;
-        this.userId = user.username;
-        this.loggedIn = true;
-        //this.fetchGroups(user.username);
-
-        // prod
-        console.log(this.name);
-        let payload = { userId: this.userId, name: this.name };
+        let user = await Auth.signIn(this.signInEmail, this.signInPassword);
+        console.log("after signIn");
+        let payload = { userId: user.username, name: user.attributes.name };
         this.logIn(payload);
+        this.signInEmail = "";
+        this.signInPassword = "";
       } catch (error) {
         console.log("error signing in", error);
       }
     },
-    async signUp() {
+    signUpForm() {
+      this.signingUp = !this.signingUp;
+    },
+    async createAccount() {
+      console.log(this.signUpName, this.signUpEmail, this.signUpPassword);
       try {
         const { user } = await Auth.signUp({
-          username: "EMAIL HERE",
-          password: "PASSWORD HERE",
+          username: this.signUpEmail,
+          password: this.signUpPassword,
           attributes: {
-            name: "NAME HERE",
-          },
-          // hardcoded for testing lambda
+            name: this.signUpName
+          }
         });
+        this.confirmingSignUp = true;
+        this.signUpEmail = "";
+        (this.signUpPassword = ""), (this.signUpName = "");
         console.log(user, "sign up");
       } catch (error) {
         console.log("error signing up:", error);
@@ -69,10 +102,11 @@ export default {
     async confirmSignUp() {
       try {
         const userConfirm = await Auth.confirmSignUp(
-          "EMAIL HERE",
-          "VERIFICATION CODE HERE"
+          this.confirmSignUpEmail,
+          this.confirmSignUpCode
         );
         console.log(userConfirm, "user confirm");
+        (this.confirmSignUpEmail = ""), (this.confirmSignUpCode = "");
       } catch (error) {
         console.log("error confirming sign up", error);
       }
@@ -80,20 +114,29 @@ export default {
     async signOut() {
       try {
         await Auth.signOut();
-        this.loggedIn = false;
+        localStorage.removeItem("userId");
+        localStorage.removeItem("name");
+        localStorage.loggedIn = false;
+        this.logOut();
         console.log("signed out");
       } catch (error) {
         console.log("error signing out: ", error);
       }
-    },
+    }
   },
   data() {
     return {
-      userId: "",
-      loggedIn: "",
-      name: "",
+      signingUp: false,
+      confirmingSignUp: false,
+      signInEmail: "",
+      signInPassword: "",
+      signUpName: "",
+      signUpEmail: "",
+      signUpPassword: "",
+      confirmSignUpEmail: "",
+      confirmSignUpCode: ""
     };
-  },
+  }
 };
 </script>
 

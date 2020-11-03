@@ -1,9 +1,10 @@
 //import axios from "axios";
 import { API } from "aws-amplify";
 
+const namespaced = true;
+
 const state = {
   groups: [],
-  userId: "",
 };
 
 const getters = {
@@ -33,4 +34,4 @@ const actions = {
   },
 };
 
-export default { state, getters, actions, mutations };
+export default { state, getters, actions, mutations, namespaced };
