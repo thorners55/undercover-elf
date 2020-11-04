@@ -88,15 +88,28 @@
 
       <!-- if making new account (signing up) -->
       <div v-if="signingUp">
-        <form v-on:keyup.enter="signIn">
+        <form v-on:keyup.enter="createAccount">
           <label for="name">Name:</label>
           <input type="text" id="name" v-model="signUpName" />
           <label for="email">Email:</label>
           <input type="email" id="email" v-model="signUpEmail" />
           <label for="password">Password:</label>
-          <input type="password" id="password" v-model="signUpPassword" />
+          <input type="password" id="password" v-model="signUpPassword" @input="handlePasswords" />
+          <p
+            v-if="passwordFormatMessage"
+          >Password must be a minimum of 8 characters, contain at least one uppercase and one lowercase character, and one special character</p>
+          <label for="passwordRetype">Re-enter password:</label>
+          <input
+            type="password"
+            id="passwordRetype"
+            v-model="signUpPasswordRetype"
+            @input="handlePasswords"
+          />
         </form>
-        <button v-on:click="createAccount(); showSignIn = false">Create account</button>
+        <button
+          v-on:click="createAccount(); showSignIn = false"
+          :disabled="!validPassword"
+        >Create account</button>
 
         <button
           v-on:click="signingUp = false; signUpEmail = ''; signUpPassword =''; signUpName = ''"
@@ -220,13 +233,8 @@ export default {
       }
     },
     async createAccount() {
-      console.log(
-        this.signUpName,
-        this.signUpEmail,
-        this.signUpPassword,
-        this.signInEmail,
-        this.signInPassword
-      );
+      console.log(this.signUpPasswordRetype);
+
       try {
         const { user } = await Auth.signUp({
           username: this.signUpEmail,
@@ -247,22 +255,38 @@ export default {
         console.log("error signing up:", error);
       }
     },
+    async handlePasswords() {
+      // if doesnt match regex, show a message saying doesnt match and keep button disabled
+      const regex = /^(?=.*?[A-Z])(?=(.*[a-z]){1,})(?=(.*[\d]){1,})(?=(.*[\W]){1,})(?!.*\s).{8,}$/;
 
-    async confirmSignUp() {
-      let email;
-      if (this.confirmSignUpEmail.length > 1) {
-        email = this.confirmSignUpEmail;
+      const passwordFormat = regex.test(this.signUpPassword);
+      if (passwordFormat) {
+        this.passwordFormatMessage = false;
+        if (this.signUpPassword === this.signUpPasswordRetype) {
+          this.validPassword = true;
+        } else {
+          this.validPassword = false;
+        }
       } else {
-        email = this.signInEmail;
+        this.passwordFormatMessage = true;
       }
+    },
+    async confirmSignUp() {
       try {
         const userConfirm = await Auth.confirmSignUp(
-          email,
+          this.signUpEmail,
           this.confirmSignUpCode
         );
-        this.signIn(email);
-        console.log(userConfirm, "user confirm");
-        this.confirmSignUpEmail = "";
+        console.log(userConfirm);
+        alert("Successfully registered! You will be automatically logged in");
+        //this.signUpEmail = "";
+        console.log(this.signUpEmail, this.signUpPassword);
+        this.signIn(this.signUpEmail);
+        this.signingUp = false;
+        this.showSignIn = true;
+        this.confirmingSignUp = false;
+        this.userNotConfirmed = false;
+        this.userNotConfirmedMessage = false;
         this.confirmSignUpCode = "";
       } catch (error) {
         alert("Error confirming sign up: " + error.message);
@@ -270,9 +294,10 @@ export default {
       }
     },
     async resendCode() {
-      console.log(this.signInEmail);
+      console.log(this.signUpEmail);
       try {
-        Auth.resendSignUp(this.signInEmail);
+        Auth.resendSignUp(this.signUpEmail);
+        alert("Verification code has been sent to registered email");
       } catch (error) {
         alert("Error re-sending verification code: " + error.message);
         console.log("error re-sending verification code", error);
@@ -302,7 +327,9 @@ export default {
       signUpName: "",
       signUpEmail: "",
       signUpPassword: "",
-      confirmSignUpEmail: "",
+      signUpPasswordRetype: "",
+      validPassword: false,
+      passwordFormatMessage: false,
       confirmSignUpCode: "",
       userNotConfirmed: false,
       userNotConfirmedMessage: false,
