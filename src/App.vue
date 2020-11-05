@@ -18,15 +18,26 @@
     <button v-on:click="drawNames">Draw names</button>
 
     <NavBar v-if="loggedIn" />
-    <router-view />
+    <router-view>
+      <Home />
+      <Profile />
+      <AllGroups />
+      <CreateGroup />
+      <AllWishlists />
+    </router-view>
     <SignIn />
   </div>
 </template>
 
 <script>
 import { API } from "aws-amplify";
+import Home from "./components/Home.vue";
 import SignIn from "./components/SignIn.vue";
 import NavBar from "./components/NavBar.vue";
+import Profile from "./components/Profile.vue";
+import AllGroups from "./components/AllGroups.vue";
+import CreateGroup from "./components/CreateGroup.vue";
+import AllWishlists from "./components/AllWishlists";
 import { Auth } from "aws-amplify";
 import { v4 as uuidv4 } from "uuid";
 import { mapState } from "vuex";
@@ -34,8 +45,13 @@ import { mapState } from "vuex";
 export default {
   name: "App",
   components: {
-    SignIn,
+    Home,
     NavBar,
+    SignIn,
+    Profile,
+    AllGroups,
+    CreateGroup,
+    AllWishlists,
   },
   computed: mapState("loggedIn", ["loggedIn"]),
   mounted() {

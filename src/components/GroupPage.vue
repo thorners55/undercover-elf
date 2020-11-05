@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>Group page {{ id }}</p>
+    <h2>Group {{ id }}</h2>
   </div>
 </template>
 
@@ -9,7 +9,7 @@ export default {
   name: "GroupPage",
   computed: {
     id() {
-      return this.$route.params.id;
+      return this.$route.query.id;
     },
   },
   data() {
