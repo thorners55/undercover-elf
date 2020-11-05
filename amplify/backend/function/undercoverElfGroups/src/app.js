@@ -50,7 +50,7 @@ const convertUrlType = (param, type) => {
 app.get("/groups", function(request, response) {
   const groupId = `group_${request.query.id}`;
 
-  if (typeof request.query.id === "undefined") {
+  if (typeof request.query.id === "undefined" || !request.query.id) {
     response.json({
       statusCode: 404,
       error: "Not found: Request requires a query with group ID",
@@ -73,7 +73,7 @@ app.get("/groups", function(request, response) {
       response.json({
         statusCode: 200,
         url: request.url,
-        body: JSON.stringify(result.Item),
+        body: result.Item,
       });
     }
   });

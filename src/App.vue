@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <h1>Undercover Elf</h1>
-
     <button v-on:click="currentState">Current state</button>
     <button v-on:click="getUserData">Get user data</button>
     <button v-on:click="getGroupData">Get group data</button>
@@ -17,6 +16,7 @@
     <button v-on:click="deleteGroup">Delete group</button>
     <button v-on:click="drawNames">Draw names</button>
 
+    <SignIn />
     <NavBar v-if="loggedIn" />
     <router-view>
       <Home />
@@ -25,7 +25,6 @@
       <CreateGroup />
       <AllWishlists />
     </router-view>
-    <SignIn />
   </div>
 </template>
 

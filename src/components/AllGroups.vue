@@ -29,8 +29,8 @@ export default {
     ...mapState("groups", ["groups"]),
     ...mapActions("groups", ["getInitialGroups"]),
   },
-  async created() {
-    console.log("NavBar created");
+  created() {
+    console.log("AllGroups created");
     this.fetchGroups(this.userId);
   },
 

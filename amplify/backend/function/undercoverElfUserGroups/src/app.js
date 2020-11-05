@@ -116,7 +116,7 @@ app.post("/users/:id/groups", function(request, response) {
   request.body.pk = `user_${userId}`;
   request.body.sk = `group_${groupId}`;
 
-  if (request.body.name === undefined) {
+  if (request.body.name === undefined || !userId || !groupId) {
     if (request.query.groupId.length < 1) {
       response.json({ statusCode: 405, error: "Method not allowed" });
       return;
