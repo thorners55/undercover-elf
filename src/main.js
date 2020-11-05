@@ -5,12 +5,14 @@ import Amplify from "aws-amplify";
 import "@aws-amplify/ui-vue";
 import aws_exports from "./aws-exports";
 import store from "./store";
+import router from "./router";
 
 Amplify.configure(aws_exports);
 
 Vue.config.productionTip = false;
 
 new Vue({
+  router,
   store,
   beforeCreate() {
     console.log("main.js before create");

@@ -7,7 +7,9 @@
     </div>
     <ul id="groupNav">
       <li v-for="group in groups" :key="group.sk">
-        {{ group.groupName }}
+        <router-link :to="`/groups/${group.sk}`">{{
+          group.groupName
+        }}</router-link>
       </li>
     </ul>
   </div>
@@ -15,6 +17,7 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
+
 export default {
   name: "NavBar",
   methods: {

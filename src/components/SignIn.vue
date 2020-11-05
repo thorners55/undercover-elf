@@ -15,7 +15,11 @@
         <div v-if="showSignIn">
           <div v-if="!hideSignInForgottenPassword">
             <p>Sign in</p>
-            <form id="sign-in" v-on:keyup.enter="signIn(signInEmail)">
+            <form
+              id="sign-in"
+              v-on:keyup.enter="signIn(signInEmail)"
+              v-on:submit.prevent
+            >
               <label for="email">Email:</label>
               <input type="email" id="email" v-model="signInEmail" />
               <label for="password">Password:</label>
@@ -23,27 +27,57 @@
             </form>
             <button
               type="submit"
-              v-on:click="signIn(signInEmail); signUpEmail = ''; signUpPassword = ''"
-            >Sign in</button>
+              v-on:click="
+                signIn(signInEmail);
+                signUpEmail = '';
+                signUpPassword = '';
+              "
+            >
+              Sign in
+            </button>
             <button
-              v-on:click="showForgotPassword = true; hideSignInForgottenPassword = true"
-            >Forgotten password?</button>
+              v-on:click="
+                showForgotPassword = true;
+                hideSignInForgottenPassword = true;
+              "
+            >
+              Forgotten password?
+            </button>
           </div>
           <div v-if="showForgotPassword">
-            <form id="forgot-password" v-on:submit.prevent v-on:keyup.enter="forgotPassword">
+            <form
+              id="forgot-password"
+              v-on:submit.prevent
+              v-on:keyup.enter="forgotPassword"
+            >
               <!-- FIX -->
               <label for="forgot-password-email">Email:</label>
-              <input type="email" id="forgot-password-email" v-model="forgottenEmail" />
+              <input
+                type="email"
+                id="forgot-password-email"
+                v-model="forgottenEmail"
+              />
             </form>
             <button v-on:click="forgotPassword">Reset password</button>
             <button
-              v-on:click="hideSignInForgottenPassword = false; showForgotPassword = false;"
-            >Back to sign in</button>
+              v-on:click="
+                hideSignInForgottenPassword = false;
+                showForgotPassword = false;
+              "
+            >
+              Back to sign in
+            </button>
           </div>
           <div v-if="showForgotPasswordConfirm">
-            <p v-if="showForgottenPasswordError">{{forgottenPasswordErrorMessage}}</p>
-            <p>Email: {{forgottenEmail}}</p>
-            <form id="forgot-password-confirm-code" v-on:keyup.enter="changePassword">
+            <p v-if="showForgottenPasswordError">
+              {{ forgottenPasswordErrorMessage }}
+            </p>
+            <p>Email: {{ forgottenEmail }}</p>
+            <form
+              id="forgot-password-confirm-code"
+              v-on:keyup.enter="changePassword"
+              v-on:submit.prevent
+            >
               <label for="forgot-password-confirm-code">Code:</label>
               <input
                 type="text"
@@ -54,14 +88,38 @@
               <input
                 type="password"
                 id="forgot-password-new-password"
+                @input="handlePasswords"
                 v-model="forgottenPasswordNewPassword"
               />
+              <p v-if="passwordFormatMessage">
+                Password must be a minimum of 8 characters, contain at least one
+                uppercase and one lowercase character, and one special character
+              </p>
+              <label for="forgot-password-new-password"
+                >Re-type new password:</label
+              >
+              <input
+                type="password"
+                id="forgot-password-new-password-retype"
+                @input="handlePasswords"
+                v-model="forgottenPasswordNewPasswordRetype"
+              />
+              <p v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
             </form>
-            <button v-on:click="changePassword">Change password</button>
+            <button v-on:click="changePassword" :disabled="!validPassword">
+              Change password
+            </button>
             <button
               v-if="showForgotPasswordConfirm"
-              v-on:click="showForgotPassword = false; hideSignInForgottenPassword = false; showForgotPasswordConfirm = false; forgottenEmail = ''"
-            >Back to sign in</button>
+              v-on:click="
+                showForgotPassword = false;
+                hideSignInForgottenPassword = false;
+                showForgotPasswordConfirm = false;
+                forgottenEmail = '';
+              "
+            >
+              Back to sign in
+            </button>
           </div>
           <!-- if user has signed up but has not confirmed email -->
         </div>
@@ -71,32 +129,54 @@
       <div v-if="userNotConfirmed && userNotConfirmedMessage">
         <p>You must confirm your account to sign in.</p>
         <button
-          v-on:click="confirmingSignUp = true; showSignIn = false; userNotConfirmedMessage = false"
-        >Confirm account</button>
+          v-on:click="
+            confirmingSignUp = true;
+            showSignIn = false;
+            userNotConfirmedMessage = false;
+          "
+        >
+          Verify account
+        </button>
       </div>
 
       <!-- if not making new account (signing up) -->
       <div
-        v-if="!signingUp && !userNotConfirmed && !showForgotPassword && !showForgotPasswordConfirm"
+        v-if="
+          !signingUp &&
+            !userNotConfirmed &&
+            !showForgotPassword &&
+            !showForgotPasswordConfirm
+        "
       >
         <p>Don't have an account?</p>
         <button
-          v-on:click="signingUp = true, signInEmail = ''; signInPassword = ''"
-        >Create an account</button>
+          v-on:click="
+            (signingUp = true), (signInEmail = '');
+            signInPassword = '';
+          "
+        >
+          Create an account
+        </button>
       </div>
 
       <!-- if making new account (signing up) -->
       <div v-if="signingUp">
-        <form v-on:keyup.enter="createAccount">
+        <form v-on:keyup.enter="createAccount" v-on:submit.prevent>
           <label for="name">Name:</label>
           <input type="text" id="name" v-model="signUpName" />
           <label for="email">Email:</label>
           <input type="email" id="email" v-model="signUpEmail" />
           <label for="password">Password:</label>
-          <input type="password" id="password" v-model="signUpPassword" @input="handlePasswords" />
-          <p
-            v-if="passwordFormatMessage"
-          >Password must be a minimum of 8 characters, contain at least one uppercase and one lowercase character, and one special character</p>
+          <input
+            type="password"
+            id="password"
+            v-model="signUpPassword"
+            @input="handlePasswords"
+          />
+          <p v-if="passwordFormatMessage">
+            Password must be a minimum of 8 characters, contain at least one
+            uppercase and one lowercase character, and one special character
+          </p>
           <label for="passwordRetype">Re-enter password:</label>
           <input
             type="password"
@@ -106,28 +186,46 @@
           />
           <p v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
         </form>
-        <button
-          v-on:click="createAccount(); showSignIn = false"
-          :disabled="!validPassword"
-        >Create account</button>
+        <button v-on:click="createAccount" :disabled="!validPassword">
+          Create account
+        </button>
 
         <button
-          v-on:click="signingUp = false; signUpEmail = ''; signUpPassword =''; signUpName = ''"
-        >Back to sign in</button>
+          v-on:click="
+            signingUp = false;
+            signUpEmail = '';
+            signUpPassword = '';
+            signUpName = '';
+          "
+        >
+          Back to sign in
+        </button>
       </div>
       <!-- if have made new account but have not confirmed -->
       <div v-if="confirmingSignUp">
         <p>Email: {{ signUpEmail ? signUpEmail : signInEmail }}</p>
-        <form v-on:keyup.enter="confirmSignUp">
+        <form v-on:keyup.enter="confirmSignUp" v-on:submit.prevent>
           <label for="code">Verification code:</label>
           <input type="text" id="password" v-model="confirmSignUpCode" />
         </form>
-
-        <button v-on:click="confirmSignUp">Confirm sign up</button>
+        <button v-on:click="confirmSignUp">Submit verification code</button>
         <button v-on:click="resendCode">Re-send verification code</button>
         <button
-          v-on:click="signingUp = false; showSignIn = true; confirmingSignUp = false; userNotConfirmed = false; userNotConfirmedMessage = false; signUpName = ''; signUpEmail = ''; signUpName = ''; signInEmail = ''; signInPassword = ''"
-        >Back to sign in</button>
+          v-on:click="
+            signingUp = false;
+            showSignIn = true;
+            confirmingSignUp = false;
+            userNotConfirmed = false;
+            userNotConfirmedMessage = false;
+            signUpName = '';
+            signUpEmail = '';
+            signUpName = '';
+            signInEmail = '';
+            signInPassword = '';
+          "
+        >
+          Back to sign in
+        </button>
       </div>
     </div>
   </div>
@@ -142,16 +240,12 @@ import { mapActions, mapState } from "vuex";
 
 export default {
   name: "SignIn",
-  props: {},
   computed: {
     ...mapState("loggedIn", ["loggedIn"]),
-    ...mapState("loggedIn", ["name"])
+    ...mapState("loggedIn", ["name"]),
   },
   methods: {
     ...mapActions("loggedIn", ["logIn", "logOut"]),
-    test() {
-      console.log(this.forgottenEmail);
-    },
     async signIn(email) {
       console.log("beginning of signIn");
       console.log(email);
@@ -182,14 +276,16 @@ export default {
         } else if (error.code === "NotAuthorizedException") {
           this.showErrorMessage = true;
           this.errorMessage = error.message;
-          this.signingUp = false;
-          this.showSignIn = true;
-          this.confirmingSignUp = false;
-          this.userNotConfirmed = false;
-          this.userNotConfirmedMessage = false;
-          this.signUpName = "";
-          this.signInPassword = "";
         }
+        this.signingUp = false;
+        this.showSignIn = true;
+        this.confirmingSignUp = false;
+        this.userNotConfirmed = false;
+        this.userNotConfirmedMessage = false;
+        this.signUpName = "";
+        this.signInPassword = "";
+        this.signUpPassword = "";
+        this.signUpPasswordRetype = "";
         alert("Error signing in: " + error.message);
         console.log("error signing in", error);
       }
@@ -237,15 +333,15 @@ export default {
       }
     },
     async createAccount() {
-      console.log(this.signUpPasswordRetype);
+      this.showSignIn = false;
 
       try {
         const { user } = await Auth.signUp({
           username: this.signUpEmail,
           password: this.signUpPassword,
           attributes: {
-            name: this.signUpName
-          }
+            name: this.signUpName,
+          },
         });
         this.signingUp = false;
         this.confirmingSignUp = true;
@@ -262,11 +358,20 @@ export default {
     async handlePasswords() {
       // if doesnt match regex, show a message saying doesnt match and keep button disabled
       const regex = /^(?=.*?[A-Z])(?=(.*[a-z]){1,})(?=(.*[\d]){1,})(?=(.*[\W]){1,})(?!.*\s).{8,}$/;
+      let password;
+      let passwordRetype;
+      if (this.forgottenEmail) {
+        password = this.forgottenPasswordNewPassword;
+        passwordRetype = this.forgottenPasswordNewPasswordRetype;
+      } else {
+        password = this.signUpPassword;
+        passwordRetype = this.signUpPasswordRetype;
+      }
 
-      const passwordFormat = regex.test(this.signUpPassword);
+      const passwordFormat = regex.test(password);
       if (passwordFormat) {
         this.passwordFormatMessage = false;
-        if (this.signUpPassword === this.signUpPasswordRetype) {
+        if (password === passwordRetype) {
           this.validPassword = true;
           this.passwordsDoNotMatchMessage = false;
         } else {
@@ -278,15 +383,23 @@ export default {
       }
     },
     async confirmSignUp() {
+      let email;
+      if (this.signInEmail) {
+        email = this.signInEmail;
+      } else {
+        email = this.signUpEmail;
+      }
+      console.log("confirmSignUp");
+      console.log(this.signUpEmail, this.signInEmail);
       try {
         const userConfirm = await Auth.confirmSignUp(
-          this.signUpEmail,
+          email,
           this.confirmSignUpCode
         );
         console.log(userConfirm);
         alert("Successfully registered! You will be automatically logged in");
         //this.signUpEmail = "";
-        console.log(this.signUpEmail, this.signUpPassword);
+        console.log(email, this.signUpPassword);
         this.signIn(this.signUpEmail);
         this.signingUp = false;
         this.showSignIn = true;
@@ -321,7 +434,7 @@ export default {
         alert("Error signing out: " + error.message);
         console.log("error signing out: ", error);
       }
-    }
+    },
   },
   data() {
     return {
@@ -347,11 +460,12 @@ export default {
       hideSignInForgottenPassword: false,
       forgottenPasswordConfirmCode: "",
       forgottenPasswordNewPassword: "",
+      forgottenPasswordNewPasswordRetype: "",
       showForgotPasswordConfirm: false,
       showForgottenPasswordError: false,
-      forgottenPasswordErrorMessage: ""
+      forgottenPasswordErrorMessage: "",
     };
-  }
+  },
 };
 </script>
 
