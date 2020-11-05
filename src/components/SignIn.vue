@@ -15,7 +15,7 @@
         <div v-if="showSignIn">
           <div v-if="!hideSignInForgottenPassword">
             <p>Sign in</p>
-            <form id="sign-in" v-on:keyup.enter="signIn">
+            <form id="sign-in" v-on:keyup.enter="signIn(signInEmail)">
               <label for="email">Email:</label>
               <input type="email" id="email" v-model="signInEmail" />
               <label for="password">Password:</label>
@@ -27,16 +27,15 @@
             >Sign in</button>
             <button
               v-on:click="showForgotPassword = true; hideSignInForgottenPassword = true"
-            >Forgotten password</button>
+            >Forgotten password?</button>
           </div>
           <div v-if="showForgotPassword">
-            <form id="forgot-password" v-on:keyup.enter="forgotPassword">
+            <form id="forgot-password" v-on:submit.prevent v-on:keyup.enter="forgotPassword">
+              <!-- FIX -->
               <label for="forgot-password-email">Email:</label>
               <input type="email" id="forgot-password-email" v-model="forgottenEmail" />
             </form>
-            <button
-              v-on:click="forgotPassword(); showForgotPasswordConfirm = true; showForgotPassword = false;"
-            >Reset password</button>
+            <button v-on:click="forgotPassword">Reset password</button>
             <button
               v-on:click="hideSignInForgottenPassword = false; showForgotPassword = false;"
             >Back to sign in</button>
@@ -105,6 +104,7 @@
             v-model="signUpPasswordRetype"
             @input="handlePasswords"
           />
+          <p v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
         </form>
         <button
           v-on:click="createAccount(); showSignIn = false"
@@ -149,6 +149,9 @@ export default {
   },
   methods: {
     ...mapActions("loggedIn", ["logIn", "logOut"]),
+    test() {
+      console.log(this.forgottenEmail);
+    },
     async signIn(email) {
       console.log("beginning of signIn");
       console.log(email);
@@ -167,6 +170,10 @@ export default {
         this.logIn(payload);
         this.signInEmail = "";
         this.signInPassword = "";
+        this.signUpName = "";
+        this.signUpEmail = "";
+        this.signUpPassword = "";
+        this.signUpPasswordRetype = "";
       } catch (error) {
         if (error.code === "UserNotConfirmedException") {
           this.userNotConfirmed = true;
@@ -181,9 +188,6 @@ export default {
           this.userNotConfirmed = false;
           this.userNotConfirmedMessage = false;
           this.signUpName = "";
-          this.signUpEmail = "";
-          this.signUpName = "";
-          this.signInEmail = "";
           this.signInPassword = "";
         }
         alert("Error signing in: " + error.message);
@@ -192,8 +196,8 @@ export default {
     },
     async forgotPassword() {
       console.log("forgot password");
-      console.log(this.forgottenEmail);
-      this.showForgotPassword = true;
+      this.showForgotPasswordConfirm = true;
+      this.showForgotPassword = false;
       try {
         const isSuccess = await Auth.forgotPassword(this.forgottenEmail);
         console.log(isSuccess);
@@ -208,7 +212,7 @@ export default {
       console.log("change password");
       console.log(typeof this.forgottenPasswordConfirmCode);
       try {
-        const isSuccess = await Auth.forgotPasswordSubmit(
+        await Auth.forgotPasswordSubmit(
           this.forgottenEmail,
           this.forgottenPasswordConfirmCode,
           this.forgottenPasswordNewPassword
@@ -219,10 +223,10 @@ export default {
         this.forgottenPasswordErrorMessage = "";
         this.showForgotPasswordConfirm = false;
         this.showSignIn = true;
+        this.hideSignInForgottenPassword = false;
         alert(
           "Your password has been changed successfully! You can now go back to the sign in page and sign in using your new password"
         );
-        console.log(isSuccess);
       } catch (error) {
         console.log(error);
         alert("Error: " + error.message);
@@ -264,7 +268,9 @@ export default {
         this.passwordFormatMessage = false;
         if (this.signUpPassword === this.signUpPasswordRetype) {
           this.validPassword = true;
+          this.passwordsDoNotMatchMessage = false;
         } else {
+          this.passwordsDoNotMatchMessage = true;
           this.validPassword = false;
         }
       } else {
@@ -330,6 +336,7 @@ export default {
       signUpPasswordRetype: "",
       validPassword: false,
       passwordFormatMessage: false,
+      passwordsDoNotMatchMessage: false,
       confirmSignUpCode: "",
       userNotConfirmed: false,
       userNotConfirmedMessage: false,
