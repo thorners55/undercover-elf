@@ -70,11 +70,15 @@ app.get("/groups", function(request, response) {
     if (error) {
       response.json({ statusCode: 500, error: error.message });
     } else {
-      response.json({
-        statusCode: 200,
-        url: request.url,
-        body: result.Item,
-      });
+      if (!result.Item) {
+        response.json({ statusCode: 404, error: "Group does not exist" });
+      } else {
+        response.json({
+          statusCode: 200,
+          url: request.url,
+          body: result.Item,
+        });
+      }
     }
   });
 });

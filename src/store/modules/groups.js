@@ -8,36 +8,40 @@ const state = {
   foundGroupName: "",
   foundGroupMembers: [],
   foundGroupExchange: "",
+  findingGroup: true,
+  groupNotFound: false,
 };
 
-const getters = {
-  /*getGroups: (state) => {
-    console.log(state), state.groups;
-  },*/
-  allGroups: (state) => state.groups,
-};
+const getters = {};
 
 const mutations = {
   setGroups(state, groups) {
     state.groups = groups;
   },
 
-  findGroupInfo(state, group) {
-    console.log("find group info");
-    state.foundGroupName = group.name;
-    state.foundGroupMembers = group.members;
-    state.foundGroupExchange = group.exchange;
+  reset(state) {
+    state.findingGroup = true;
+    state.groupNotFund = false;
   },
 
-  addUserGroup(state, group) {
-    console.log(state, group);
-
-    // push group info object onto groups - need to know what "get groups" looks like
-    //array, each item: { exchange: x, groupName: x, name: Ralph Jackson, pk: user_x, sk: group_x }
+  // if the group does not exist, shows a message saying this
+  findGroupInfo(state, response) {
+    state.findingGroup = false;
+    if (response.error) {
+      state.groupNotFound = true;
+      state.findingGroup = true;
+    } else {
+      console.log("find group info");
+      state.groupNotFound = false;
+      state.foundGroupName = response.body.name;
+      state.foundGroupMembers = response.body.members;
+      state.foundGroupExchange = response.body.exchange;
+    }
   },
 };
 
 const actions = {
+  // searches database to find groups a user is a part of
   fetchGroups({ commit }, userId) {
     console.log(userId);
     API.get("undercoverElfApi", `/users/${userId}/groups`, {})
@@ -50,34 +54,51 @@ const actions = {
       });
   },
 
+  // searches to find a group using the ID the user has input
   findGroup({ commit }, groupId) {
     console.log(groupId);
     API.get("undercoverElfApi", `/groups?id=${groupId}`, {})
-      .then((group) => {
-        console.log(group);
-        commit("findGroupInfo", group.body);
+      .then((response) => {
+        console.log(response);
+        commit("findGroupInfo", response);
       })
       .catch((err) => {
         console.log(err);
+        return;
       });
   },
 
-  joinGroup({ commit }, { name, userId, groupId, foundGroupName }) {
+  // reset state to default when user clicks button
+  resetState({ commit }) {
+    commit("reset");
+  },
+
+  // join a group that user has previously searched for
+  joinGroup(context, { name, userId, groupId, foundGroupName }) {
     console.log(name, userId, groupId);
-    commit("addGroup");
+    console.log(state.foundGroupMembers);
+    const newMembers = state.foundGroupMembers.map((member) => {
+      return member;
+    });
+    newMembers.push({
+      id: `user_${userId}`,
+      name,
+    });
+    console.log(state.foundGroupMembers);
+    console.log(newMembers);
     API.post("undercoverElfApi", `/users/${userId}/groups?groupId=${groupId}`, {
       body: {
-        admin: 0,
-        groupName: foundGroupName,
-        name,
-        wishlist: [],
+        userInfo: {
+          admin: 0,
+          groupName: foundGroupName,
+          name,
+          wishlist: [],
+        },
+        newMembers,
       },
     })
       .then((response) => {
         console.log(response);
-        commit("addUserGroup", response);
-        //response is an array of items that have been updated
-        // ALERT WHEN SUCCESSFULLY JOIN
         alert(`Successfully joined group!`);
         router.push({ path: "/groups" });
       })

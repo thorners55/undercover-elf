@@ -110,13 +110,14 @@ app.get("/users/:id/groups", function(request, response) {
   }
 });
 
-app.post("/users/:id/groups", function(request, response) {
+app.post("/users/:id/groups", async function(request, response) {
+  // Confused by this - seems to be updating wishlist. Should this be in app.patch?
   const userId = request.params.id;
   const groupId = request.query.groupId;
-  request.body.pk = `user_${userId}`;
-  request.body.sk = `group_${groupId}`;
+  request.body.userInfo.pk = `user_${userId}`;
+  request.body.userInfo.sk = `group_${groupId}`;
 
-  if (request.body.name === undefined || !userId || !groupId) {
+  if (request.body.userInfo.name === undefined || !userId || !groupId) {
     if (request.query.groupId.length < 1) {
       response.json({ statusCode: 405, error: "Method not allowed" });
       return;
@@ -130,7 +131,7 @@ app.post("/users/:id/groups", function(request, response) {
       },
       UpdateExpression: "set wishlist = :wishlist",
       ExpressionAttributeValues: {
-        ":wishlist": request.body.wishlist,
+        ":wishlist": request.body.userInfo.wishlist,
       },
       ReturnValues: "UPDATED_NEW",
     };
@@ -149,20 +150,40 @@ app.post("/users/:id/groups", function(request, response) {
   } else {
     let params = {
       TableName: tableName,
-      Item: request.body,
+      Item: request.body.userInfo,
     };
 
-    dynamodb.put(params, (error, result) => {
-      if (error) {
-        response.json({ statusCode: 500, error: error.message });
-      } else {
-        response.json({
-          statusCode: 200,
-          url: request.url,
-          body: JSON.stringify(result.Item),
-        });
-      }
-    });
+    let groupParams = {
+      TableName: tableName,
+      Key: {
+        pk: `group_${request.query.groupId}`,
+        sk: "meta",
+      },
+      UpdateExpression: "set members = :m",
+      ExpressionAttributeValues: {
+        ":m": request.body.newMembers,
+      },
+      ReturnValues: "ALL_NEW",
+    };
+
+    try {
+      // adds an item for the user in group, e.g. pk: user_id, sk: group_id
+      await dynamodb.put(params).promise();
+
+      // add {id: user_x, name: Namey Name} to group meta to "member"
+      // need to pass through an array with user info added to it - add this on front end
+
+      // updates group metadata to include the new user in its members array/info
+      const result = await dynamodb.update(groupParams).promise();
+
+      response.json({
+        statusCode: 200,
+        url: request.url,
+        body: result.Attributes,
+      });
+    } catch (error) {
+      response.json({ statusCode: 500, error: error.message });
+    }
   }
 });
 
