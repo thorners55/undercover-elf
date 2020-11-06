@@ -13,7 +13,7 @@ Vue.use(VueRouter);
 const routes = [
   { path: "/", component: Home },
   { path: "/groups", component: AllGroups },
-  { path: "/groups/:groupId", component: GroupPage },
+  { path: "/groups/:groupId/profile", component: GroupPage },
   { path: "/groups/join", component: JoinGroup },
   { path: "/groups/create", component: CreateGroup },
   { path: "/profile", component: Profile },

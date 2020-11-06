@@ -50,7 +50,7 @@
 import { mapState, mapActions } from "vuex";
 
 export default {
-  name: "NavBar",
+  name: "JoinGroup",
   computed: {
     ...mapState("loggedIn", ["userId", "name"]),
     ...mapState("groups", [

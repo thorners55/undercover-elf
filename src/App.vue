@@ -23,6 +23,7 @@
       <Profile />
       <AllGroups />
       <CreateGroup />
+      <JoinGroup />
       <AllWishlists />
     </router-view>
   </div>
@@ -36,6 +37,7 @@ import NavBar from "./components/NavBar.vue";
 import Profile from "./components/Profile.vue";
 import AllGroups from "./components/AllGroups.vue";
 import CreateGroup from "./components/CreateGroup.vue";
+import JoinGroup from "./components/JoinGroup.vue";
 import AllWishlists from "./components/AllWishlists";
 import { Auth } from "aws-amplify";
 import { v4 as uuidv4 } from "uuid";
@@ -50,6 +52,7 @@ export default {
     Profile,
     AllGroups,
     CreateGroup,
+    JoinGroup,
     AllWishlists,
   },
   computed: mapState("loggedIn", ["loggedIn"]),
