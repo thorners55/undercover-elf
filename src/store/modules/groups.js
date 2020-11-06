@@ -10,6 +10,7 @@ const state = {
   foundGroupExchange: "",
   findingGroup: true,
   groupNotFound: false,
+  groupInfo: {},
 };
 
 const getters = {};
@@ -37,6 +38,10 @@ const mutations = {
       state.foundGroupMembers = response.body.members;
       state.foundGroupExchange = response.body.exchange;
     }
+  },
+
+  setGroupInfo(state, groupInfo) {
+    state.groupInfo = groupInfo;
   },
 };
 
@@ -81,7 +86,7 @@ const actions = {
       return member;
     });
     newMembers.push({
-      id: `user_${userId}`,
+      pk: `user_${userId}`,
       name,
     });
     console.log(state.foundGroupMembers);
@@ -104,6 +109,20 @@ const actions = {
       })
       .catch((err) => {
         console.log(err, "postUserInGroup error");
+      });
+  },
+
+  fetchGroupInfo({ commit }, groupId) {
+    console.log("getGroupInfo", groupId);
+    const split = groupId.split("_");
+    const id = split[1];
+    API.get("undercoverElfApi", `/groups?id=${id}`, {})
+      .then(({ body }) => {
+        console.log(body);
+        commit("setGroupInfo", body);
+      })
+      .catch((err) => {
+        console.log(err);
       });
   },
 };

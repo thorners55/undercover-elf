@@ -8,7 +8,7 @@
     </div>
     <ul id="groupNav">
       <li v-for="group in groups" :key="group.sk">
-        <router-link :to="`/groups?id=${group.sk}`">{{
+        <router-link :to="`/groups/${group.sk}`">{{
           group.groupName
         }}</router-link>
       </li>

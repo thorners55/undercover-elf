@@ -187,11 +187,11 @@ app.post("/users/:id/groups", async function(request, response) {
   }
 });
 
-app.delete("/users/:id/groups", function(request, response) {
+app.delete("/users/:id/groups", async function(request, response) {
   const userId = `user_${request.params.id}`;
   const groupId = `group_${request.query.groupId}`;
-  request.body.pk = userId;
-  request.body.sk = groupId;
+
+  const { memberRemoved } = request.body;
 
   if (request.query.groupId.length > 1) {
     response.json({ statusCode: 405, error: "Method not allowed" });
@@ -200,19 +200,39 @@ app.delete("/users/:id/groups", function(request, response) {
 
   let params = {
     TableName: tableName,
-    Key: request.body,
+    Key: {
+      pk: userId,
+      sk: groupId,
+    },
   };
 
-  dynamodb.delete(params, function(error, result) {
-    if (error) {
-      response.json({ statusCode: 500, error: error.message });
-    } else {
-      response.json({
-        statusCode: 204,
-        url: request.url,
-      });
-    }
-  });
+  let removeUserFromGroupParams = {
+    TableName: tableName,
+    Key: {
+      pk: groupId,
+      sk: "meta",
+    },
+    UpdateExpression: "set members = :m",
+    ExpressionAttributeValues: {
+      ":m": memberRemoved,
+    },
+    ReturnValues: "ALL_NEW",
+  };
+
+  try {
+    // delete the user group entry
+    await dynamodb.delete(params).promise();
+
+    // remove the member from the array of members in the group meta item
+    await dynamodb.update(removeUserFromGroupParams).promise();
+
+    response.json({
+      statusCode: 204,
+      url: request.url,
+    });
+  } catch (error) {
+    response.json({ statusCode: 500, error: error.message });
+  }
 });
 
 app.listen(3000, function() {
