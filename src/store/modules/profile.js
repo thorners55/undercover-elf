@@ -15,6 +15,7 @@ const mutations = {
     state.groups = profile.groups;
     state.name = profile.name;
     state.userId = profile.pk;
+    localStorage.setItem("groups", JSON.stringify(state.groups));
   },
 };
 

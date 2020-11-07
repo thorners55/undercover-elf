@@ -83,31 +83,61 @@ app.get("/groups", function(request, response) {
   });
 });
 
-app.post("/groups", function(request, response) {
-  console.log(request.body, "<--- request");
-  const { newGroupInfo } = request.body;
+app.post("/groups", async function(request, response) {
+  const { newGroupInfo, updatedGroupArray } = request.body;
   const groupId = newGroupInfo.pk;
 
   newGroupInfo.pk = `group_${groupId}`;
   newGroupInfo.sk = "meta";
   newGroupInfo.closed = 0;
 
+  const { pk, exchange, groupName } = newGroupInfo;
+  const { name } = newGroupInfo.members[0];
+
+  const newUserGroup = {
+    pk: newGroupInfo.members[0].pk,
+    sk: pk,
+    admin: 1,
+    closed: 0,
+    exchange,
+    groupName,
+    name,
+  };
+
   let params = {
     TableName: tableName,
     Item: newGroupInfo,
   };
 
-  dynamodb.put(params, (error, result) => {
-    if (error) {
-      response.json({ statusCode: 500, error: error.message });
-    } else {
-      response.json({
-        statusCode: 200,
-        url: request.url,
-        body: result,
-      });
-    }
-  });
+  let newUserGroupParams = {
+    TableName: tableName,
+    Item: newUserGroup,
+  };
+
+  let updateUserGroupArrayParams = {
+    TableName: tableName,
+    Key: {
+      pk: newGroupInfo.members[0].pk,
+      sk: "profile",
+    },
+    UpdateExpression: "set groups = :g",
+    ExpressionAttributeValues: {
+      ":g": updatedGroupArray,
+    },
+  };
+
+  try {
+    await dynamodb.put(params).promise();
+    await dynamodb.put(newUserGroupParams).promise();
+    await dynamodb.update(updateUserGroupArrayParams).promise();
+
+    response.json({
+      statusCode: 200,
+      url: request.url,
+    });
+  } catch (error) {
+    response.json({ statusCode: 500, error: error.message });
+  }
 });
 
 app.patch("/groups", async function(request, response) {

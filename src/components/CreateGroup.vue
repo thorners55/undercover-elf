@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>Create group</h2>
-    <div v-if="creatingGroup">
+    <div v-if="!createGroupSuccess">
       <form v-on:submit.prevent>
         <label for="group-name">Group name:</label>
         <input type="text" id="group-name" v-model="newGroup.groupName" />
@@ -10,18 +10,20 @@
         <label for="budget">Budget: </label>
         <input type="text" id="budget" v-model="newGroup.budget" />
       </form>
-      <button v-on:click="createGroup">Create group</button>
+      <button v-on:click="createGroup()">
+        Create group
+      </button>
     </div>
-    <div v-if="!creatingGroup">
+    <div v-if="createGroupSuccess">
       <p>Group successfully created!</p>
       <p>Group ID for {{ newGroup.groupName }} is: {{ createdGroupId }}</p>
       <p>
         To invite people to this group, send them the group ID that has been
-        generated for you, as shown above. They can then join this group by
-        creating an account.
+        generated for you, as shown above. They can join this group by searching
+        for this ID in the 'Join Group' section.
       </p>
     </div>
-    <router-link to="/groups">Back to groups</router-link>
+    <router-link to="/">Back to groups</router-link>
   </div>
 </template>
 
@@ -40,12 +42,11 @@ export default {
   },
   computed: {
     ...mapState("profile", ["name", "userId"]),
-    ...mapState("groups", ["createdGroupId"]),
+    ...mapState("groups", ["createdGroupId", "groups", "createGroupSuccess"]),
   },
 
   data() {
     return {
-      creatingGroup: true,
       newGroup: {
         groupName: "",
         exchange: "",

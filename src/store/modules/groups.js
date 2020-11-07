@@ -13,6 +13,7 @@ const state = {
   groupNotFound: false,
   groupInfo: {},
   userGroupInfo: {},
+  createGroupSuccess: false,
   createdGroupId: "",
 };
 
@@ -58,8 +59,10 @@ const mutations = {
     state.groupInfo = groupInfo;
   },
 
-  setCreatedGroupId(state, groupId) {
+  setCreatedGroupId(state, { groupId, updatedGroupArray }) {
+    state.createGroupSuccess = true;
     state.createdGroupId = groupId;
+    localStorage.groups = JSON.stringify(updatedGroupArray);
   },
 };
 
@@ -169,19 +172,28 @@ const actions = {
     newGroupInfo.admin = rootState.loggedIn.name;
     newGroupInfo.members = [
       {
-        id: rootState.loggedIn.userId,
+        pk: `user_${rootState.loggedIn.userId}`,
         name: rootState.loggedIn.name,
       },
     ];
-    console.log(newGroupInfo);
+    console.log(state.groups);
+    const updatedGroupArray = rootState.profile.groups.map((group) => {
+      return group;
+    });
+    updatedGroupArray.push({
+      groupId: `group_${groupId}`,
+      groupName: newGroupInfo.groupName,
+    });
+    console.log(updatedGroupArray);
     API.post("undercoverElfApi", "/groups", {
       body: {
         newGroupInfo,
+        updatedGroupArray,
       },
     })
       .then((response) => {
         console.log(response);
-        commit("setCreatedGroupId", groupId);
+        commit("setCreatedGroupId", { groupId, updatedGroupArray });
       })
       .catch((err) => {
         console.log(err);
