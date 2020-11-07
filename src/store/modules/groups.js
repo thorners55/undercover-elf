@@ -59,6 +59,9 @@ const mutations = {
 
   setGroupInfo(state, groupInfo) {
     state.groupInfo = groupInfo;
+
+    const groupInfoToUpdate = JSON.parse(JSON.stringify(groupInfo));
+    state.groupInfoToUpdate = groupInfoToUpdate;
   },
 
   setCreatedGroupId(state, { groupId, updatedGroupArray }) {
@@ -218,6 +221,73 @@ const actions = {
         console.log(err);
       });
   },
+
+  updateGroup({ rootState }, { groupId, groupInfoToUpdate }) {
+    console.log(groupId, groupInfoToUpdate);
+    console.log(state.groupInfo.groupName);
+
+    const split = groupId.split("_");
+    const id = split[1];
+
+    const userId = `user_${localStorage.userId}`;
+
+    const originalName = state.groupInfo.groupName;
+    const updatedName = groupInfoToUpdate.groupName;
+    const originalBudget = state.groupInfo.budget;
+    const updatedBudget = groupInfoToUpdate.budget;
+    const originalExchange = state.groupInfo.exchange;
+    const updatedExchange = groupInfoToUpdate.exchange;
+
+    let updateNameOrExchange = false;
+    console.log(originalName, updatedName);
+
+    // pass true or false balue saying if it is only the budget being updated
+    // if name or exchange is nt being updated AND name is not being updated AND exchange date is not being updated, alert that nothing is updated
+
+    if (originalName !== updatedName || updatedExchange !== originalExchange) {
+      updateNameOrExchange = true;
+      console.log("false");
+    }
+
+    if (
+      !updateNameOrExchange &&
+      originalBudget === updatedBudget &&
+      originalExchange === updatedExchange
+    ) {
+      alert("Nothing to update!");
+    } else {
+      let localStateGroups = JSON.parse(localStorage.groups);
+
+      for (let i = 0; i < localStateGroups.length; i++) {
+        if (localStateGroups[i].groupId === groupId) {
+          localStateGroups[i].groupName = groupInfoToUpdate.groupName;
+          break;
+        } else continue;
+      }
+      console.log(localStateGroups);
+
+      API.patch("undercoverElfApi", `/groups?id=${id}`, {
+        body: {
+          groupInfoToUpdate,
+          updateNameOrExchange,
+          localStateGroups,
+          userId,
+        },
+      })
+        .then(() => {
+          rootState.profile.groups = localStateGroups;
+          console.log(rootState.profile.groups);
+          localStorage.groups = JSON.stringify(localStateGroups);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  },
+
+  /*removeUser({ commit }, { userId, groupId }) {
+    console.log(userId, groupId);
+  },*/
 };
 
 export default { state, getters, actions, mutations, namespaced };

@@ -142,6 +142,14 @@ app.post("/groups", async function(request, response) {
 
 app.patch("/groups", async function(request, response) {
   const groupId = request.query.id;
+  const {
+    groupInfoToUpdate,
+    updateNameOrExchange,
+    localStateGroups,
+    userId,
+  } = request.body;
+
+  // IF CHANGING NAME, NEED TO CHANGE THE GROUPS ARRAY IN USER PROFILE
 
   if (groupId.length < 1) {
     response.json({
@@ -156,15 +164,12 @@ app.patch("/groups", async function(request, response) {
       pk: `group_${groupId}`,
       sk: "meta",
     },
-    KeyConditionExpression: "#n = :n",
     ConditionExpression: "attribute_exists(pk)",
-    ExpressionAttributeNames: {
-      "#n": "name",
-    },
-    UpdateExpression: "set #n = :n, exchange = :exchange",
+    UpdateExpression: "set groupName  = :gn, exchange = :exchange, budget = :b",
     ExpressionAttributeValues: {
-      ":n": request.body.name,
-      ":exchange": request.body.exchange,
+      ":gn": groupInfoToUpdate.groupName,
+      ":exchange": groupInfoToUpdate.exchange,
+      ":b": groupInfoToUpdate.budget,
     },
     ReturnValues: "UPDATED_NEW",
   };
@@ -183,37 +188,60 @@ app.patch("/groups", async function(request, response) {
     ConditionExpression: "attribute_exists(pk)",
     UpdateExpression: "set groupName = :gn, exchange = :exchange",
     ExpressionAttributeValues: {
-      ":gn": request.body.name,
-      ":exchange": request.body.exchange,
+      ":gn": groupInfoToUpdate.groupName,
+      ":exchange": groupInfoToUpdate.exchange,
     },
     ReturnValues: "ALL_NEW",
   };
 
+  let updateUserProfileParams = {
+    TableName: tableName,
+    Key: {
+      pk: userId,
+      sk: "profile",
+    },
+    UpdateExpression: "set groups = :g",
+    ExpressionAttributeValues: {
+      ":g": localStateGroups,
+    },
+    ReturnValues: "UPDATED_NEW",
+  };
+
   try {
     // call first func updateGroupInfo
-    await dynamodb.update(paramsUpdateGroupInfo).promise();
-    // get members
-    const members = await dynamodb.get(paramsGetUsersInGroup).promise();
+    const updatedGroup = await dynamodb.update(paramsUpdateGroupInfo).promise();
 
-    // call second fun updateUserGroups - map through the array and make calls
-    const memberIds = members.Item.members.map((member) => {
-      return member.id;
-    });
+    // if updating name or exchange date, need to go through user groups. Don't if only updating budget. Only need to update group info
+    if (updateNameOrExchange) {
+      // get members
+      const members = await dynamodb.get(paramsGetUsersInGroup).promise();
+      // call second fun updateUserGroups - map through the array and make calls
+      const memberIds = members.Item.members.map((member) => {
+        return member.pk;
+      });
 
-    //wait for DynamoDB to update each user item with the group name and exchange date
-    const updatedUserGroups = await Promise.all(
-      memberIds.map((id) => {
-        paramsUpdateUserGroup.Key.pk = id;
-        paramsUpdateUserGroup.Key.sk = `group_${groupId}`;
-        const updatedUserGroup = dynamodb
-          .update(paramsUpdateUserGroup)
-          .promise();
-        return updatedUserGroup;
-      })
-    );
+      //wait for DynamoDB to update each user item with the group name and exchange date
+      const updatedUserGroups = await Promise.all(
+        memberIds.map((id) => {
+          paramsUpdateUserGroup.Key.pk = id;
+          paramsUpdateUserGroup.Key.sk = `group_${groupId}`;
+          console.log(paramsUpdateUserGroup, "<--- params user group");
+          const updatedUserGroup = dynamodb
+            .update(paramsUpdateUserGroup)
+            .promise();
+          return updatedUserGroup;
+        })
+      );
 
-    // send updated user group items with exchange date and groupName updated
-    response.json({ statusCode: 200, body: updatedUserGroups });
+      // update the group name inside the array in user profile
+
+      await dynamodb.update(updateUserProfileParams).promise();
+
+      // send updated user group items with exchange date and groupName updated
+      response.json({ statusCode: 200, body: updatedUserGroups });
+    } else {
+      response.json({ statusCode: 200, body: updatedGroup });
+    }
   } catch (err) {
     console.log(err);
     if (err.message === "The conditional request failed") {

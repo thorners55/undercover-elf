@@ -1,11 +1,12 @@
 <template>
   <div>
-    <h2>My profile</h2>
+    <h2>My account</h2>
     <p>{{ name }}</p>
     <h3>Admin</h3>
     <ul>
       <li v-for="group in groupAdmin" :key="group.groupId">
         <router-link :to="`/groups/${group.groupId}/profile`">{{ group.groupName }}</router-link>
+        <router-link :to="`/groups/edit?groupId=${group.groupId}`">Group settings</router-link>
       </li>
     </ul>
   </div>

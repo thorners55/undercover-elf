@@ -5,9 +5,7 @@
     <button v-on:click="getUserData">Get user data</button>
     <button v-on:click="getGroupData">Get group data</button>
     <button v-on:click="getUserAllGroupsData">Get user all groups data</button>
-    <button v-on:click="getUserSpecificGroupData">
-      Get user specific group data
-    </button>
+    <button v-on:click="getUserSpecificGroupData">Get user specific group data</button>
     <button v-on:click="postNewGroup">Post new group</button>
     <button v-on:click="postUserInGroup">Post user in group</button>
     <button v-on:click="deleteUserInGroup">Delete user in group</button>
@@ -26,6 +24,7 @@
       <JoinGroup />
       <GroupPage />
       <AllWishlists />
+      <AdminEditGroup />
     </router-view>
   </div>
 </template>
@@ -38,6 +37,7 @@ import NavBar from "./components/NavBar.vue";
 import Profile from "./components/Profile.vue";
 import AllGroups from "./components/AllGroups.vue";
 import CreateGroup from "./components/CreateGroup.vue";
+import AdminEditGroup from "./components/AdminEditGroup.vue";
 import JoinGroup from "./components/JoinGroup.vue";
 import AllWishlists from "./components/AllWishlists";
 import { Auth } from "aws-amplify";
@@ -54,7 +54,8 @@ export default {
     AllGroups,
     CreateGroup,
     JoinGroup,
-    AllWishlists,
+    AdminEditGroup,
+    AllWishlists
   },
   computed: mapState("loggedIn", ["loggedIn"]),
   mounted() {
@@ -64,40 +65,40 @@ export default {
     getUserData: function() {
       console.log("getUserData");
       API.get("undercoverElfApi", "/users/1234/profile", {})
-        .then((response) => {
+        .then(response => {
           console.log(response);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
     getGroupData: function() {
       console.log("getGroupData");
       API.get("undercoverElfApi", "/groups?id=1", {})
-        .then((response) => {
+        .then(response => {
           console.log(response);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
     getUserAllGroupsData: function() {
       console.log("getUserAllGroupsData");
       API.get("undercoverElfApi", "/users/1234/groups", {})
-        .then((items) => {
+        .then(items => {
           console.log(items);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
     getUserSpecificGroupData: function() {
       console.log("getUserSpecificGroup");
       API.get("undercoverElfApi", "/users/1234/groups?groupId=2", {})
-        .then((items) => {
+        .then(items => {
           console.log(items);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -111,10 +112,10 @@ export default {
           admin: "Kathryn Thornley",
           exchange: "26/12/20",
           members: [{ id: "user_1235", name: "Kathryn Thornley" }],
-          pk: groupId,
-        },
+          pk: groupId
+        }
       })
-        .then((response) => {
+        .then(response => {
           console.log(response);
           this.postUserInGroup(
             response.body.admin,
@@ -122,7 +123,7 @@ export default {
             `${response.body.group}`
           );
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err, "postNewGroup error");
         });
     },
@@ -136,25 +137,25 @@ export default {
           body: {
             admin: 1,
             name,
-            wishlist: [],
-          },
+            wishlist: []
+          }
         }
       )
-        .then((response) => {
+        .then(response => {
           console.log(response);
           /* response is an array of items that have been updated */
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err, "postUserInGroup error");
         });
     },
     deleteUserInGroup: function() {
       console.log("deleteUserInGroup");
       API.del("undercoverElfApi", "/users/1234/groups?groupId=3")
-        .then((response) => {
+        .then(response => {
           console.log(response);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -163,14 +164,14 @@ export default {
       API.post("undercoverElfApi", "/users/1234/groups?groupId=3", {
         body: {
           wishlist: [
-            { description: "Green helmet", url: "thehelmetstore.co.uk" },
-          ],
-        },
+            { description: "Green helmet", url: "thehelmetstore.co.uk" }
+          ]
+        }
       })
-        .then((response) => {
+        .then(response => {
           console.log(response);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -179,22 +180,22 @@ export default {
       API.patch("undercoverElfApi", "/groups?id=2", {
         body: {
           name: "Thornley Family",
-          exchange: "9/12/20",
-        },
+          exchange: "9/12/20"
+        }
       })
-        .then((response) => {
+        .then(response => {
           console.log(response);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
     deleteGroup: function() {
       API.del("undercoverElfApi", "/groups", {})
-        .then((response) => {
+        .then(response => {
           console.log(response);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -203,10 +204,10 @@ export default {
       API.get("undercoverElfApi", "/draw-groups?id=2", {})
         .then(({ body }) => {
           console.log(body, typeof body);
-          let copyResponse = body.map((x) => x);
+          let copyResponse = body.map(x => x);
           this.assignNames(body, copyResponse, "2");
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -278,12 +279,12 @@ export default {
       await pickNames();
       console.log("patch");
       API.patch("undercoverElfApi", `/draw-names?id=${groupId}`, {
-        body: response,
+        body: response
       })
-        .then((response) => {
+        .then(response => {
           console.log(response);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -294,13 +295,13 @@ export default {
       } catch (err) {
         console.log(err);
       }
-    },
+    }
   },
   data() {
     return {
-      name: "",
+      name: ""
     };
-  },
+  }
   /* created() {
     onAuthUIStateChange((state, user) => {
       if (state === AuthState.SignedIn) {

@@ -1,14 +1,14 @@
 <template>
   <div>
     <h2>{{ groupInfo.groupName }}</h2>
-    <button v-if="userGroupInfo.admin === 1">Delete group</button>
-    <button v-if="userGroupInfo.admin === 1">Close group</button>
-    <button v-if="userGroupInfo.closed === 1">Draw names</button>
-    <li v-for="member in groupInfo.members" :key="member.pk">{{ member.name }}</li>
+    <router-link v-if="userGroupInfo.admin" to="/groups/edit"
+      >Group settings</router-link
+    >
+    <li v-for="member in groupInfo.members" :key="member.pk">
+      {{ member.name }}
+    </li>
     <p>Exchange date: {{ groupInfo.exchange }}</p>
-    <button v-if="userGroupInfo.admin === 1">Change exchange date</button>
-    <p>Budget: {{ groupInfo.budget }}</p>
-    <button v-if="userGroupInfo.admin === 1">Change budget</button>
+    <p>Budget: £{{ groupInfo.budget }}</p>
     <div v-if="groupInfo.closed === 1">
       <p>You are buying for: {{ userGroupInfo.buyingForName }}</p>
       <button>View {{ userGroupInfo.buyingForName }}'s wishlist</button>
@@ -39,7 +39,9 @@
     <button
       v-if="userGroupInfo.admin === 0"
       v-on:click="leaveGroup(userId, groupId, groupInfo.members)"
-    >Leave group</button>
+    >
+      Leave group
+    </button>
   </div>
 </template>
 
@@ -54,30 +56,30 @@ export default {
       "fetchGroupInfo",
       "leaveGroup",
       "getGroupInfo",
-      "fetchUserGroupInfo"
+      "fetchUserGroupInfo",
     ]),
     leaveGroup(userId, groupId, members) {
       console.log("leaveGroup", userId, groupId);
       const split = groupId.split("_");
       const id = split[1];
       // make a new array with the member to be deleted removed, use this to update the group metadata
-      const memberRemoved = members.filter(member => {
+      const memberRemoved = members.filter((member) => {
         return member.pk !== `user_${userId}`;
       });
 
       API.del("undercoverElfApi", `/users/${userId}/groups?groupId=${id}`, {
         body: {
-          memberRemoved
-        }
+          memberRemoved,
+        },
       })
-        .then(response => {
+        .then((response) => {
           console.log(response);
           this.$router.push({ path: "/" });
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
-    }
+    },
   },
   computed: {
     groupId() {
@@ -85,7 +87,7 @@ export default {
     },
     // ...mapState("groups", [this.$route.params.groupId]),
     ...mapState("loggedIn", ["userId"]),
-    ...mapState("groups", ["groupInfo", "userGroupInfo"])
+    ...mapState("groups", ["groupInfo", "userGroupInfo"]),
     // SOMEHOW NEED TO PASS THROUGH GROUPID INTO MAP STATE - AT THE MOMENT IS SAYING THIS IS UNDEFINED
   },
   created() {
@@ -96,9 +98,9 @@ export default {
   },
   data() {
     return {
-      editing: false
+      editing: false,
     };
-  }
+  },
 };
 </script>
 
