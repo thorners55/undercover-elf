@@ -10,12 +10,15 @@
     <ul>
       <li v-for="member in groupInfo.members" :key="member.pk">
         {{ member.name }}
+        <p v-if="member.pk === userId">(me)</p>
+        <button
+          v-if="member.pk !== userId"
+          v-on:click="removeUser(member.pk, groupInfo.pk)"
+        >
+          Remove user from group
+        </button>
       </li>
-      <button v-on:click="removeUser(member.pk, groupInfo.pk)">
-        Remove user from group
-      </button>
     </ul>
-    <button>Delete group</button>
 
     <p>Exchange date:</p>
 
@@ -60,14 +63,15 @@ export default {
       return this.$route.query.groupId;
     },
     ...mapState("groups", ["groupInfo", "groupInfoToUpdate"]),
+    ...mapActions("groups", ["removeUser"]),
   },
   created() {
-    console.log(this.$route.query);
     this.fetchGroupInfo(this.groupId);
   },
   data() {
     return {
       editGroup: false,
+      userId: `user_${localStorage.userId}`,
     };
   },
 };

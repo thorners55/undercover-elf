@@ -59,7 +59,6 @@ const mutations = {
 
   setGroupInfo(state, groupInfo) {
     state.groupInfo = groupInfo;
-
     const groupInfoToUpdate = JSON.parse(JSON.stringify(groupInfo));
     state.groupInfoToUpdate = groupInfoToUpdate;
   },
@@ -105,7 +104,7 @@ const actions = {
   },
 
   // join a group that user has previously searched for
-  joinGroup({ commit }, { name, userId, groupId, foundGroupName }) {
+  joinGroup({ commit, rootState }, { name, userId, groupId, foundGroupName }) {
     console.log(name, userId, groupId);
     console.log(state.foundGroupMembers);
     let alreadyMember = false;
@@ -129,6 +128,21 @@ const actions = {
         pk: userId,
         name,
       });
+      /*let userProfileGroups = {
+        admin: 0,
+        groupName: foundGroupName,
+        groupId,
+      };*/
+
+      const updatedGroupArray = rootState.profile.groups.map((group) => {
+        return group;
+      });
+      updatedGroupArray.push({
+        groupId: `group_${groupId}`,
+        groupName: foundGroupName,
+        admin: 0,
+      });
+
       console.log(state.foundGroupMembers);
       console.log(newMembers);
       API.post(
@@ -143,12 +157,14 @@ const actions = {
               wishlist: [],
             },
             newMembers,
+            updatedGroupArray,
           },
         }
       )
         .then((response) => {
           console.log(response);
           alert(`Successfully joined group!`);
+          localStorage.groups(JSON.stringify(updatedGroupArray));
           router.push({ path: "/" });
         })
         .catch((err) => {
@@ -291,9 +307,10 @@ const actions = {
     }
   },
 
-  /*removeUser({ commit }, { userId, groupId }) {
+  removeUser({ commit }, { userId, groupId }) {
     console.log(userId, groupId);
-  },*/
+    commit();
+  },
 };
 
 export default { state, getters, actions, mutations, namespaced };

@@ -2,7 +2,7 @@ import { API } from "aws-amplify";
 const namespaced = true;
 
 const state = {
-  userID: "",
+  userId: "",
   name: "",
   groups: [],
 };
@@ -22,7 +22,7 @@ const mutations = {
     state.groups = profile.groups;
     state.name = profile.name;
     state.userId = profile.pk;
-    localStorage.setItem("groups", JSON.stringify(state.groups));
+    localStorage.setItem("groups", JSON.stringify(profile.groups));
   },
 };
 

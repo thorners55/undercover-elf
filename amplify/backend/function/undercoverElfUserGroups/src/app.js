@@ -171,12 +171,25 @@ app.post("/users/:id/groups", async function(request, response) {
       ReturnValues: "ALL_NEW",
     };
 
+    let updateUserGroupArrayParams = {
+      TableName: tableName,
+      Key: {
+        pk: request.body.userInfo.pk,
+        sk: "profile",
+      },
+      UpdateExpression: "set groups = :g",
+      ExpressionAttributeValues: {
+        ":g": request.body.updatedGroupArray,
+      },
+    };
+
     try {
       // adds an item for the user in group, e.g. pk: user_id, sk: group_id
       await dynamodb.put(params).promise();
 
-      // add {id: user_x, name: Namey Name} to group meta to "member"
-      // need to pass through an array with user info added to it - add this on front end
+      // add group info to user profile ("groups")
+      // { admin: 0, groupId, groupName}
+      await dynamodb.update(updateUserGroupArrayParams).promise();
 
       // updates group metadata to include the new user in its members array/info
       const result = await dynamodb.update(groupParams).promise();
