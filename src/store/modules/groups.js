@@ -1,5 +1,6 @@
 import { API } from "aws-amplify";
 import router from "../../router";
+import { v4 as uuidv4 } from "uuid";
 
 const namespaced = true;
 
@@ -11,6 +12,8 @@ const state = {
   findingGroup: true,
   groupNotFound: false,
   groupInfo: {},
+  userGroupInfo: {},
+  createdGroupId: "",
 };
 
 const getters = {};
@@ -18,6 +21,17 @@ const getters = {};
 const mutations = {
   setGroups(state, groups) {
     state.groups = groups;
+    // loop through the groups array which has all the group info
+    // set state of the groupId with value which is object with group info
+    for (let i = 0; i < groups.length; i++) {
+      console.log(groups[i]);
+      state[groups[i].sk] = groups[i];
+      return;
+    }
+  },
+
+  setUserGroupInfo(state, userGroupInfo) {
+    state.userGroupInfo = userGroupInfo;
   },
 
   reset(state) {
@@ -42,6 +56,10 @@ const mutations = {
 
   setGroupInfo(state, groupInfo) {
     state.groupInfo = groupInfo;
+  },
+
+  setCreatedGroupId(state, groupId) {
+    state.createdGroupId = groupId;
   },
 };
 
@@ -86,7 +104,7 @@ const actions = {
       return member;
     });
     newMembers.push({
-      pk: `user_${userId}`,
+      pk: userId,
       name,
     });
     console.log(state.foundGroupMembers);
@@ -120,6 +138,50 @@ const actions = {
       .then(({ body }) => {
         console.log(body);
         commit("setGroupInfo", body);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
+
+  fetchUserGroupInfo({ commit }, { userId, groupId }) {
+    console.log(userId, groupId);
+    const split = groupId.split("_");
+    const id = split[1];
+    API.get("undercoverElfApi", `/users/${userId}/groups?groupId=${id}`, {})
+      .then(({ body }) => {
+        console.log(body);
+        commit("setUserGroupInfo", body);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
+
+  updateStateUserGroupInfo({ commit }, groupId) {
+    commit("setUserGroupInfo", groupId);
+  },
+
+  postGroup({ commit, rootState }, newGroupInfo) {
+    console.log(commit);
+    const groupId = uuidv4();
+    newGroupInfo.pk = groupId;
+    newGroupInfo.admin = rootState.loggedIn.name;
+    newGroupInfo.members = [
+      {
+        id: rootState.loggedIn.userId,
+        name: rootState.loggedIn.name,
+      },
+    ];
+    console.log(newGroupInfo);
+    API.post("undercoverElfApi", "/groups", {
+      body: {
+        newGroupInfo,
+      },
+    })
+      .then((response) => {
+        console.log(response);
+        commit("setCreatedGroupId", groupId);
       })
       .catch((err) => {
         console.log(err);

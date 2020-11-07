@@ -62,11 +62,6 @@ export default {
     ]),
   },
   methods: {
-    test() {
-      console.log(this.groupId, "groupID");
-      console.log(this.name, "name", this.userId, "userId");
-    },
-
     ...mapActions("groups", ["joinGroup", "findGroup", "resetState"]),
   },
   mounted() {

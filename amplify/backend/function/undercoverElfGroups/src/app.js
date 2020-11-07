@@ -84,15 +84,17 @@ app.get("/groups", function(request, response) {
 });
 
 app.post("/groups", function(request, response) {
-  const groupId = request.body.pk;
+  console.log(request.body, "<--- request");
+  const { newGroupInfo } = request.body;
+  const groupId = newGroupInfo.pk;
 
-  request.body.pk = `group_${request.body.pk}`;
-  request.body.sk = "meta";
-  request.body.closed = 0;
+  newGroupInfo.pk = `group_${groupId}`;
+  newGroupInfo.sk = "meta";
+  newGroupInfo.closed = 0;
 
   let params = {
     TableName: tableName,
-    Item: request.body,
+    Item: newGroupInfo,
   };
 
   dynamodb.put(params, (error, result) => {
@@ -102,10 +104,7 @@ app.post("/groups", function(request, response) {
       response.json({
         statusCode: 200,
         url: request.url,
-        body: {
-          admin: request.body.admin,
-          group: groupId,
-        },
+        body: result,
       });
     }
   });

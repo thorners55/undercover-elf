@@ -88,7 +88,7 @@ app.get("/users/:id/profile", function(request, response) {
       response.json({
         statusCode: 200,
         url: request.url,
-        body: JSON.stringify(result.Item),
+        body: result.Item,
       });
     }
   });

@@ -82,10 +82,13 @@ app.get("/users/:id/groups", function(request, response) {
       if (error) {
         response.json({ statusCode: 500, error: error.message });
       } else {
+        if (!result.Item) {
+          response.json({ statusCode: 404, error: "User or group not found" });
+        }
         response.json({
           statusCode: 200,
           url: request.url,
-          body: JSON.stringify(result.Item),
+          body: result.Item,
         });
       }
     });
@@ -121,6 +124,8 @@ app.post("/users/:id/groups", async function(request, response) {
     if (request.query.groupId.length < 1) {
       response.json({ statusCode: 405, error: "Method not allowed" });
       return;
+    } else if (!userId || !group) {
+      response.json({ statusCode: 400, error: "Bad request" });
     }
 
     let params = {

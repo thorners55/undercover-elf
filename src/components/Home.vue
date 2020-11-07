@@ -5,9 +5,21 @@
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
+
 export default {
   name: "Home",
-
+  methods: {
+    ...mapActions("profile", ["fetchUserProfile"]),
+  },
+  computed: {
+    ...mapState("loggedIn", ["userId"]),
+    // ...mapState("groups", ["groups"]),
+    ...mapState("profile", ["groups"]),
+  },
+  created() {
+    this.fetchUserProfile(this.userId);
+  },
   data() {
     return {};
   },

@@ -7,8 +7,9 @@
       <router-link to="/groups/create">Create new group</router-link>
     </div>
     <ul id="groupNav">
+      <router-link to="/groups/create">Create new group</router-link>
       <li v-for="group in groups" :key="group.sk">
-        <router-link :to="`/groups/${group.sk}/profile`">{{
+        <router-link :to="`/groups/${group.groupId}/profile`">{{
           group.groupName
         }}</router-link>
       </li>
@@ -22,18 +23,18 @@ import { mapActions, mapState } from "vuex";
 export default {
   name: "AllGroups",
   methods: {
-    ...mapActions("groups", ["fetchGroups"]),
+    ...mapActions("profile", ["fetchUserProfile"]),
   },
   computed: {
     ...mapState("loggedIn", ["userId"]),
-    ...mapState("groups", ["groups"]),
-    ...mapActions("groups", ["getInitialGroups"]),
+    // ...mapState("groups", ["groups"]),
+    ...mapState("profile", ["groups"]),
   },
   created() {
     console.log("AllGroups created");
-    this.fetchGroups(this.userId);
+    //this.fetchGroups(this.userId);
+    this.fetchUserProfile(this.userId);
   },
-
   data() {
     return {};
   },

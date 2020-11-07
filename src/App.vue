@@ -18,12 +18,13 @@
 
     <SignIn />
     <NavBar v-if="loggedIn" />
-    <router-view>
+    <router-view v-if="loggedIn">
       <Home />
       <Profile />
       <AllGroups />
       <CreateGroup />
       <JoinGroup />
+      <GroupPage />
       <AllWishlists />
     </router-view>
   </div>
