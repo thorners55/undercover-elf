@@ -1,5 +1,5 @@
 import { API } from "aws-amplify";
-import router from "../../router";
+//import router from "../../router";
 import { v4 as uuidv4 } from "uuid";
 
 const namespaced = true;
@@ -9,6 +9,7 @@ const state = {
   foundGroupName: "",
   foundGroupMembers: [],
   foundGroupExchange: "",
+  foundGroupClosed: "",
   findingGroup: true,
   groupNotFound: false,
   groupInfo: {},
@@ -20,7 +21,7 @@ const state = {
 const getters = {};
 
 const mutations = {
-  setGroups(state, groups) {
+  /* setGroups(state, groups) {
     state.groups = groups;
     // loop through the groups array which has all the group info
     // set state of the groupId with value which is object with group info
@@ -29,19 +30,19 @@ const mutations = {
       state[groups[i].sk] = groups[i];
       return;
     }
-  },
+  },*/
 
-  setUserGroupInfo(state, userGroupInfo) {
+  /*setUserGroupInfo(state, userGroupInfo) {
     state.userGroupInfo = userGroupInfo;
-  },
+  },*/
 
   reset(state) {
     state.findingGroup = true;
-    state.groupNotFund = false;
+    state.groupNotFound = false;
   },
 
   // if the group does not exist, shows a message saying this
-  findGroupInfo(state, response) {
+  setFoundGroupInfo(state, response) {
     state.findingGroup = false;
     if (response.error) {
       state.groupNotFound = true;
@@ -49,15 +50,16 @@ const mutations = {
     } else {
       console.log("find group info");
       state.groupNotFound = false;
-      state.foundGroupName = response.body.name;
+      state.foundGroupName = response.body.groupName;
       state.foundGroupMembers = response.body.members;
       state.foundGroupExchange = response.body.exchange;
+      state.foundGroupClosed = response.body.closed;
     }
   },
 
-  setGroupInfo(state, groupInfo) {
+  /*setGroupInfo(state, groupInfo) {
     state.groupInfo = groupInfo;
-  },
+  },*/
 
   setCreatedGroupId(state, { groupId, updatedGroupArray }) {
     state.createGroupSuccess = true;
@@ -68,7 +70,7 @@ const mutations = {
 
 const actions = {
   // searches database to find groups a user is a part of
-  fetchGroups({ commit }, userId) {
+  /*fetchGroups({ commit }, userId) {
     console.log(userId);
     API.get("undercoverElfApi", `/users/${userId}/groups`, {})
       .then((groups) => {
@@ -78,7 +80,7 @@ const actions = {
       .catch((err) => {
         console.log(err);
       });
-  },
+  },*/
 
   // searches to find a group using the ID the user has input
   findGroup({ commit }, groupId) {
@@ -86,7 +88,7 @@ const actions = {
     API.get("undercoverElfApi", `/groups?id=${groupId}`, {})
       .then((response) => {
         console.log(response);
-        commit("findGroupInfo", response);
+        commit("setFoundGroupInfo", response);
       })
       .catch((err) => {
         console.log(err);
@@ -100,19 +102,33 @@ const actions = {
   },
 
   // join a group that user has previously searched for
-  joinGroup(context, { name, userId, groupId, foundGroupName }) {
+  joinGroup({ commit }, { name, userId, groupId /*foundGroupName*/ }) {
     console.log(name, userId, groupId);
     console.log(state.foundGroupMembers);
-    const newMembers = state.foundGroupMembers.map((member) => {
-      return member;
-    });
-    newMembers.push({
-      pk: userId,
-      name,
-    });
-    console.log(state.foundGroupMembers);
-    console.log(newMembers);
-    API.post("undercoverElfApi", `/users/${userId}/groups?groupId=${groupId}`, {
+    let alreadyMember = false;
+    const groups = JSON.parse(localStorage.groups);
+    for (let i = 0; i < groups.length; i++) {
+      if (groups[i].groupId === `group_${groupId}`) {
+        alreadyMember = true;
+        break;
+      } else continue;
+    }
+    if (alreadyMember) {
+      alert(
+        "You are already a member of this group! Please search for another group."
+      );
+      commit("reset");
+    } else {
+      const newMembers = state.foundGroupMembers.map((member) => {
+        return member;
+      });
+      newMembers.push({
+        pk: userId,
+        name,
+      });
+      console.log(state.foundGroupMembers);
+      console.log(newMembers);
+      /* API.post("undercoverElfApi", `/users/${userId}/groups?groupId=${groupId}`, {
       body: {
         userInfo: {
           admin: 0,
@@ -126,11 +142,12 @@ const actions = {
       .then((response) => {
         console.log(response);
         alert(`Successfully joined group!`);
-        router.push({ path: "/groups" });
+        router.push({ path: "/" });
       })
       .catch((err) => {
         console.log(err, "postUserInGroup error");
-      });
+      });*/
+    }
   },
 
   fetchGroupInfo({ commit }, groupId) {
@@ -161,9 +178,9 @@ const actions = {
       });
   },
 
-  updateStateUserGroupInfo({ commit }, groupId) {
+  /*updateStateUserGroupInfo({ commit }, groupId) {
     commit("setUserGroupInfo", groupId);
-  },
+  },*/
 
   postGroup({ commit, rootState }, newGroupInfo) {
     console.log(commit);

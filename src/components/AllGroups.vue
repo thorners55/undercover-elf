@@ -3,15 +3,20 @@
     <h2>Groups</h2>
     <div v-if="groups.length === 0">
       <p>You have no groups yet!</p>
-      <router-link to="/groups/join">Join existing group</router-link><br />
+      <router-link to="/groups/join">Join existing group</router-link>
+      <br />
       <router-link to="/groups/create">Create new group</router-link>
     </div>
     <ul id="groupNav">
+      <router-link to="/groups/join">Join existing group</router-link>
+      <br />
       <router-link to="/groups/create">Create new group</router-link>
       <li v-for="group in groups" :key="group.sk">
-        <router-link :to="`/groups/${group.groupId}/profile`">{{
+        <router-link :to="`/groups/${group.groupId}/profile`">
+          {{
           group.groupName
-        }}</router-link>
+          }}
+        </router-link>
       </li>
     </ul>
   </div>
@@ -23,12 +28,12 @@ import { mapActions, mapState } from "vuex";
 export default {
   name: "AllGroups",
   methods: {
-    ...mapActions("profile", ["fetchUserProfile"]),
+    ...mapActions("profile", ["fetchUserProfile"])
   },
   computed: {
     ...mapState("loggedIn", ["userId"]),
     // ...mapState("groups", ["groups"]),
-    ...mapState("profile", ["groups"]),
+    ...mapState("profile", ["groups"])
   },
   created() {
     console.log("AllGroups created");
@@ -37,7 +42,7 @@ export default {
   },
   data() {
     return {};
-  },
+  }
 };
 </script>
 
