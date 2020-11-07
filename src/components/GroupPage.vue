@@ -72,7 +72,7 @@ export default {
       })
         .then(response => {
           console.log(response);
-          this.$router.push({ path: "/groups" });
+          this.$router.push({ path: "/" });
         })
         .catch(err => {
           console.log(err);

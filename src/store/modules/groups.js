@@ -32,9 +32,9 @@ const mutations = {
     }
   },*/
 
-  /*setUserGroupInfo(state, userGroupInfo) {
+  setUserGroupInfo(state, userGroupInfo) {
     state.userGroupInfo = userGroupInfo;
-  },*/
+  },
 
   reset(state) {
     state.findingGroup = true;
@@ -57,9 +57,9 @@ const mutations = {
     }
   },
 
-  /*setGroupInfo(state, groupInfo) {
+  setGroupInfo(state, groupInfo) {
     state.groupInfo = groupInfo;
-  },*/
+  },
 
   setCreatedGroupId(state, { groupId, updatedGroupArray }) {
     state.createGroupSuccess = true;
@@ -151,6 +151,7 @@ const actions = {
   },
 
   fetchGroupInfo({ commit }, groupId) {
+    console.log("fetchGroupInfo");
     console.log("getGroupInfo", groupId);
     const split = groupId.split("_");
     const id = split[1];
@@ -165,7 +166,7 @@ const actions = {
   },
 
   fetchUserGroupInfo({ commit }, { userId, groupId }) {
-    console.log(userId, groupId);
+    console.log("fetchUserGroupInfo");
     const split = groupId.split("_");
     const id = split[1];
     API.get("undercoverElfApi", `/users/${userId}/groups?groupId=${id}`, {})

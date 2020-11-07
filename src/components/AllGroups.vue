@@ -7,10 +7,7 @@
       <br />
       <router-link to="/groups/create">Create new group</router-link>
     </div>
-    <ul id="groupNav">
-      <router-link to="/groups/join">Join existing group</router-link>
-      <br />
-      <router-link to="/groups/create">Create new group</router-link>
+    <ul>
       <li v-for="group in groups" :key="group.sk">
         <router-link :to="`/groups/${group.groupId}/profile`">
           {{
