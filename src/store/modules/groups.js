@@ -1,6 +1,6 @@
 import { API } from "aws-amplify";
-//import router from "../../router";
 import { v4 as uuidv4 } from "uuid";
+import router from "../../router";
 
 const namespaced = true;
 
@@ -105,7 +105,7 @@ const actions = {
   },
 
   // join a group that user has previously searched for
-  joinGroup({ commit }, { name, userId, groupId /*foundGroupName*/ }) {
+  joinGroup({ commit }, { name, userId, groupId, foundGroupName }) {
     console.log(name, userId, groupId);
     console.log(state.foundGroupMembers);
     let alreadyMember = false;
@@ -131,31 +131,35 @@ const actions = {
       });
       console.log(state.foundGroupMembers);
       console.log(newMembers);
-      /* API.post("undercoverElfApi", `/users/${userId}/groups?groupId=${groupId}`, {
-      body: {
-        userInfo: {
-          admin: 0,
-          groupName: foundGroupName,
-          name,
-          wishlist: [],
-        },
-        newMembers,
-      },
-    })
-      .then((response) => {
-        console.log(response);
-        alert(`Successfully joined group!`);
-        router.push({ path: "/" });
-      })
-      .catch((err) => {
-        console.log(err, "postUserInGroup error");
-      });*/
+      API.post(
+        "undercoverElfApi",
+        `/users/${userId}/groups?groupId=${groupId}`,
+        {
+          body: {
+            userInfo: {
+              admin: 0,
+              groupName: foundGroupName,
+              name,
+              wishlist: [],
+            },
+            newMembers,
+          },
+        }
+      )
+        .then((response) => {
+          console.log(response);
+          alert(`Successfully joined group!`);
+          router.push({ path: "/" });
+        })
+        .catch((err) => {
+          console.log(err, "postUserInGroup error");
+        });
     }
   },
 
   fetchGroupInfo({ commit }, groupId) {
     console.log("fetchGroupInfo");
-    console.log("getGroupInfo", groupId);
+    console.log(groupId);
     const split = groupId.split("_");
     const id = split[1];
     API.get("undercoverElfApi", `/groups?id=${id}`, {})
@@ -278,6 +282,8 @@ const actions = {
           rootState.profile.groups = localStateGroups;
           console.log(rootState.profile.groups);
           localStorage.groups = JSON.stringify(localStateGroups);
+          router.push({ path: `/groups/${groupId}/profile` });
+          alert("Group information successfully changed!");
         })
         .catch((err) => {
           console.log(err);

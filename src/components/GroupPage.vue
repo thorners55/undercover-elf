@@ -1,7 +1,9 @@
 <template>
   <div>
     <h2>{{ groupInfo.groupName }}</h2>
-    <router-link v-if="userGroupInfo.admin" to="/groups/edit"
+    <router-link
+      v-if="userGroupInfo.admin"
+      :to="`/groups/edit?groupId=${groupId}`"
       >Group settings</router-link
     >
     <li v-for="member in groupInfo.members" :key="member.pk">

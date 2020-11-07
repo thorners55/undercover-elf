@@ -34,7 +34,7 @@
       v-if="editGroup"
       v-on:click="
         updateGroup({
-          groupId: groupInfo.pk,
+          groupId,
           groupInfoToUpdate,
         })
       "
@@ -62,6 +62,7 @@ export default {
     ...mapState("groups", ["groupInfo", "groupInfoToUpdate"]),
   },
   created() {
+    console.log(this.$route.query);
     this.fetchGroupInfo(this.groupId);
   },
   data() {
