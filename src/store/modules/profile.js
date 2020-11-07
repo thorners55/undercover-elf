@@ -7,7 +7,14 @@ const state = {
   groups: [],
 };
 
-const getters = {};
+const getters = {
+  groupAdmin() {
+    const adminGroups = state.groups.filter((group) => {
+      return group.admin === 1;
+    });
+    return adminGroups;
+  },
+};
 
 const mutations = {
   setProfile(state, profile) {

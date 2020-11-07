@@ -2,26 +2,33 @@
   <div>
     <h2>My profile</h2>
     <p>{{ name }}</p>
+    <h3>Admin</h3>
+    <ul>
+      <li v-for="group in groupAdmin" :key="group.groupId">
+        <router-link :to="`/groups/${group.groupId}/profile`">{{ group.groupName }}</router-link>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 
 // ADD CHANGE PASSWORD?
 
 export default {
   name: "Profile",
   methods: {
-    ...mapActions("profile", ["fetchUserProfile"]),
+    ...mapActions("profile", ["fetchUserProfile"])
   },
   computed: {
     ...mapState("loggedIn", ["userId", "name", "groups"]),
+    ...mapGetters("profile", ["groupAdmin"])
   },
   created() {
     this.fetchUserProfile(this.userId);
-  },
+  }
 };
 </script>
 
-<style></style>
+<style scoped></style>

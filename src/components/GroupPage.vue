@@ -1,12 +1,22 @@
 <template>
   <div>
     <h2>{{ groupInfo.groupName }}</h2>
-    <li v-for="member in groupInfo.members" :key="member.pk">
-      {{ member.name }}
-    </li>
+    <button v-if="userGroupInfo.admin === 1">Delete group</button>
+    <button v-if="userGroupInfo.admin === 1">Close group</button>
+    <button v-if="userGroupInfo.closed === 1">Draw names</button>
+    <li v-for="member in groupInfo.members" :key="member.pk">{{ member.name }}</li>
     <p>Exchange date: {{ groupInfo.exchange }}</p>
-    <p>You are buying for: {{ userGroupInfo.buyingForName }}</p>
-    <button>View {{ userGroupInfo.buyingForName }}'s wishlist</button>
+    <button v-if="userGroupInfo.admin === 1">Change exchange date</button>
+    <p>Budget: {{ groupInfo.budget }}</p>
+    <button v-if="userGroupInfo.admin === 1">Change budget</button>
+    <div v-if="groupInfo.closed === 1">
+      <p>You are buying for: {{ userGroupInfo.buyingForName }}</p>
+      <button>View {{ userGroupInfo.buyingForName }}'s wishlist</button>
+    </div>
+    <p v-if="groupInfo.closed === 0">
+      Names have not been drawn yet, but you can still get started on your
+      wishlist!
+    </p>
     <p>Your wishlist: {{ userGroupInfo.wishlist }}</p>
 
     <ul>
@@ -26,9 +36,10 @@
     </ul>
     <button>Add new item</button>
 
-    <button v-on:click="leaveGroup(userId, groupId, groupInfo.members)">
-      Leave group
-    </button>
+    <button
+      v-if="userGroupInfo.admin === 0"
+      v-on:click="leaveGroup(userId, groupId, groupInfo.members)"
+    >Leave group</button>
   </div>
 </template>
 
@@ -43,30 +54,30 @@ export default {
       "fetchGroupInfo",
       "leaveGroup",
       "getGroupInfo",
-      "fetchUserGroupInfo",
+      "fetchUserGroupInfo"
     ]),
     leaveGroup(userId, groupId, members) {
       console.log("leaveGroup", userId, groupId);
       const split = groupId.split("_");
       const id = split[1];
       // make a new array with the member to be deleted removed, use this to update the group metadata
-      const memberRemoved = members.filter((member) => {
+      const memberRemoved = members.filter(member => {
         return member.pk !== `user_${userId}`;
       });
 
       API.del("undercoverElfApi", `/users/${userId}/groups?groupId=${id}`, {
         body: {
-          memberRemoved,
-        },
+          memberRemoved
+        }
       })
-        .then((response) => {
+        .then(response => {
           console.log(response);
           this.$router.push({ path: "/groups" });
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
-    },
+    }
   },
   computed: {
     groupId() {
@@ -74,7 +85,7 @@ export default {
     },
     // ...mapState("groups", [this.$route.params.groupId]),
     ...mapState("loggedIn", ["userId"]),
-    ...mapState("groups", ["groupInfo", "userGroupInfo"]),
+    ...mapState("groups", ["groupInfo", "userGroupInfo"])
     // SOMEHOW NEED TO PASS THROUGH GROUPID INTO MAP STATE - AT THE MOMENT IS SAYING THIS IS UNDEFINED
   },
   created() {
@@ -85,9 +96,9 @@ export default {
   },
   data() {
     return {
-      editing: false,
+      editing: false
     };
-  },
+  }
 };
 </script>
 

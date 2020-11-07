@@ -183,6 +183,7 @@ const actions = {
     updatedGroupArray.push({
       groupId: `group_${groupId}`,
       groupName: newGroupInfo.groupName,
+      admin: 1,
     });
     console.log(updatedGroupArray);
     API.post("undercoverElfApi", "/groups", {
