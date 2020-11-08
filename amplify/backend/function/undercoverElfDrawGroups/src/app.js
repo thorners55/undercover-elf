@@ -57,7 +57,7 @@ const convertUrlType = (param, type) => {
 };
 
 app.get("/draw-groups", function(request, response) {
-  if (request.query.id.length < 1) {
+  if (request.query.id.length < 36 || !request.query.id) {
     response.json({ statusCode: 400, error: "Invalid group ID" });
     return;
   }

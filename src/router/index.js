@@ -7,8 +7,6 @@ import GroupPage from "../components/GroupPage.vue";
 import JoinGroup from "../components/JoinGroup.vue";
 import CreateGroup from "../components/CreateGroup.vue";
 import AdminEditGroup from "../components/AdminEditGroup.vue";
-import AllWishlists from "../components/AllWishlists.vue";
-
 Vue.use(VueRouter);
 
 const routes = [
@@ -18,7 +16,6 @@ const routes = [
   { path: "/groups/create", component: CreateGroup },
   { path: "/groups/edit", component: AdminEditGroup },
   { path: "/profile", component: Profile },
-  { path: "/wishlists", component: AllWishlists },
 ];
 
 // Create router

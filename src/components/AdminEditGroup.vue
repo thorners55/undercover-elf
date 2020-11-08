@@ -46,7 +46,9 @@
     </button>
     <button v-if="!editGroup" v-on:click="editGroup = true">Edit group</button>
 
-    <button v-if="groupInfo.closed === 0">Draw names</button>
+    <button v-if="groupInfo.closed === 0" v-on:click="drawGroups({ groupId })">
+      Draw names
+    </button>
   </div>
 </template>
 
@@ -63,7 +65,7 @@ export default {
       return this.$route.query.groupId;
     },
     ...mapState("groups", ["groupInfo", "groupInfoToUpdate"]),
-    ...mapActions("groups", ["removeUser"]),
+    ...mapActions("groups", [/*"removeUser", */ "drawGroups"]),
   },
   created() {
     this.fetchGroupInfo(this.groupId);

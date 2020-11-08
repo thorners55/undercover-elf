@@ -125,7 +125,7 @@ const actions = {
         return member;
       });
       newMembers.push({
-        pk: userId,
+        pk: `user_${userId}`, //HERE!
         name,
       });
       /*let userProfileGroups = {
@@ -307,9 +307,113 @@ const actions = {
     }
   },
 
-  removeUser({ commit }, { userId, groupId }) {
+  /*removeUser(context, { userId, groupId }) {
     console.log(userId, groupId);
-    commit();
+    // make a request to API to delete the user group entry, to user's profile to remove group from groups array, and to group meta to remove member from members array
+  },*/
+
+  drawGroups({ dispatch }, { groupId }) {
+    console.log("drawNames");
+    const split = groupId.split("_");
+    const id = split[1];
+
+    API.get("undercoverElfApi", `/draw-groups?id=${id}`, {})
+      .then(({ body }) => {
+        console.log(body, typeof body);
+        let response = body;
+        let copyResponse = body.map((x) => x);
+        dispatch("assignNames", { response, copyResponse, id });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
+
+  async pickNames(context, { response, copyResponse }) {
+    console.log("pickNames");
+
+    function randomNum(length) {
+      return Math.floor(Math.random() * (length - 0) + 0);
+    }
+    let length = copyResponse.length;
+    let count = 0;
+    for (let i = 0; i < response.length; i++) {
+      let index = randomNum(length);
+      let buyFor = copyResponse[index];
+      // here to make sure there are no infinite loops
+      if (count > 15) {
+        console.log("exceed max call");
+        break;
+      }
+      //
+
+      // if person picks their own name and it is NOT the last iteration, try again
+      // if person picks their own name and it IS the last iteration, pick a random person in the array who has already been assigned a person to buy for, take this assigned person and give it to the person who had picked their own name. Then, the random person who was picked is now buying for the person who picked their own name
+      if (response[i].pk === buyFor.pk) {
+        console.log("inside if");
+
+        if (i === response.length - 1) {
+          console.log("inside nested if");
+
+          // swap two assignments
+          const random = randomNum(response.length - 1);
+
+          let randomBF = response[random].buyingForUserId;
+          let currentIterationName = response[i].name;
+
+          if (randomBF === currentIterationName) {
+            console.log("inside second nested if");
+            i = i - 1;
+            count++;
+            continue;
+          } else {
+            console.log(response[random].buyingForName);
+            console.log(random, response[random]);
+            // Last person to pick someone buying for whoever random person had
+            response[i].buyingForName = response[random].buyingForName;
+            response[i].buyingForUserId = response[random].buyingForUserId;
+            // Random person now buying for last person to pick someone
+            response[random].buyingForName = response[i].name;
+            response[random].buyingForUserId = response[i].pk;
+          }
+        } else {
+          i = i - 1;
+          count++;
+          continue;
+        }
+      } else {
+        response[i].buyingForName = buyFor.name;
+        response[i].buyingForUserId = buyFor.pk;
+        copyResponse.splice(index, 1);
+        length = length - 1;
+      }
+    }
+    return;
+  },
+
+  async assignNames({ dispatch }, { response, copyResponse, id }) {
+    console.log("assignNames");
+    console.log(response, copyResponse, id);
+
+    try {
+      await dispatch("pickNames", { response, copyResponse });
+      console.log("patch");
+      const assignNamesResponse = await API.patch(
+        "undercoverElfApi",
+        `/draw-names?id=${id}`,
+        {
+          body: response,
+        }
+      );
+      console.log(assignNamesResponse);
+      alert(
+        "Names have been drawn successfully! You will now be redirected to the group page where you can view the person you are buying for's wishlist"
+      );
+      router.push({ path: `/groups/group_${id}/profile` });
+    } catch (err) {
+      console.log(err);
+      alert("There has been an error drawing names. Please try again.");
+    }
   },
 };
 

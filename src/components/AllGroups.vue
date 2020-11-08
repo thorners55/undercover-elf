@@ -1,6 +1,7 @@
 <template>
   <div>
     <h2>Groups</h2>
+    <router-link to="/groups/join">Join existing group</router-link>
     <div v-if="groups.length < 1">
       <p>You have no groups yet!</p>
       <router-link to="/groups/join">Join existing group</router-link>

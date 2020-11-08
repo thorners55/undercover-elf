@@ -57,7 +57,7 @@ const convertUrlType = (param, type) => {
 };
 
 app.patch("/draw-names", async function(request, response) {
-  if (request.query.id.length < 1) {
+  if (request.query.id.length < 36 || !request.query.id) {
     response.json({
       statusCode: 400,
       error: "Invalid group ID",
@@ -78,6 +78,18 @@ app.patch("/draw-names", async function(request, response) {
     ReturnValues: "UPDATED_NEW",
   };
 
+  let closeGroupParams = {
+    TableName: tableName,
+    Key: {
+      pk: groupId,
+      sk: "meta",
+    },
+    UpdateExpression: "set closed = :closed",
+    ExpressionAttributeValues: {
+      ":closed": 1,
+    },
+  };
+
   let postedResponse = [];
 
   for (let i = 0; i < drawGroupsResponse.length; i++) {
@@ -93,6 +105,7 @@ app.patch("/draw-names", async function(request, response) {
       buyFor.id = drawGroupsResponse[i].pk;
       postedResponse.push(buyFor);
       if (i === drawGroupsResponse.length - 1) {
+        await dynamodb.update(closeGroupParams).promise();
         response.json({ statusCode: 200, body: postedResponse });
         return;
       }
