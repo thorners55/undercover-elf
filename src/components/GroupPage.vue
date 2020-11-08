@@ -56,6 +56,7 @@
 
         <div v-if="item.isEditing" v-bind:class="{ editing: item.isEditing }">
           <form
+            v-on:submit.prevent
             v-on:keyup.enter="
               updateWishlistItem(item.id);
               item.isEditing = false;
@@ -100,7 +101,7 @@
     >
       Add new item
     </button>
-    <form v-if="addingItem" v-on:keyup.enter="addItem">
+    <form v-on:submit.prevent v-if="addingItem" v-on:keyup.enter="addItem">
       Description:
       <input
         type="text"

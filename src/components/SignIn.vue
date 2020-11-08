@@ -26,7 +26,7 @@
               <input type="password" id="password" v-model="signInPassword" />
             </form>
             <button
-              type="submit"
+              type="button"
               v-on:click="
                 signIn(signInEmail);
                 signUpEmail = '';
@@ -57,9 +57,13 @@
                 id="forgot-password-email"
                 v-model="forgottenEmail"
               />
+              <button type="button" v-on:click="forgotPassword">
+                Reset password
+              </button>
             </form>
-            <button v-on:click="forgotPassword">Reset password</button>
+
             <button
+              type="button"
               v-on:click="
                 hideSignInForgottenPassword = false;
                 showForgotPassword = false;
@@ -105,10 +109,15 @@
                 v-model="forgottenPasswordNewPasswordRetype"
               />
               <p v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
+              <button
+                type="button"
+                v-on:click="changePassword"
+                :disabled="!validPassword"
+              >
+                Change password
+              </button>
             </form>
-            <button v-on:click="changePassword" :disabled="!validPassword">
-              Change password
-            </button>
+
             <button
               v-if="showForgotPasswordConfirm"
               v-on:click="
@@ -185,10 +194,14 @@
             @input="handlePasswords"
           />
           <p v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
+          <button
+            type="button"
+            v-on:click="createAccount"
+            :disabled="!validPassword"
+          >
+            Create account
+          </button>
         </form>
-        <button v-on:click="createAccount" :disabled="!validPassword">
-          Create account
-        </button>
 
         <button
           v-on:click="
@@ -211,6 +224,7 @@
         <button v-on:click="confirmSignUp">Submit verification code</button>
         <button v-on:click="resendCode">Re-send verification code</button>
         <button
+          type="button"
           v-on:click="
             signingUp = false;
             showSignIn = true;
