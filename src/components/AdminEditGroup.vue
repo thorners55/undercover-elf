@@ -8,10 +8,12 @@
       <input
         type="text"
         v-model="groupInfoToUpdate.groupName"
-        v-on:keyup.enter="updateGroup({
-          groupId,
-          groupInfoToUpdate,
-        })"
+        v-on:keyup.enter="
+          updateGroup({
+            groupId,
+            groupInfoToUpdate,
+          })
+        "
       />
     </div>
     <ul>
@@ -21,7 +23,9 @@
         <button
           v-if="member.pk !== userId"
           v-on:click="removeUser(member.pk, groupInfo.pk)"
-        >Remove user from group</button>
+        >
+          Remove user from group
+        </button>
       </li>
     </ul>
 
@@ -33,10 +37,12 @@
       <input
         type="date"
         v-model="groupInfoToUpdate.exchange"
-        v-on:keyup.enter="updateGroup({
-          groupId,
-          groupInfoToUpdate,
-        })"
+        v-on:keyup.enter="
+          updateGroup({
+            groupId,
+            groupInfoToUpdate,
+          })
+        "
       />
     </div>
 
@@ -46,10 +52,12 @@
       <input
         type="text"
         v-model="groupInfoToUpdate.budget"
-        v-on:keyup.enter="updateGroup({
-          groupId,
-          groupInfoToUpdate,
-        })"
+        v-on:keyup.enter="
+          updateGroup({
+            groupId,
+            groupInfoToUpdate,
+          })
+        "
       />
     </div>
     <button
@@ -60,10 +68,14 @@
           groupInfoToUpdate,
         })
       "
-    >Submit</button>
+    >
+      Submit
+    </button>
     <button v-if="!editGroup" v-on:click="editGroup = true">Edit group</button>
 
-    <button v-if="groupInfo.closed === 0" v-on:click="drawGroups({ groupId })">Draw names</button>
+    <button v-if="groupInfo.closed === 0" v-on:click="drawGroups({ groupId })">
+      Draw names
+    </button>
   </div>
 </template>
 
@@ -73,14 +85,14 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "AdminEditGroup",
   methods: {
-    ...mapActions("groups", ["updateGroup", "fetchGroupInfo", "removeUser"])
+    ...mapActions("groups", ["updateGroup", "fetchGroupInfo", "removeUser"]),
   },
   computed: {
     groupId() {
       return this.$route.query.groupId;
     },
     ...mapState("groups", ["groupInfo", "groupInfoToUpdate"]),
-    ...mapActions("groups", [/*"removeUser", */ "drawGroups"])
+    ...mapActions("groups", [/*"removeUser", */ "drawGroups"]),
   },
   created() {
     this.fetchGroupInfo(this.groupId);
@@ -88,9 +100,9 @@ export default {
   data() {
     return {
       editGroup: false,
-      userId: `user_${localStorage.userId}`
+      userId: `user_${localStorage.undercoverElfUserId}`,
     };
-  }
+  },
 };
 </script>
 

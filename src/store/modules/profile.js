@@ -22,7 +22,7 @@ const mutations = {
     state.groups = profile.groups;
     state.name = profile.name;
     state.userId = profile.pk;
-    localStorage.setItem("groups", JSON.stringify(profile.groups));
+    localStorage.setItem("undercoverElfGroups", JSON.stringify(profile.groups));
   },
 };
 

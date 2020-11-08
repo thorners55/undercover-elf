@@ -246,9 +246,9 @@ app.delete("/users/:id/groups", async function(request, response) {
   const userId = `user_${request.params.id}`;
   const groupId = `group_${request.query.groupId}`;
 
-  const { memberRemoved } = request.body;
+  const { memberRemoved, groupRemoved } = request.body;
 
-  if (request.query.groupId.length > 1) {
+  if (request.query.groupId.length < 1) {
     response.json({ statusCode: 405, error: "Method not allowed" });
     return;
   }
@@ -274,12 +274,27 @@ app.delete("/users/:id/groups", async function(request, response) {
     ReturnValues: "ALL_NEW",
   };
 
+  let removeGroupFromUserProfile = {
+    TableName: tableName,
+    Key: {
+      pk: userId,
+      sk: "profile",
+    },
+    UpdateExpression: "set groups = :g",
+    ExpressionAttributeValues: {
+      ":g": groupRemoved,
+    },
+  };
+
   try {
     // delete the user group entry
     await dynamodb.delete(params).promise();
 
     // remove the member from the array of members in the group meta item
     await dynamodb.update(removeUserFromGroupParams).promise();
+
+    // remove group array index from user profile by updating user profile group attribute
+    await dynamodb.update(removeGroupFromUserProfile).promise();
 
     response.json({
       statusCode: 204,

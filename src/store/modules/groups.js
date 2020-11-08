@@ -72,7 +72,7 @@ const mutations = {
   setCreatedGroupId(state, { groupId, updatedGroupArray }) {
     state.createGroupSuccess = true;
     state.createdGroupId = groupId;
-    localStorage.groups = JSON.stringify(updatedGroupArray);
+    localStorage.undercoverElfGroups = JSON.stringify(updatedGroupArray);
   },
 };
 
@@ -114,7 +114,7 @@ const actions = {
     console.log(name, userId, groupId);
     console.log(state.foundGroupMembers);
     let alreadyMember = false;
-    const groups = JSON.parse(localStorage.groups);
+    const groups = JSON.parse(localStorage.undercoverElfGroups);
     for (let i = 0; i < groups.length; i++) {
       if (groups[i].groupId === `group_${groupId}`) {
         alreadyMember = true;
@@ -170,7 +170,7 @@ const actions = {
         .then((response) => {
           console.log(response);
           alert(`Successfully joined group!`);
-          localStorage.groups(JSON.stringify(updatedGroupArray));
+          localStorage.undercoverElfGroups = updatedGroupArray;
           router.push({ path: "/" });
         })
         .catch((err) => {
@@ -261,7 +261,7 @@ const actions = {
     const split = groupId.split("_");
     const id = split[1];
 
-    const userId = `user_${localStorage.userId}`;
+    const userId = `user_${localStorage.undercoverElfUserId}`;
 
     const originalName = state.groupInfo.groupName;
     const updatedName = groupInfoToUpdate.groupName;
@@ -288,7 +288,7 @@ const actions = {
     ) {
       alert("Nothing to update!");
     } else {
-      let localStateGroups = JSON.parse(localStorage.groups);
+      let localStateGroups = JSON.parse(localStorage.undercoverElfGroups);
 
       for (let i = 0; i < localStateGroups.length; i++) {
         if (localStateGroups[i].groupId === groupId) {
@@ -309,9 +309,46 @@ const actions = {
         .then(() => {
           rootState.profile.groups = localStateGroups;
           console.log(rootState.profile.groups);
-          localStorage.groups = JSON.stringify(localStateGroups);
+          localStorage.undercoverElfGroups = JSON.stringify(localStateGroups);
           router.push({ path: `/groups/${groupId}/profile` });
           alert("Group information successfully changed!");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  },
+
+  leaveGroup(context, { userId, groupId, groupName, members }) {
+    console.log("leaveGroup", userId, groupId, members);
+    const result = confirm(`Are you sure you what to leave ${groupName}?`);
+
+    const split = groupId.split("_");
+    const id = split[1];
+    if (result) {
+      // filter through local storage array to remove that group, then use this new array to update the user group profile
+
+      const localStateGroups = JSON.parse(localStorage.undercoverElfGroups);
+      const removedGroupFromUserProfile = localStateGroups.filter((group) => {
+        return group.groupId !== groupId;
+      });
+
+      // make a new array with the member to be deleted removed, use this to update the group metadata
+      const memberRemoved = members.filter((member) => {
+        return member.pk !== `user_${userId}`;
+      });
+      console.log(removedGroupFromUserProfile);
+
+      API.del("undercoverElfApi", `/users/${userId}/groups?groupId=${id}`, {
+        body: {
+          memberRemoved,
+          groupRemoved: removedGroupFromUserProfile,
+        },
+      })
+        .then((response) => {
+          console.log(response);
+          alert(`You successfully left ${groupName}`);
+          router.push({ path: "/" });
         })
         .catch((err) => {
           console.log(err);

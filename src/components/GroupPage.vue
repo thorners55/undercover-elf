@@ -126,8 +126,15 @@
     </button>
 
     <button
-      v-if="userGroupInfo.admin === 0"
-      v-on:click="leaveGroup(userId, groupId, groupInfo.members)"
+      v-if="userGroupInfo.admin === 0 && groupInfo.closed === 0"
+      v-on:click="
+        leaveGroup({
+          userId,
+          groupId,
+          groupName: groupInfo.groupName,
+          members: groupInfo.members,
+        })
+      "
     >
       Leave group
     </button>
@@ -136,7 +143,6 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import { API } from "aws-amplify";
 import { v4 as uuidv4 } from "uuid";
 
 export default {
@@ -149,28 +155,6 @@ export default {
       "fetchUserGroupInfo",
       "updateWishlist",
     ]),
-    leaveGroup(userId, groupId, members) {
-      console.log("leaveGroup", userId, groupId);
-      const split = groupId.split("_");
-      const id = split[1];
-      // make a new array with the member to be deleted removed, use this to update the group metadata
-      const memberRemoved = members.filter((member) => {
-        return member.pk !== `user_${userId}`;
-      });
-
-      API.del("undercoverElfApi", `/users/${userId}/groups?groupId=${id}`, {
-        body: {
-          memberRemoved,
-        },
-      })
-        .then((response) => {
-          console.log(response);
-          this.$router.push({ path: "/" });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
     updateDescription(event) {
       this.updatedDescription = event.target.value;
     },
@@ -236,7 +220,6 @@ export default {
     deleteItem(id) {
       var result = confirm("Are you sure you want to delete this item?");
       if (result) {
-        //Logic to delete the item
         const updatedWishlist = this.userGroupInfo.wishlist.filter((item) => {
           return item.id !== id;
         });

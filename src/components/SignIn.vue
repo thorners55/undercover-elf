@@ -444,10 +444,10 @@ export default {
     async signOut() {
       try {
         await Auth.signOut();
-        localStorage.removeItem("userId");
-        localStorage.removeItem("name");
-        localStorage.removeItem("groups");
-        localStorage.loggedIn = false;
+        localStorage.removeItem("undercoverElfUserId");
+        localStorage.removeItem("undercoverElfName");
+        localStorage.removeItem("undercoverElfGroups");
+        localStorage.undercoverElfLoggedIn = false;
         this.logOut();
         this.$router.push({ path: "/" });
         console.log("signed out");

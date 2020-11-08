@@ -16,11 +16,11 @@ const mutations = {
     state.name = name;
   },
   isLoggedIn(state) {
-    console.log(localStorage.loggedIn === "true");
-    if (localStorage.loggedIn === "true") {
+    console.log(localStorage.undercoverElfLoggedIn === "true");
+    if (localStorage.undercoverElfLoggedIn === "true") {
       state.loggedIn = true;
-      state.userId = localStorage.userId;
-      state.name = localStorage.name;
+      state.userId = localStorage.undercoverElfUserId;
+      state.name = localStorage.undercoverElfName;
     }
   },
 
@@ -35,9 +35,9 @@ const actions = {
   logIn({ commit }, { userId, name }) {
     console.log("log in action");
     commit("setUserId", { userId, name });
-    localStorage.setItem("userId", userId);
-    localStorage.setItem("loggedIn", "true");
-    localStorage.setItem("name", name);
+    localStorage.setItem("undercoverElfUserId", userId);
+    localStorage.setItem("undercoverElfLoggedIn", "true");
+    localStorage.setItem("undercoverElfName", name);
   },
 
   logOut({ commit }) {
