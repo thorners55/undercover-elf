@@ -56,60 +56,88 @@ const convertUrlType = (param, type) => {
 };
 
 app.get("/users/:id/groups", function(request, response) {
-  const userId = `user_${request.params.id}`;
-  const groupId = `group_${request.query.groupId}`;
+  // if there is a request query, it is fetching the user wishlist
+  if (request.query.wishlist) {
+    const userId = request.params.id;
+    const groupId = request.query.groupId;
 
-  for (let i = 0; i < request.params.id.length; i++) {
-    if (typeof i !== "number") {
-      response.json({
-        statusCode: 400,
-        error: "Bad request",
-      });
-      return;
-    }
-  }
-
-  if (request.query.groupId) {
-    var params = {
+    let params = {
       TableName: tableName,
       Key: {
         pk: userId,
         sk: groupId,
       },
+      AttributesToGet: ["wishlist", "name", "groupName"],
     };
 
-    dynamodb.get(params, (error, result) => {
+    dynamodb.get(params, function(error, result) {
       if (error) {
         response.json({ statusCode: 500, error: error.message });
+      } else if (!result.Item) {
+        response.json({ statusCode: 404, error: "User or group not found" });
       } else {
-        if (!result.Item) {
-          response.json({ statusCode: 404, error: "User or group not found" });
-        }
-        response.json({
-          statusCode: 200,
-          url: request.url,
-          body: result.Item,
-        });
+        response.json({ statusCode: 200, body: result.Item });
       }
     });
   } else {
-    var params = {
-      TableName: tableName,
-      KeyConditionExpression: "pk = :pk AND begins_with ( sk , :sk )",
-      ExpressionAttributeValues: {
-        ":pk": userId,
-        ":sk": "group_",
-      },
-    };
+    const userId = `user_${request.params.id}`;
+    const groupId = `group_${request.query.groupId}`;
 
-    dynamodb.query(params, (error, result) => {
-      if (error) {
-        response.statusCode = 500;
-        response.json({ error: "Could not load items: " + err.message });
-      } else {
-        response.json(result.Items);
+    for (let i = 0; i < request.params.id.length; i++) {
+      if (typeof i !== "number") {
+        response.json({
+          statusCode: 400,
+          error: "Bad request",
+        });
+        return;
       }
-    });
+    }
+
+    if (request.query.groupId) {
+      var params = {
+        TableName: tableName,
+        Key: {
+          pk: userId,
+          sk: groupId,
+        },
+      };
+
+      dynamodb.get(params, (error, result) => {
+        if (error) {
+          response.json({ statusCode: 500, error: error.message });
+        } else {
+          if (!result.Item) {
+            response.json({
+              statusCode: 404,
+              error: "User or group not found",
+            });
+          }
+          response.json({
+            statusCode: 200,
+            url: request.url,
+            body: result.Item,
+          });
+        }
+      });
+    } else {
+      var params = {
+        TableName: tableName,
+        KeyConditionExpression: "pk = :pk AND begins_with ( sk , :sk )",
+        ExpressionAttributeValues: {
+          ":pk": userId,
+          ":sk": "group_",
+        },
+      };
+
+      dynamodb.query(params, (error, result) => {
+        if (error) {
+          response.statusCode = 500;
+          response.json({ error: "Could not load items: " + err.message });
+        } else {
+          response.json(result.Items);
+        }
+      });
+    }
   }
 });
 

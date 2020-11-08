@@ -13,7 +13,14 @@
     <p>Budget: £{{ groupInfo.budget }}</p>
     <div v-if="groupInfo.closed === 1">
       <p>You are buying for: {{ userGroupInfo.buyingForName }}</p>
-      <button>View {{ userGroupInfo.buyingForName }}'s wishlist</button>
+      <router-link
+        :to="`/wishlist/${userGroupInfo.buyingForUserId}?groupId=${groupId}`"
+        >View {{ userGroupInfo.buyingForName }}'s wishlist</router-link
+      >
+      <p>
+        Remember, you are the only person who can see
+        {{ userGroupInfo.buyingForName }}'s wishlist!
+      </p>
     </div>
     <p v-if="groupInfo.closed === 0">
       Names have not been drawn yet, but you can still get started on your
