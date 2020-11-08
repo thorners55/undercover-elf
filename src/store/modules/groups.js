@@ -33,6 +33,11 @@ const mutations = {
   },*/
 
   setUserGroupInfo(state, userGroupInfo) {
+    const addIsEditing = userGroupInfo.wishlist.map((item) => {
+      item.isEditing = false;
+      return item;
+    });
+    userGroupInfo.wishlist = addIsEditing;
     state.userGroupInfo = userGroupInfo;
   },
 
@@ -414,6 +419,25 @@ const actions = {
       console.log(err);
       alert("There has been an error drawing names. Please try again.");
     }
+  },
+
+  updateWishlist(content, { userId, groupId, wishlist }) {
+    console.log("update wishlist", userId, groupId, wishlist);
+
+    API.patch(
+      "undercoverElfApi",
+      `/users/user_${userId}/groups?groupId=${groupId}`,
+      {
+        body: wishlist,
+      }
+    )
+      .then((response) => {
+        console.log(response);
+        alert("Wishlist has been successfully updated!");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   },
 };
 

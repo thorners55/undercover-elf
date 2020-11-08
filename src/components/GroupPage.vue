@@ -17,33 +17,87 @@
         :to="`/wishlist/${userGroupInfo.buyingForUserId}?groupId=${groupId}`"
         >View {{ userGroupInfo.buyingForName }}'s wishlist</router-link
       >
-      <p>
-        Remember, you are the only person who can see
-        {{ userGroupInfo.buyingForName }}'s wishlist!
-      </p>
     </div>
     <p v-if="groupInfo.closed === 0">
       Names have not been drawn yet, but you can still get started on your
       wishlist!
     </p>
-    <p>Your wishlist: {{ userGroupInfo.wishlist }}</p>
 
+    <!-- WISHLIST ITEMS -->
+    <p v-if="hasEdited">
+      IMPORTANT: You must press "Save all changes" to submit changes made to
+      your wishlist before leaving the page.
+    </p>
     <ul>
       <li v-for="item in userGroupInfo.wishlist" :key="item.url">
-        <div v-if="!editing">
+        <div v-if="!item.isEditing" v-bind:class="{ editing: item.isEditing }">
           <p>{{ item.description }}</p>
           <p>{{ item.url }}</p>
-        </div>
-        <button v-on:click="editing = !editing">Edit item</button>
-        <button>Delete item</button>
+          <p>{{ item.comment }}</p>
 
-        <div v-if="editing">
-          <input type="text" :value="`${item.description}`" />
-          <input type="text" :value="`${item.url}`" />
+          <button
+            v-on:click="
+              item.isEditing = !item.isEditing;
+              hasEdited = true;
+            "
+          >
+            Edit item
+          </button>
+          <button
+            type="button"
+            v-on:click="
+              deleteItem(item.id);
+              hasEdited = true;
+            "
+          >
+            Delete item
+          </button>
+        </div>
+
+        <div v-if="item.isEditing" v-bind:class="{ editing: item.isEditing }">
+          <form
+            v-on:keyup.enter="
+              updateWishlistItem(item.id);
+              item.isEditing = false;
+            "
+          >
+            <input
+              type="text"
+              :value="`${item.description}`"
+              v-on:input="(event) => updateDescription(event)"
+            />
+            <input
+              type="text"
+              :value="`${item.url}`"
+              v-on:input="(event) => updateUrl(event)"
+            />
+            <input
+              type="text"
+              :value="`${item.comment}`"
+              v-on:input="(event) => updateComment(event)"
+            />
+            <button
+              type="button"
+              v-on:click="
+                updateWishlistItem(item.id);
+                item.isEditing = false;
+              "
+            >
+              Done editing
+            </button>
+          </form>
         </div>
       </li>
     </ul>
     <button>Add new item</button>
+    <button
+      v-if="hasEdited"
+      v-on:click="
+        updateWishlist({ userId, groupId, wishlist: userGroupInfo.wishlist })
+      "
+    >
+      Save all changes
+    </button>
 
     <button
       v-if="userGroupInfo.admin === 0"
@@ -66,6 +120,7 @@ export default {
       "leaveGroup",
       "getGroupInfo",
       "fetchUserGroupInfo",
+      "updateWishlist",
     ]),
     leaveGroup(userId, groupId, members) {
       console.log("leaveGroup", userId, groupId);
@@ -89,15 +144,54 @@ export default {
           console.log(err);
         });
     },
+    updateDescription(event) {
+      this.updatedDescription = event.target.value;
+    },
+    updateUrl(event) {
+      this.updatedUrl = event.target.value;
+    },
+    updateComment(event) {
+      this.updatedComment = event.target.value;
+    },
+    updateWishlistItem(id) {
+      // if updated description, url or comment is undefined, don't update it
+      // Can't use v-model because using value to fill in the input box, so have to use the on input function. So, if only edit one thing, everything else will be blank, so have to separate them out like this because otherwise tries to submit blank values.
+      // NEED TO DISABLE ANY BUTTON THAT ISNT THAT ITEM WHEN CLICK EDITING ON ONE ITEM
+      this.userGroupInfo.wishlist.forEach((item) => {
+        if (item.id === id) {
+          if (this.updatedDescription) {
+            item.description = this.updatedDescription;
+          }
+          if (this.updatedUrl) {
+            item.url = this.updatedUrl;
+          }
+          if (this.updatedComment) {
+            item.comment = this.updatedComment;
+          }
+        }
+      });
+    },
+    deleteItem(id) {
+      var result = confirm("Are you sure you want to delete this item?");
+      if (result) {
+        //Logic to delete the item
+        const updatedWishlist = this.userGroupInfo.wishlist.filter((item) => {
+          return item.id !== id;
+        });
+
+        this.userGroupInfo.wishlist = updatedWishlist;
+        alert(
+          "Item deleted - please press 'Save all changes' to submit your updated wishlist."
+        );
+      }
+    },
   },
   computed: {
     groupId() {
       return this.$route.params.groupId;
     },
-    // ...mapState("groups", [this.$route.params.groupId]),
     ...mapState("loggedIn", ["userId"]),
     ...mapState("groups", ["groupInfo", "userGroupInfo"]),
-    // SOMEHOW NEED TO PASS THROUGH GROUPID INTO MAP STATE - AT THE MOMENT IS SAYING THIS IS UNDEFINED
   },
   created() {
     console.log("GroupPage created");
@@ -107,7 +201,10 @@ export default {
   },
   data() {
     return {
-      editing: false,
+      hasEdited: false,
+      updatedDescription: undefined,
+      updatedUrl: undefined,
+      updatedComment: undefined,
     };
   },
 };
@@ -127,5 +224,10 @@ li {
 }
 a {
   color: #42b983;
+}
+
+.editing {
+  background-color: pink;
+  border: 2px solid red;
 }
 </style>

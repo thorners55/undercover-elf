@@ -142,44 +142,19 @@ app.get("/users/:id/groups", function(request, response) {
 });
 
 app.post("/users/:id/groups", async function(request, response) {
-  // Confused by this - seems to be updating wishlist. Should this be in app.patch?
   const userId = request.params.id;
   const groupId = request.query.groupId;
   request.body.userInfo.pk = `user_${userId}`;
   request.body.userInfo.sk = `group_${groupId}`;
 
   if (request.body.userInfo.name === undefined || !userId || !groupId) {
+    // not sure if need this part - think I got confused using .post instead of .patch for updating wishlist. Leaving it here just in case.
     if (request.query.groupId.length < 1) {
       response.json({ statusCode: 405, error: "Method not allowed" });
       return;
     } else if (!userId || !group) {
       response.json({ statusCode: 400, error: "Bad request" });
     }
-
-    let params = {
-      TableName: tableName,
-      Key: {
-        pk: userId,
-        sk: groupId,
-      },
-      UpdateExpression: "set wishlist = :wishlist",
-      ExpressionAttributeValues: {
-        ":wishlist": request.body.userInfo.wishlist,
-      },
-      ReturnValues: "UPDATED_NEW",
-    };
-
-    dynamodb.update(params, (error, result) => {
-      if (error) {
-        response.json({ statusCode: 500, error: error.message });
-      } else {
-        response.json({
-          statusCode: 200,
-          url: request.url,
-          body: JSON.stringify(result.Item),
-        });
-      }
-    });
   } else {
     let params = {
       TableName: tableName,
@@ -230,6 +205,40 @@ app.post("/users/:id/groups", async function(request, response) {
     } catch (error) {
       response.json({ statusCode: 500, error: error.message });
     }
+  }
+});
+
+app.patch("/users/:id/groups", function(request, response) {
+  const userId = request.params.id;
+  const groupId = request.query.groupId;
+
+  if (!userId || !groupId) {
+    response.json({ statusCode: 400, error: "Missing user or group ID" });
+  } else {
+    let params = {
+      TableName: tableName,
+      Key: {
+        pk: userId,
+        sk: groupId,
+      },
+      UpdateExpression: "set wishlist = :wishlist",
+      ExpressionAttributeValues: {
+        ":wishlist": request.body,
+      },
+      ReturnValues: "UPDATED_NEW",
+    };
+
+    dynamodb.update(params, (error, result) => {
+      if (error) {
+        response.json({ statusCode: 500, error: error.message });
+      } else {
+        response.json({
+          statusCode: 200,
+          url: request.url,
+          body: result.Item,
+        });
+      }
+    });
   }
 });
 

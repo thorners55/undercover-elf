@@ -8,7 +8,7 @@
           <li>{{ item.description }}</li>
           <li v-if="item.url">{{ item.url }}</li>
           <li v-if="!item.url">No URL provided for this item</li>
-          <li>{{ item.comments }}</li>
+          <li>{{ item.comment }}</li>
         </ul>
       </li>
     </ul>

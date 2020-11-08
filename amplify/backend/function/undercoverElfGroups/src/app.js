@@ -94,16 +94,6 @@ app.post("/groups", async function(request, response) {
   const { pk, exchange, groupName } = newGroupInfo;
   const { name } = newGroupInfo.members[0];
 
-  const newUserGroup = {
-    pk: newGroupInfo.members[0].pk,
-    sk: pk,
-    admin: 1,
-    closed: 0,
-    exchange,
-    groupName,
-    name,
-  };
-
   let params = {
     TableName: tableName,
     Item: newGroupInfo,
@@ -111,7 +101,16 @@ app.post("/groups", async function(request, response) {
 
   let newUserGroupParams = {
     TableName: tableName,
-    Item: newUserGroup,
+    Item: {
+      pk: newGroupInfo.members[0].pk,
+      sk: pk,
+      admin: 1,
+      closed: 0,
+      exchange,
+      groupName,
+      name,
+      wishlist: [],
+    },
   };
 
   let updateUserGroupArrayParams = {
