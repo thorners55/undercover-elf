@@ -361,8 +361,9 @@ const actions = {
     // make a request to API to delete the user group entry, to user's profile to remove group from groups array, and to group meta to remove member from members array
   },*/
 
-  drawGroups({ dispatch }, { groupId }) {
-    console.log("drawNames");
+  drawNames({ dispatch }, { groupId }) {
+    console.log("drawNames", groupId);
+
     const split = groupId.split("_");
     const id = split[1];
 

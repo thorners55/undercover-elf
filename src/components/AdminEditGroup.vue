@@ -73,7 +73,7 @@
     </button>
     <button v-if="!editGroup" v-on:click="editGroup = true">Edit group</button>
 
-    <button v-if="groupInfo.closed === 0" v-on:click="drawGroups({ groupId })">
+    <button v-if="groupInfo.closed === 0" v-on:click="drawNames({ groupId })">
       Draw names
     </button>
   </div>
@@ -83,16 +83,20 @@
 import { mapState, mapActions } from "vuex";
 
 export default {
-  name: "AdminEditGroup",
+  name: "AdminEdesitGroup",
   methods: {
-    ...mapActions("groups", ["updateGroup", "fetchGroupInfo", "removeUser"]),
+    ...mapActions("groups", [
+      "updateGroup",
+      "fetchGroupInfo",
+      "removeUser",
+      "drawNames",
+    ]),
   },
   computed: {
     groupId() {
       return this.$route.query.groupId;
     },
     ...mapState("groups", ["groupInfo", "groupInfoToUpdate"]),
-    ...mapActions("groups", [/*"removeUser", */ "drawGroups"]),
   },
   created() {
     this.fetchGroupInfo(this.groupId);
