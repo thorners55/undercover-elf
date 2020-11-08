@@ -1,6 +1,7 @@
 import { API } from "aws-amplify";
-import { v4 as uuidv4 } from "uuid";
 import router from "../../router";
+import { v4 as uuidv4 } from "uuid";
+import date from "date-and-time";
 
 const namespaced = true;
 
@@ -212,8 +213,14 @@ const actions = {
   },*/
 
   postGroup({ commit, rootState }, newGroupInfo) {
-    console.log(commit);
+    const tryDate = date.transform(
+      newGroupInfo.exchange,
+      "YYYY-MM-DD",
+      "DD-MM-YYYY"
+    );
+
     const groupId = uuidv4();
+    newGroupInfo.exchange = tryDate;
     newGroupInfo.pk = groupId;
     newGroupInfo.admin = rootState.loggedIn.name;
     newGroupInfo.members = [

@@ -2,12 +2,9 @@
   <div>
     <h2>Groups</h2>
     <router-link to="/groups/join">Join existing group</router-link>
-    <div v-if="groups.length < 1">
-      <p>You have no groups yet!</p>
-      <router-link to="/groups/join">Join existing group</router-link>
-      <br />
-      <router-link to="/groups/create">Create new group</router-link>
-    </div>
+    <router-link to="/groups/create">Create new group</router-link>
+    <p v-if="groups.length < 1">You have no groups yet!</p>
+
     <ul>
       <li v-for="group in groups" :key="group.sk">
         <router-link :to="`/groups/${group.groupId}/profile`">

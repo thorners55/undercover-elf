@@ -65,6 +65,7 @@
               type="text"
               :value="`${item.description}`"
               v-on:input="(event) => updateDescription(event)"
+              required
             />
             <input
               type="text"
@@ -89,7 +90,31 @@
         </div>
       </li>
     </ul>
-    <button>Add new item</button>
+    <button
+      type="submit"
+      v-if="!addingItem"
+      v-on:click="
+        addingItem = true;
+        hasEdited = true;
+      "
+    >
+      Add new item
+    </button>
+    <form v-if="addingItem" v-on:keyup.enter="addItem">
+      Description:
+      <input
+        type="text"
+        id="add-new-item-description"
+        v-model="addItemDescription"
+        required
+      />
+      Link to item:
+      <input type="text" id="add-new-item-url" v-model="addItemUrl" /> Comment:
+      <input type="text" id="add-new-item-comment" v-model="addItemComment" />
+      <button type="button" v-on:click="addItem">
+        Add item
+      </button>
+    </form>
     <button
       v-if="hasEdited"
       v-on:click="
@@ -111,6 +136,7 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import { API } from "aws-amplify";
+import { v4 as uuidv4 } from "uuid";
 
 export default {
   name: "GroupPage",
@@ -157,19 +183,54 @@ export default {
       // if updated description, url or comment is undefined, don't update it
       // Can't use v-model because using value to fill in the input box, so have to use the on input function. So, if only edit one thing, everything else will be blank, so have to separate them out like this because otherwise tries to submit blank values.
       // NEED TO DISABLE ANY BUTTON THAT ISNT THAT ITEM WHEN CLICK EDITING ON ONE ITEM
-      this.userGroupInfo.wishlist.forEach((item) => {
-        if (item.id === id) {
-          if (this.updatedDescription) {
-            item.description = this.updatedDescription;
+
+      // if the updated item doesn't have a url or comment, alert that it must have it
+      if (!this.updatedUrl || !this.updatedComment) {
+        alert(
+          "Item must have either a link to where the item is sold, or a comment."
+        );
+      } else {
+        this.userGroupInfo.wishlist.forEach((item) => {
+          if (item.id === id) {
+            if (this.updatedDescription) {
+              item.description = this.updatedDescription;
+            }
+            if (this.updatedUrl) {
+              item.url = this.updatedUrl;
+            }
+            if (this.updatedComment) {
+              item.comment = this.updatedComment;
+            }
           }
-          if (this.updatedUrl) {
-            item.url = this.updatedUrl;
-          }
-          if (this.updatedComment) {
-            item.comment = this.updatedComment;
-          }
-        }
-      });
+        });
+      }
+    },
+    addItem() {
+      console.log("addItem");
+
+      if (!this.addItemComment || this.addItemUrl) {
+        alert(
+          "Item must have either a link to where the item is sold, or a comment."
+        );
+      } else {
+        const id = uuidv4();
+
+        const addedItem = {
+          description: this.addItemDescription,
+          url: this.addItemUrl,
+          comment: this.addItemComment,
+          isEditing: false,
+          id,
+        };
+        this.userGroupInfo.wishlist.push(addedItem);
+
+        this.hasEdited = true;
+        (this.addItemDescription = ""),
+          (this.addItemUrl = ""),
+          (this.addItemComment = "");
+        this.addingItem = false;
+        console.log(this.userGroupInfo.wishlist);
+      }
     },
     deleteItem(id) {
       var result = confirm("Are you sure you want to delete this item?");
@@ -202,9 +263,13 @@ export default {
   data() {
     return {
       hasEdited: false,
+      addingItem: false,
       updatedDescription: undefined,
       updatedUrl: undefined,
       updatedComment: undefined,
+      addItemDescription: "",
+      addItemUrl: "",
+      addItemComment: "",
     };
   },
 };
