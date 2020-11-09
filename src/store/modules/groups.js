@@ -65,7 +65,10 @@ const mutations = {
   },
 
   setGroupInfo(state, groupInfo) {
+    const splitGroupId = groupInfo.pk.split("_");
+    const inviteId = splitGroupId[1];
     state.groupInfo = groupInfo;
+    state.groupInfo.inviteId = inviteId;
     const groupInfoToUpdate = JSON.parse(JSON.stringify(groupInfo));
     state.groupInfoToUpdate = groupInfoToUpdate;
   },

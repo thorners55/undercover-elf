@@ -4,19 +4,12 @@
     <div v-if="!createGroupSuccess">
       <form v-on:submit.prevent v-on:keyup.enter="createGroup">
         <label for="group-name">Group name:</label>
-        <input
-          type="text"
-          id="group-name"
-          v-model="newGroup.groupName"
-          required
-        />
+        <input type="text" id="group-name" v-model="newGroup.groupName" required />
         <label for="exchange">Gift exchange</label>
         <input type="date" id="exchange" v-model="newGroup.exchange" required />
         <label for="budget">Budget: £</label>
         <input type="text" id="budget" v-model="newGroup.budget" required />
-        <button type="button" v-on:click="createGroup">
-          Create group
-        </button>
+        <button type="button" v-on:click="createGroup">Create group</button>
       </form>
     </div>
     <div v-if="createGroupSuccess">
@@ -26,10 +19,9 @@
         To invite people to this group, send them the group ID that has been
         generated for you, as shown above. They can join this group by searching
         for this ID in the 'Join Group' section.
+        The group invitation ID can be found in group settings.
       </p>
-      <router-link :to="`/groups/group_${createdGroupId}/profile`"
-        >View group page</router-link
-      >
+      <router-link :to="`/groups/group_${createdGroupId}/profile`">View group page</router-link>
     </div>
     <router-link to="/">Back to groups</router-link>
   </div>
@@ -46,11 +38,11 @@ export default {
       this.creatingGroup = false;
       this.postGroup(this.newGroup);
     },
-    ...mapActions("groups", ["postGroup"]),
+    ...mapActions("groups", ["postGroup"])
   },
   computed: {
     ...mapState("profile", ["name", "userId"]),
-    ...mapState("groups", ["createdGroupId", "groups", "createGroupSuccess"]),
+    ...mapState("groups", ["createdGroupId", "groups", "createGroupSuccess"])
   },
 
   data() {
@@ -59,10 +51,10 @@ export default {
         groupName: "",
         exchange: "",
         members: "",
-        budget: "",
-      },
+        budget: ""
+      }
     };
-  },
+  }
 };
 </script>
 

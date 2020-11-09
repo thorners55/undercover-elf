@@ -1,10 +1,9 @@
 <template>
   <div>
-    <h2>Edit group settings</h2>
-
-    <h3>{{ groupInfo.groupName }}</h3>
+    <h2>Edit group settings for {{groupInfo.groupName}}</h2>
 
     <router-link :to="`/groups/${groupInfo.pk}/profile`">Back to {{groupInfo.groupName}} page</router-link>
+    <p>Invitation ID: {{groupInfo.inviteId}}</p>
 
     <div>
       <input
