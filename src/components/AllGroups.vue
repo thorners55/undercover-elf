@@ -1,15 +1,15 @@
 <template>
-  <div>
-    <h2>Groups</h2>
-    <router-link to="/groups/join">Join existing group</router-link>
-    <router-link to="/groups/create">Create new group</router-link>
+  <div id="all-groups">
+    <img src="../assets/cabin.svg" id="logo" width="50rem" />
+    <h2>Welcome home!</h2>
+    <button type="button" v-on:click="$router.push('/groups/join')">Join existing group</button>
+    <button type="button" v-on:click="$router.push('/groups/create')">Create new group</button>
     <p v-if="groups.length < 1">You have no groups yet!</p>
-
+    <p>Click a group name to view the group information</p>
+    <h2>You are a member of:</h2>
     <ul>
       <li v-for="group in groups" :key="group.sk">
-        <router-link :to="`/groups/${group.groupId}/profile`">
-          {{ group.groupName }}
-        </router-link>
+        <router-link :to="`/groups/${group.groupId}/profile`">{{ group.groupName }}</router-link>
       </li>
     </ul>
   </div>
@@ -21,12 +21,12 @@ import { mapActions, mapState } from "vuex";
 export default {
   name: "AllGroups",
   methods: {
-    ...mapActions("profile", ["fetchUserProfile"]),
+    ...mapActions("profile", ["fetchUserProfile"])
   },
   computed: {
     ...mapState("loggedIn", ["userId"]),
     // ...mapState("groups", ["groups"]),
-    ...mapState("profile", ["groups"]),
+    ...mapState("profile", ["groups"])
   },
   created() {
     console.log("AllGroups created");
@@ -35,15 +35,20 @@ export default {
   },
   data() {
     return {};
-  },
+  }
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
+#all-groups {
+  margin-top: 5ch;
 }
+
+h2 {
+  font-size: 1.5rem;
+}
+
 ul {
   list-style-type: none;
   padding: 0;
@@ -52,7 +57,17 @@ li {
   display: inline-block;
   margin: 0 10px;
 }
+
+button {
+  margin: 1ch;
+}
+
 a {
-  color: #42b983;
+  color: #2c3e50;
+}
+
+img {
+  display: block;
+  margin: auto;
 }
 </style>

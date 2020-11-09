@@ -1,19 +1,24 @@
 <template>
-  <div>
+  <div id="my-account">
+    <img src="../assets/gingerbread-man.svg" id="logo" width="50rem" />
     <h2>My account</h2>
+    <div id="accountLogOut">
+      <LogOut id="accountLogOut" />
+      <h3>Profile</h3>
+    </div>
     <p>Name: {{ name }}</p>
     <p>Email: {{ email }}</p>
 
-    <h3>Group admin for:</h3>
+    <h3>Group admin for</h3>
     <p v-if="groupAdmin.length < 1">You are not admin for any groups!</p>
     <ul>
       <li v-for="group in groupAdmin" :key="group.groupId">
-        <router-link :to="`/groups/${group.groupId}/profile`">{{
+        <router-link :to="`/groups/${group.groupId}/profile`">
+          {{
           group.groupName
-        }}</router-link>
-        <router-link :to="`/groups/edit?groupId=${group.groupId}`"
-          >Group settings</router-link
-        >
+          }}
+        </router-link>
+        <router-link :to="`/groups/edit?groupId=${group.groupId}`">Group settings</router-link>
       </li>
     </ul>
   </div>
@@ -22,21 +27,25 @@
 <script>
 import { Auth } from "aws-amplify";
 import { mapState, mapGetters, mapActions } from "vuex";
+import LogOut from "./LogOut.vue";
 
 // ADD CHANGE PASSWORD?
 
 export default {
   name: "Profile",
+  components: {
+    LogOut
+  },
   methods: {
     async getEmail() {
       const userEmail = await Auth.currentUserInfo();
       this.email = userEmail.attributes.email;
     },
-    ...mapActions("profile", ["fetchUserProfile"]),
+    ...mapActions("profile", ["fetchUserProfile"])
   },
   computed: {
     ...mapState("loggedIn", ["userId", "name", "groups"]),
-    ...mapGetters("profile", ["groupAdmin"]),
+    ...mapGetters("profile", ["groupAdmin"])
   },
   created() {
     this.fetchUserProfile(this.userId);
@@ -44,10 +53,25 @@ export default {
   },
   data() {
     return {
-      email: "",
+      email: ""
     };
-  },
+  }
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+#my-account {
+  margin: 5ch 0;
+}
+
+#accountLogOut {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  #accountLogOut {
+    display: block;
+    margin: 3ch 0;
+  }
+}
+</style>

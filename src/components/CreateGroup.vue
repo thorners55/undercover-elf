@@ -23,7 +23,7 @@
       </p>
       <router-link :to="`/groups/group_${createdGroupId}/profile`">View group page</router-link>
     </div>
-    <router-link to="/">Back to groups</router-link>
+    <router-link to="/">Back to home</router-link>
   </div>
 </template>
 

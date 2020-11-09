@@ -46,7 +46,7 @@
         ">Search again</button>
     </div>
     <!-- go back to main groups page -->
-    <router-link to="/">Back to groups</router-link>
+    <router-link to="/">Back to home</router-link>
   </div>
 </template>
 

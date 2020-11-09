@@ -1,17 +1,13 @@
 <template>
   <div id="app">
-    <img src="./assets/elf.svg" id="logo" width="90rem" />
-
-    <h1>Undercover Elf</h1>
+    <Header />
 
     <div id="main-signin-nav">
-      <SignIn />
-      <NavBar v-if="loggedIn" />
-      <main>
-        <router-view v-if="loggedIn">
-          <Home />
-          <Profile />
+      <SignIn v-if="!loggedIn" />
+      <main v-if="loggedIn">
+        <router-view>
           <AllGroups />
+          <Profile />
           <CreateGroup />
           <JoinGroup />
           <GroupPage />
@@ -26,9 +22,8 @@
 
 <script>
 import { mapState } from "vuex";
-import Home from "./components/Home.vue";
+import Header from "./components/Header.vue";
 import SignIn from "./components/SignIn.vue";
-import NavBar from "./components/NavBar.vue";
 import Profile from "./components/Profile.vue";
 import AllGroups from "./components/AllGroups.vue";
 import CreateGroup from "./components/CreateGroup.vue";
@@ -40,8 +35,7 @@ import WishlistPage from "./components/WishlistPage.vue";
 export default {
   name: "App",
   components: {
-    Home,
-    NavBar,
+    Header,
     SignIn,
     Profile,
     AllGroups,
@@ -56,11 +50,12 @@ export default {
     console.log(this.loggedIn);
   }
 };
+// hat buckle colour f8ca4f
 </script>
 
 <style>
 html {
-  background-color: rgb(128, 228, 181);
+  background-color: #80e4b5;
 }
 
 #app {
@@ -94,5 +89,19 @@ h1 {
 #main-signin-nav {
   font-size: 1.2rem;
   font-family: "Quicksand", sans-serif;
+}
+
+button {
+  background-color: #f8ca4f;
+  color: #2c3e50;
+  padding: 1ch;
+  font-size: 1rem;
+  font-family: "Quicksand", sans-serif;
+  border-radius: 0.5rem;
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: #fefefa;
 }
 </style>
