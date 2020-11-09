@@ -9,20 +9,15 @@
 
     <!-- if user is not logged in -->
     <div v-if="!loggedIn">
-      <button v-on:click="signIn">click</button>
       <!-- if user is signing in, not making new account -->
       <div v-if="!signingUp">
         <div v-if="showSignIn">
           <div v-if="!hideSignInForgottenPassword">
-            <p>Sign in</p>
-            <form
-              id="sign-in"
-              v-on:keyup.enter="signIn(signInEmail)"
-              v-on:submit.prevent
-            >
-              <label for="email">Email:</label>
+            <h2>Sign in</h2>
+            <form id="sign-in" v-on:keyup.enter="signIn(signInEmail)" v-on:submit.prevent>
+              <label for="email">Email</label>
               <input type="email" id="email" v-model="signInEmail" />
-              <label for="password">Password:</label>
+              <label for="password">Password</label>
               <input type="password" id="password" v-model="signInPassword" />
             </form>
             <button
@@ -32,34 +27,20 @@
                 signUpEmail = '';
                 signUpPassword = '';
               "
-            >
-              Sign in
-            </button>
+            >Sign in</button>
             <button
               v-on:click="
                 showForgotPassword = true;
                 hideSignInForgottenPassword = true;
               "
-            >
-              Forgotten password?
-            </button>
+            >Forgotten password?</button>
           </div>
           <div v-if="showForgotPassword">
-            <form
-              id="forgot-password"
-              v-on:submit.prevent
-              v-on:keyup.enter="forgotPassword"
-            >
+            <form id="forgot-password" v-on:submit.prevent v-on:keyup.enter="forgotPassword">
               <!-- FIX -->
               <label for="forgot-password-email">Email:</label>
-              <input
-                type="email"
-                id="forgot-password-email"
-                v-model="forgottenEmail"
-              />
-              <button type="button" v-on:click="forgotPassword">
-                Reset password
-              </button>
+              <input type="email" id="forgot-password-email" v-model="forgottenEmail" />
+              <button type="button" v-on:click="forgotPassword">Reset password</button>
             </form>
 
             <button
@@ -68,14 +49,10 @@
                 hideSignInForgottenPassword = false;
                 showForgotPassword = false;
               "
-            >
-              Back to sign in
-            </button>
+            >Back to sign in</button>
           </div>
           <div v-if="showForgotPasswordConfirm">
-            <p v-if="showForgottenPasswordError">
-              {{ forgottenPasswordErrorMessage }}
-            </p>
+            <p v-if="showForgottenPasswordError">{{ forgottenPasswordErrorMessage }}</p>
             <p>Email: {{ forgottenEmail }}</p>
             <form
               id="forgot-password-confirm-code"
@@ -95,27 +72,23 @@
                 @input="handlePasswords"
                 v-model="forgottenPasswordNewPassword"
               />
-              <p v-if="passwordFormatMessage">
+              <p class="message" v-if="passwordFormatMessage">
                 Password must be a minimum of 8 characters, contain at least one
                 uppercase and one lowercase character, and one special character
               </p>
-              <label for="forgot-password-new-password"
-                >Re-type new password:</label
-              >
+              <label for="forgot-password-new-password">Re-type new password:</label>
               <input
                 type="password"
                 id="forgot-password-new-password-retype"
                 @input="handlePasswords"
                 v-model="forgottenPasswordNewPasswordRetype"
               />
-              <p v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
+              <p class="message" v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
               <button
                 type="button"
                 v-on:click="changePassword"
                 :disabled="!validPassword"
-              >
-                Change password
-              </button>
+              >Change password</button>
             </form>
 
             <button
@@ -126,9 +99,7 @@
                 showForgotPasswordConfirm = false;
                 forgottenEmail = '';
               "
-            >
-              Back to sign in
-            </button>
+            >Back to sign in</button>
           </div>
           <!-- if user has signed up but has not confirmed email -->
         </div>
@@ -136,16 +107,14 @@
       </div>
 
       <div v-if="userNotConfirmed && userNotConfirmedMessage">
-        <p>You must confirm your account to sign in.</p>
+        <p class="message">You must confirm your account to sign in.</p>
         <button
           v-on:click="
             confirmingSignUp = true;
             showSignIn = false;
             userNotConfirmedMessage = false;
           "
-        >
-          Verify account
-        </button>
+        >Verify account</button>
       </div>
 
       <!-- if not making new account (signing up) -->
@@ -163,45 +132,36 @@
             (signingUp = true), (signInEmail = '');
             signInPassword = '';
           "
-        >
-          Create an account
-        </button>
+        >Create an account</button>
       </div>
 
       <!-- if making new account (signing up) -->
       <div v-if="signingUp">
-        <form v-on:keyup.enter="createAccount" v-on:submit.prevent>
-          <label for="name">Name:</label>
-          <input type="text" id="name" v-model="signUpName" />
-          <label for="email">Email:</label>
-          <input type="email" id="email" v-model="signUpEmail" />
-          <label for="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            v-model="signUpPassword"
-            @input="handlePasswords"
-          />
-          <p v-if="passwordFormatMessage">
-            Password must be a minimum of 8 characters, contain at least one
-            uppercase and one lowercase character, and one special character
-          </p>
-          <label for="passwordRetype">Re-enter password:</label>
-          <input
-            type="password"
-            id="passwordRetype"
-            v-model="signUpPasswordRetype"
-            @input="handlePasswords"
-          />
-          <p v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
-          <button
-            type="button"
-            v-on:click="createAccount"
-            :disabled="!validPassword"
-          >
-            Create account
-          </button>
-        </form>
+        <div id="signup-grid">
+          <div></div>
+          <form v-on:keyup.enter="createAccount" v-on:submit.prevent>
+            <label for="name">Name</label>
+            <input type="text" id="name" v-model="signUpName" />
+            <label for="email">Email</label>
+            <input type="email" id="email" v-model="signUpEmail" />
+            <label for="password">Password</label>
+            <input type="password" id="password" v-model="signUpPassword" @input="handlePasswords" />
+
+            <label for="passwordRetype">Re-enter password</label>
+            <input
+              type="password"
+              id="passwordRetype"
+              v-model="signUpPasswordRetype"
+              @input="handlePasswords"
+            />
+          </form>
+        </div>
+        <p class="message" v-if="passwordFormatMessage">
+          Password must be a minimum of 8 characters, contain at least one
+          uppercase and one lowercase character, and one special character
+        </p>
+        <p class="message" v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
+        <button type="button" v-on:click="createAccount" :disabled="!validPassword">Create account</button>
 
         <button
           v-on:click="
@@ -209,10 +169,9 @@
             signUpEmail = '';
             signUpPassword = '';
             signUpName = '';
+            showSignIn = true;
           "
-        >
-          Back to sign in
-        </button>
+        >Back to sign in</button>
       </div>
       <!-- if have made new account but have not confirmed -->
       <div v-if="confirmingSignUp">
@@ -221,6 +180,7 @@
           <label for="code">Verification code:</label>
           <input type="text" id="password" v-model="confirmSignUpCode" />
         </form>
+        <p class="message">Enter the verification code sent to your email</p>
         <button v-on:click="confirmSignUp">Submit verification code</button>
         <button v-on:click="resendCode">Re-send verification code</button>
         <button
@@ -237,9 +197,7 @@
             signInEmail = '';
             signInPassword = '';
           "
-        >
-          Back to sign in
-        </button>
+        >Back to sign in</button>
       </div>
     </div>
   </div>
@@ -256,7 +214,7 @@ export default {
   name: "SignIn",
   computed: {
     ...mapState("loggedIn", ["loggedIn"]),
-    ...mapState("loggedIn", ["name"]),
+    ...mapState("loggedIn", ["name"])
   },
   methods: {
     ...mapActions("loggedIn", ["logIn", "logOut"]),
@@ -354,8 +312,8 @@ export default {
           username: this.signUpEmail,
           password: this.signUpPassword,
           attributes: {
-            name: this.signUpName,
-          },
+            name: this.signUpName
+          }
         });
         this.signingUp = false;
         this.confirmingSignUp = true;
@@ -455,7 +413,7 @@ export default {
         alert("Error signing out: " + error.message);
         console.log("error signing out: ", error);
       }
-    },
+    }
   },
   data() {
     return {
@@ -484,26 +442,80 @@ export default {
       forgottenPasswordNewPasswordRetype: "",
       showForgotPasswordConfirm: false,
       showForgottenPasswordError: false,
-      forgottenPasswordErrorMessage: "",
+      forgottenPasswordErrorMessage: ""
     };
-  },
+  }
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
 a {
   color: #42b983;
+}
+
+label {
+  padding: 0.5rem;
+}
+
+button {
+  margin: 1rem auto;
+  display: block;
+  align-items: center;
+}
+
+#sign-in {
+  display: grid;
+  grid-template-columns: 10ch auto;
+  row-gap: 1ch;
+  margin-left: auto;
+  margin-right: auto;
+  width: 30%;
+}
+
+/*form {
+  display: grid;
+  grid-auto-columns: max-content max-content;
+}*/
+
+form {
+  display: grid;
+  grid-template-columns: 40% auto;
+  row-gap: 1ch;
+  margin-left: auto;
+  margin-right: auto;
+  width: 40%;
+}
+label {
+  text-align: left;
+}
+
+input {
+  align-self: center;
+  height: 3ch;
+  font-size: 1rem;
+}
+
+.message {
+  margin-left: 30%;
+  margin-right: 30%;
+  font-weight: bold;
+}
+
+@media (max-width: 900px) {
+  #sign-in {
+    display: block;
+    width: auto;
+  }
+  form {
+    display: block;
+    margin: 0;
+    margin: auto;
+    width: auto;
+  }
+
+  label {
+    text-align: center;
+    display: block;
+  }
 }
 </style>
