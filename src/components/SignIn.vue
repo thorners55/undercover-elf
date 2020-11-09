@@ -20,6 +20,7 @@
               <label for="password">Password</label>
               <input type="password" id="password" v-model="signInPassword" />
             </form>
+            <p v-if="showErrorMessage" class="message">{{ errorMessage }}</p>
             <button
               type="button"
               v-on:click="
@@ -40,8 +41,8 @@
               <!-- FIX -->
               <label for="forgot-password-email">Email:</label>
               <input type="email" id="forgot-password-email" v-model="forgottenEmail" />
-              <button type="button" v-on:click="forgotPassword">Reset password</button>
             </form>
+            <button for="forgot-password" type="button" v-on:click="forgotPassword">Reset password</button>
 
             <button
               type="button"
@@ -72,10 +73,7 @@
                 @input="handlePasswords"
                 v-model="forgottenPasswordNewPassword"
               />
-              <p class="message" v-if="passwordFormatMessage">
-                Password must be a minimum of 8 characters, contain at least one
-                uppercase and one lowercase character, and one special character
-              </p>
+
               <label for="forgot-password-new-password">Re-type new password:</label>
               <input
                 type="password"
@@ -83,13 +81,18 @@
                 @input="handlePasswords"
                 v-model="forgottenPasswordNewPasswordRetype"
               />
-              <p class="message" v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
-              <button
-                type="button"
-                v-on:click="changePassword"
-                :disabled="!validPassword"
-              >Change password</button>
             </form>
+            <p class="message" v-if="passwordFormatMessage">
+              Password must be a minimum of 8 characters, contain at least one
+              uppercase and one lowercase character, and one special character
+            </p>
+            <p class="message" v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
+            <button
+              type="button"
+              for="forgot-password-confirm-code"
+              v-on:click="changePassword"
+              :disabled="!validPassword"
+            >Change password</button>
 
             <button
               v-if="showForgotPasswordConfirm"
@@ -103,18 +106,6 @@
           </div>
           <!-- if user has signed up but has not confirmed email -->
         </div>
-        <p v-if="showErrorMessage">{{ errorMessage }}</p>
-      </div>
-
-      <div v-if="userNotConfirmed && userNotConfirmedMessage">
-        <p class="message">You must confirm your account to sign in.</p>
-        <button
-          v-on:click="
-            confirmingSignUp = true;
-            showSignIn = false;
-            userNotConfirmedMessage = false;
-          "
-        >Verify account</button>
       </div>
 
       <!-- if not making new account (signing up) -->
@@ -176,11 +167,17 @@
       <!-- if have made new account but have not confirmed -->
       <div v-if="confirmingSignUp">
         <p>Email: {{ signUpEmail ? signUpEmail : signInEmail }}</p>
+        <p
+          v-if="userNotConfirmed && userNotConfirmedMessage"
+          class="message"
+        >You must confirm your account to sign in</p>
         <form v-on:keyup.enter="confirmSignUp" v-on:submit.prevent>
           <label for="code">Verification code:</label>
           <input type="text" id="password" v-model="confirmSignUpCode" />
         </form>
+
         <p class="message">Enter the verification code sent to your email</p>
+
         <button v-on:click="confirmSignUp">Submit verification code</button>
         <button v-on:click="resendCode">Re-send verification code</button>
         <button
@@ -240,24 +237,27 @@ export default {
         this.signUpEmail = "";
         this.signUpPassword = "";
         this.signUpPasswordRetype = "";
+        this.showErrorMessage = false;
       } catch (error) {
-        if (error.code === "UserNotConfirmedException") {
+        if (error.message === "User is not confirmed.") {
           this.userNotConfirmed = true;
           this.userNotConfirmedMessage = true;
           this.showSignIn = false;
+          this.confirmingSignUp = true;
         } else if (error.code === "NotAuthorizedException") {
           this.showErrorMessage = true;
           this.errorMessage = error.message;
+        } else {
+          this.signingUp = false;
+          this.showSignIn = true;
+          this.confirmingSignUp = false;
+          this.userNotConfirmed = false;
+          this.userNotConfirmedMessage = false;
+          this.signUpName = "";
+          this.signInPassword = "";
+          this.signUpPassword = "";
+          this.signUpPasswordRetype = "";
         }
-        this.signingUp = false;
-        this.showSignIn = true;
-        this.confirmingSignUp = false;
-        this.userNotConfirmed = false;
-        this.userNotConfirmedMessage = false;
-        this.signUpName = "";
-        this.signInPassword = "";
-        this.signUpPassword = "";
-        this.signUpPasswordRetype = "";
         alert("Error signing in: " + error.message);
         console.log("error signing in", error);
       }
@@ -327,33 +327,7 @@ export default {
         console.log("error signing up:", error);
       }
     },
-    async handlePasswords() {
-      // if doesnt match regex, show a message saying doesnt match and keep button disabled
-      const regex = /^(?=.*?[A-Z])(?=(.*[a-z]){1,})(?=(.*[\d]){1,})(?=(.*[\W]){1,})(?!.*\s).{8,}$/;
-      let password;
-      let passwordRetype;
-      if (this.forgottenEmail) {
-        password = this.forgottenPasswordNewPassword;
-        passwordRetype = this.forgottenPasswordNewPasswordRetype;
-      } else {
-        password = this.signUpPassword;
-        passwordRetype = this.signUpPasswordRetype;
-      }
 
-      const passwordFormat = regex.test(password);
-      if (passwordFormat) {
-        this.passwordFormatMessage = false;
-        if (password === passwordRetype) {
-          this.validPassword = true;
-          this.passwordsDoNotMatchMessage = false;
-        } else {
-          this.passwordsDoNotMatchMessage = true;
-          this.validPassword = false;
-        }
-      } else {
-        this.passwordFormatMessage = true;
-      }
-    },
     async confirmSignUp() {
       let email;
       if (this.signInEmail) {
@@ -384,8 +358,7 @@ export default {
       } catch (error) {
         alert("Error confirming sign up: " + error.message);
         this.confirmSignUpCode = "";
-        this.signUpPassword = "";
-        this.signUpEmail = "";
+
         console.log("error confirming sign up", error);
       }
     },
@@ -407,13 +380,43 @@ export default {
         localStorage.removeItem("undercoverElfGroups");
         localStorage.undercoverElfLoggedIn = false;
         this.logOut();
-        this.$router.push({ path: "/" });
+        if (this.$route.path !== "/") {
+          this.$router.push({ path: "/" });
+        }
         console.log("signed out");
       } catch (error) {
         alert("Error signing out: " + error.message);
         console.log("error signing out: ", error);
       }
-    }
+    },
+    async handlePasswords() {
+      // if doesnt match regex, show a message saying doesnt match and keep button disabled
+      const regex = /^(?=.*?[A-Z])(?=(.*[a-z]){1,})(?=(.*[\d]){1,})(?=(.*[\W]){1,})(?!.*\s).{8,}$/;
+      let password;
+      let passwordRetype;
+      if (this.forgottenEmail) {
+        password = this.forgottenPasswordNewPassword;
+        passwordRetype = this.forgottenPasswordNewPasswordRetype;
+      } else {
+        password = this.signUpPassword;
+        passwordRetype = this.signUpPasswordRetype;
+      }
+
+      const passwordFormat = regex.test(password);
+      if (passwordFormat) {
+        this.passwordFormatMessage = false;
+        if (password === passwordRetype) {
+          this.validPassword = true;
+          this.passwordsDoNotMatchMessage = false;
+        } else {
+          this.passwordsDoNotMatchMessage = true;
+          this.validPassword = false;
+        }
+      } else {
+        this.passwordFormatMessage = true;
+      }
+    },
+    resetInputs() {}
   },
   data() {
     return {
