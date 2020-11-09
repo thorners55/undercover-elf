@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="top-of-page">
     <h2>Join group</h2>
     <div v-show="findingGroup">
       <!-- hides the input when begin search -->
       <form v-on:submit.prevent>
-        <label for="groupId">Invitation ID:</label>
+        <label for="groupId">Invitation ID</label>
         <input type="text" id="groupId" v-model="groupId" v-on:keyup.enter="findGroup(groupId)" />
       </form>
       <button type="button" v-on:click="findGroup(groupId)">Find group</button>
@@ -80,4 +80,13 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+input {
+  margin: 1ch;
+}
+
+button {
+  margin: 1ch;
+  margin-bottom: 4ch;
+}
+</style>

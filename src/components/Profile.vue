@@ -1,5 +1,5 @@
 <template>
-  <div id="my-account">
+  <div class="top-of-page">
     <img src="../assets/gingerbread-man.svg" id="logo" width="50rem" />
     <h2>My account</h2>
     <div id="accountLogOut">
@@ -60,10 +60,6 @@ export default {
 </script>
 
 <style scoped>
-#my-account {
-  margin: 5ch 0;
-}
-
 #accountLogOut {
   display: none;
 }

@@ -28,6 +28,9 @@ const mutations = {
     state.loggedIn = false;
     state.userId = "";
     state.name = "";
+    localStorage.removeItem("undercoverElfLoggedIn");
+    localStorage.removeItem("undercoverElfName");
+    localStorage.removeItem("undercoverElfUserId");
   },
 };
 

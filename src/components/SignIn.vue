@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="top-of-page">
     <!-- if user is signing in, not making new account -->
     <div v-if="!signingUp">
       <div v-if="showSignIn">

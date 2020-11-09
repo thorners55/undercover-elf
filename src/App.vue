@@ -68,6 +68,15 @@ html {
   margin-top: 3rem;
 }
 
+a,
+a:visited {
+  color: #2c3e50;
+}
+
+a:hover {
+  color: #fefefa;
+}
+
 @font-face {
   font-family: "Bubbleboddy Regular";
   src: url("./assets/Bubbleboddy-Regular.ttf") format("truetype");
@@ -84,6 +93,10 @@ h1 {
   font-family: "Bubbleboddy Regular";
   font-size: 3rem;
   margin: 0.5rem;
+}
+
+.top-of-page {
+  margin-top: 5ch;
 }
 
 #main-signin-nav {
@@ -103,5 +116,11 @@ button {
 button:hover {
   cursor: pointer;
   background-color: #fefefa;
+}
+
+input {
+  align-self: center;
+  height: 3ch;
+  font-size: 1rem;
 }
 </style>

@@ -22,18 +22,18 @@ export default {
       if (result) {
         try {
           await Auth.signOut();
+          this.logOut();
           localStorage.removeItem("undercoverElfUserId");
           localStorage.removeItem("undercoverElfName");
           localStorage.removeItem("undercoverElfGroups");
           localStorage.undercoverElfLoggedIn = false;
-          this.logOut();
           if (this.$route.path !== "/") {
             this.$router.push({ path: "/" });
           }
           console.log("signed out");
         } catch (error) {
-          alert("Error signing out: " + error.message);
-          console.log("error signing out: ", error);
+          // nothing here because console logging or alerting an error shows "_this.logOut is not a function", something to do with the binding, I think
+          return;
         }
       }
     }

@@ -24,14 +24,6 @@ export default {
   font-size: 1.3rem;
 }
 
-a:visited {
-  color: #2c3e50;
-}
-
-a:hover {
-  color: #fefefa;
-}
-
 ul {
   list-style-type: none;
   padding: 0;

@@ -1,5 +1,5 @@
 <template>
-  <div id="all-groups">
+  <div class="top-of-page">
     <img src="../assets/cabin.svg" id="logo" width="50rem" />
     <h2>Welcome home!</h2>
     <button type="button" v-on:click="$router.push('/groups/join')">Join existing group</button>
@@ -41,14 +41,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-#all-groups {
-  margin-top: 5ch;
-}
-
-h2 {
-  font-size: 1.5rem;
-}
-
 ul {
   list-style-type: none;
   padding: 0;
@@ -60,10 +52,6 @@ li {
 
 button {
   margin: 1ch;
-}
-
-a {
-  color: #2c3e50;
 }
 
 img {
