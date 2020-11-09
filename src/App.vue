@@ -3,6 +3,10 @@
     <img src="./assets/elf.svg" width="100px" />
 
     <h1>Undercover Elf</h1>
+    <br />
+    <br />
+    <br />
+    <br />
     <button v-on:click="currentState">Current state</button>
     <button v-on:click="getUserData">Get user data</button>
     <button v-on:click="getGroupData">Get group data</button>
@@ -333,5 +337,15 @@ html {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+@font-face {
+  font-family: "Bubbleboddy Regular";
+  src: url("./assets/Bubbleboddy-Regular.ttf") format("truetype");
+}
+
+h1 {
+  font-family: "Bubbleboddy Regular";
+  font-size: 40px;
 }
 </style>

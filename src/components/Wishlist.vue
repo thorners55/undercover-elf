@@ -12,9 +12,7 @@
         </ul>
       </li>
     </ul>
-    <router-link :to="`/groups/${ids.groupId}/profile`"
-      >Back to {{ groupName }}</router-link
-    >
+    <router-link :to="`/groups/${ids.groupId}/profile`">Back to {{ groupName }}</router-link>
   </div>
 </template>
 
@@ -24,13 +22,13 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "Wishlist",
   props: {
-    ids: Object,
+    ids: Object
   },
   computed: {
-    ...mapState("wishlists", ["name", "wishlist", "groupName"]),
+    ...mapState("wishlists", ["name", "wishlist", "groupName"])
   },
   methods: {
-    ...mapActions("wishlists", ["fetchWishlist"]),
+    ...mapActions("wishlists", ["fetchWishlist"])
   },
 
   created() {
@@ -38,7 +36,7 @@ export default {
   },
   data() {
     return {};
-  },
+  }
 };
 </script>
 

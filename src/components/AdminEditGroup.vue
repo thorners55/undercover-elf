@@ -1,10 +1,12 @@
 <template>
   <div>
-    <h2>Edit group</h2>
+    <h2>Edit group settings</h2>
 
-    <h3 v-if="!editGroup">{{ groupInfo.groupName }}</h3>
+    <h3>{{ groupInfo.groupName }}</h3>
 
-    <div v-if="editGroup">
+    <router-link :to="`/groups/${groupInfo.pk}/profile`">Back to {{groupInfo.groupName}} page</router-link>
+
+    <div>
       <input
         type="text"
         v-model="groupInfoToUpdate.groupName"
@@ -23,17 +25,15 @@
         <button
           v-if="member.pk !== userId"
           v-on:click="removeUser(member.pk, groupInfo.pk)"
-        >
-          Remove user from group
-        </button>
+        >Remove user from group</button>
       </li>
     </ul>
 
     <p>Exchange date:</p>
 
-    <p v-if="!editGroup">{{ groupInfo.exchange }}</p>
+    <p>{{ groupInfo.exchange }}</p>
 
-    <div v-if="editGroup">
+    <div>
       <input
         type="date"
         v-model="groupInfoToUpdate.exchange"
@@ -47,8 +47,8 @@
     </div>
 
     <p>Budget: £</p>
-    <p v-if="!editGroup">{{ groupInfo.budget }}</p>
-    <div v-if="editGroup">
+    <p>{{ groupInfo.budget }}</p>
+    <div>
       <input
         type="text"
         v-model="groupInfoToUpdate.budget"
@@ -61,21 +61,16 @@
       />
     </div>
     <button
-      v-if="editGroup"
       v-on:click="
         updateGroup({
           groupId,
           groupInfoToUpdate,
         })
       "
-    >
-      Submit
-    </button>
-    <button v-if="!editGroup" v-on:click="editGroup = true">Edit group</button>
+    >Submit</button>
+    <button type="button" v-on:click="resetInfo">Reset</button>
 
-    <button v-if="groupInfo.closed === 0" v-on:click="drawNames({ groupId })">
-      Draw names
-    </button>
+    <button v-if="groupInfo.closed === 0" v-on:click="drawNames({ groupId })">Draw names</button>
   </div>
 </template>
 
@@ -89,24 +84,31 @@ export default {
       "updateGroup",
       "fetchGroupInfo",
       "removeUser",
-      "drawNames",
+      "drawNames"
     ]),
+    resetInfo() {
+      console.log(this.originalState);
+      this.groupInfoToUpdate.groupName = this.groupInfo.groupName;
+      this.groupInfoToUpdate.exchange = this.groupInfo.exchange;
+      this.groupInfoToUpdate.budget = this.groupInfo.budget;
+      console.log(this.groupInfoToUpdate);
+    }
   },
   computed: {
     groupId() {
       return this.$route.query.groupId;
     },
-    ...mapState("groups", ["groupInfo", "groupInfoToUpdate"]),
+    ...mapState("groups", ["groupInfo", "groupInfoToUpdate"])
   },
   created() {
     this.fetchGroupInfo(this.groupId);
   },
   data() {
     return {
-      editGroup: false,
       userId: `user_${localStorage.undercoverElfUserId}`,
+      originalState: {}
     };
-  },
+  }
 };
 </script>
 

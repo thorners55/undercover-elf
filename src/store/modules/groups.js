@@ -14,6 +14,7 @@ const state = {
   findingGroup: true,
   groupNotFound: false,
   groupInfo: {},
+  groupInfoToUpdate: {},
   userGroupInfo: {},
   createGroupSuccess: false,
   createdGroupId: "",
@@ -255,68 +256,74 @@ const actions = {
   },
 
   updateGroup({ rootState }, { groupId, groupInfoToUpdate }) {
-    console.log(groupId, groupInfoToUpdate);
-    console.log(state.groupInfo.groupName);
+    var result = confirm("Are you sure you want to change the group settings?");
+    if (result) {
+      console.log(groupId, groupInfoToUpdate);
+      console.log(state.groupInfo.groupName);
 
-    const split = groupId.split("_");
-    const id = split[1];
+      const split = groupId.split("_");
+      const id = split[1];
 
-    const userId = `user_${localStorage.undercoverElfUserId}`;
+      const userId = `user_${localStorage.undercoverElfUserId}`;
 
-    const originalName = state.groupInfo.groupName;
-    const updatedName = groupInfoToUpdate.groupName;
-    const originalBudget = state.groupInfo.budget;
-    const updatedBudget = groupInfoToUpdate.budget;
-    const originalExchange = state.groupInfo.exchange;
-    const updatedExchange = groupInfoToUpdate.exchange;
+      const originalName = state.groupInfo.groupName;
+      const updatedName = groupInfoToUpdate.groupName;
+      const originalBudget = state.groupInfo.budget;
+      const updatedBudget = groupInfoToUpdate.budget;
+      const originalExchange = state.groupInfo.exchange;
+      const updatedExchange = groupInfoToUpdate.exchange;
 
-    let updateNameOrExchange = false;
-    console.log(originalName, updatedName);
+      let updateNameOrExchange = false;
+      console.log(originalName, updatedName);
 
-    // pass true or false balue saying if it is only the budget being updated
-    // if name or exchange is nt being updated AND name is not being updated AND exchange date is not being updated, alert that nothing is updated
+      // pass true or false balue saying if it is only the budget being updated
+      // if name or exchange is nt being updated AND name is not being updated AND exchange date is not being updated, alert that nothing is updated
 
-    if (originalName !== updatedName || updatedExchange !== originalExchange) {
-      updateNameOrExchange = true;
-      console.log("false");
-    }
-
-    if (
-      !updateNameOrExchange &&
-      originalBudget === updatedBudget &&
-      originalExchange === updatedExchange
-    ) {
-      alert("Nothing to update!");
-    } else {
-      let localStateGroups = JSON.parse(localStorage.undercoverElfGroups);
-
-      for (let i = 0; i < localStateGroups.length; i++) {
-        if (localStateGroups[i].groupId === groupId) {
-          localStateGroups[i].groupName = groupInfoToUpdate.groupName;
-          break;
-        } else continue;
+      if (
+        originalName !== updatedName ||
+        updatedExchange !== originalExchange
+      ) {
+        updateNameOrExchange = true;
+        console.log("false");
       }
-      console.log(localStateGroups);
 
-      API.patch("undercoverElfApi", `/groups?id=${id}`, {
-        body: {
-          groupInfoToUpdate,
-          updateNameOrExchange,
-          localStateGroups,
-          userId,
-        },
-      })
-        .then(() => {
-          rootState.profile.groups = localStateGroups;
-          console.log(rootState.profile.groups);
-          localStorage.undercoverElfGroups = JSON.stringify(localStateGroups);
-          router.push({ path: `/groups/${groupId}/profile` });
-          alert("Group information successfully changed!");
+      if (
+        !updateNameOrExchange &&
+        originalBudget === updatedBudget &&
+        originalExchange === updatedExchange
+      ) {
+        alert("Nothing to update!");
+      } else {
+        let localStateGroups = JSON.parse(localStorage.undercoverElfGroups);
+
+        for (let i = 0; i < localStateGroups.length; i++) {
+          if (localStateGroups[i].groupId === groupId) {
+            localStateGroups[i].groupName = groupInfoToUpdate.groupName;
+            break;
+          } else continue;
+        }
+        console.log(localStateGroups);
+
+        API.patch("undercoverElfApi", `/groups?id=${id}`, {
+          body: {
+            groupInfoToUpdate,
+            updateNameOrExchange,
+            localStateGroups,
+            userId,
+          },
         })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
+          .then(() => {
+            rootState.profile.groups = localStateGroups;
+            console.log(rootState.profile.groups);
+            localStorage.undercoverElfGroups = JSON.stringify(localStateGroups);
+            router.push({ path: `/groups/${groupId}/profile` });
+            alert("Group information successfully changed!");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    } else return;
   },
 
   leaveGroup(context, { userId, groupId, groupName, members }) {
