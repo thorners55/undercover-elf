@@ -7,13 +7,9 @@
 
 <script>
 import { mapActions } from "vuex";
-import Wishlist from "./Wishlist.vue";
 
 export default {
-  name: "WishlistPage",
-  components: {
-    Wishlist
-  },
+  name: "BuyingForWishlist",
   methods: {
     ...mapActions("wishlists", ["fetchWishlist"])
   },

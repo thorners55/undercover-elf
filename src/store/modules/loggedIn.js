@@ -31,6 +31,7 @@ const mutations = {
     localStorage.removeItem("undercoverElfLoggedIn");
     localStorage.removeItem("undercoverElfName");
     localStorage.removeItem("undercoverElfUserId");
+    localStorage.removeItem("undercoverElfGroups");
   },
 };
 

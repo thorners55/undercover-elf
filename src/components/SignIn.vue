@@ -448,11 +448,6 @@ button {
   width: 30%;
 }
 
-/*form {
-  display: grid;
-  grid-auto-columns: max-content max-content;
-}*/
-
 form {
   display: grid;
   grid-template-columns: 40% auto;
@@ -463,19 +458,6 @@ form {
 }
 label {
   text-align: left;
-}
-
-input {
-  align-self: center;
-  height: 3ch;
-  font-size: 1rem;
-}
-
-.message {
-  margin-left: 30%;
-  margin-right: 30%;
-  font-weight: bold;
-  color: #a81111;
 }
 
 @media (max-width: 900px) {

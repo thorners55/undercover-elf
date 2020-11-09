@@ -1,5 +1,6 @@
 <template>
   <div class="top-of-page">
+    <img src="../assets/jingle-bell.svg" id="logo" width="50rem" />
     <h2>Join group</h2>
     <div v-show="findingGroup">
       <!-- hides the input when begin search -->
@@ -10,7 +11,7 @@
       <button type="button" v-on:click="findGroup(groupId)">Find group</button>
       <!-- if group isn't found, shows this message -->
       <div v-show="groupNotFound">
-        <p>Group not found. Please try again.</p>
+        <p class="message">Group not found. Please try again.</p>
       </div>
     </div>
 
@@ -35,7 +36,7 @@
           groupId = '';
         "
       >Join group</button>
-      <p v-if="foundGroupClosed === 1">
+      <p v-if="foundGroupClosed === 1" class="message">
         Cannot join group - this group has already drawn names and is closed to
         new members.
       </p>
@@ -46,7 +47,7 @@
         ">Search again</button>
     </div>
     <!-- go back to main groups page -->
-    <router-link to="/">Back to home</router-link>
+    <router-link to="/" class="back-to-home">Back to home</router-link>
   </div>
 </template>
 
@@ -72,6 +73,9 @@ export default {
   mounted() {
     console.log(this.userId, this.name);
   },
+  beforeDestroy() {
+    this.resetState();
+  },
   data() {
     return {
       groupId: ""
@@ -83,10 +87,5 @@ export default {
 <style scoped>
 input {
   margin: 1ch;
-}
-
-button {
-  margin: 1ch;
-  margin-bottom: 4ch;
 }
 </style>

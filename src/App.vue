@@ -12,8 +12,8 @@
           <JoinGroup />
           <GroupPage />
           <AdminEditGroup />
-          <WishlistPage />
-          <Wishlist />
+          <MyWishlist />
+          <BuyingForWishlist />
         </router-view>
       </main>
     </div>
@@ -29,8 +29,8 @@ import AllGroups from "./components/AllGroups.vue";
 import CreateGroup from "./components/CreateGroup.vue";
 import AdminEditGroup from "./components/AdminEditGroup.vue";
 import JoinGroup from "./components/JoinGroup.vue";
-import Wishlist from "./components/Wishlist.vue";
-import WishlistPage from "./components/WishlistPage.vue";
+import MyWishlist from "./components/MyWishlist.vue";
+import BuyingForWishlist from "./components/BuyingForWishlist.vue";
 
 export default {
   name: "App",
@@ -42,8 +42,8 @@ export default {
     CreateGroup,
     JoinGroup,
     AdminEditGroup,
-    WishlistPage,
-    Wishlist
+    BuyingForWishlist,
+    MyWishlist
   },
   computed: mapState("loggedIn", ["loggedIn"]),
   mounted() {
@@ -111,6 +111,8 @@ button {
   font-size: 1rem;
   font-family: "Quicksand", sans-serif;
   border-radius: 0.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 button:hover {
@@ -122,5 +124,36 @@ input {
   align-self: center;
   height: 3ch;
   font-size: 1rem;
+}
+
+.message {
+  margin-left: 30%;
+  margin-right: 30%;
+  font-weight: bold;
+  color: #a81111;
+}
+
+a.router-link-active.back-to-home {
+  display: block;
+  margin: 2rem;
+}
+
+@media (max-width: 900px) {
+  form {
+    display: block;
+    margin: 0;
+    margin: auto;
+    width: auto;
+  }
+
+  label {
+    text-align: center;
+    display: block;
+  }
+
+  a.router-link-active.back-to-home {
+    display: block;
+    margin: 2ch;
+  }
 }
 </style>

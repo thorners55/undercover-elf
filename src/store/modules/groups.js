@@ -78,6 +78,12 @@ const mutations = {
     state.createdGroupId = groupId;
     localStorage.undercoverElfGroups = JSON.stringify(updatedGroupArray);
   },
+
+  resetCreatedGroupId(state) {
+    state.createGroupSuccess = false;
+    state.createdGroupId = "";
+    console.log(state.createdGroupSuccess, state.createdGroupId);
+  },
 };
 
 const actions = {
@@ -97,15 +103,30 @@ const actions = {
   // searches to find a group using the ID the user has input
   findGroup({ commit }, groupId) {
     console.log(groupId);
-    API.get("undercoverElfApi", `/groups?id=${groupId}`, {})
-      .then((response) => {
-        console.log(response);
-        commit("setFoundGroupInfo", response);
-      })
-      .catch((err) => {
-        console.log(err);
-        return;
-      });
+    let alreadyMember = false;
+    const groups = JSON.parse(localStorage.undercoverElfGroups);
+    for (let i = 0; i < groups.length; i++) {
+      if (groups[i].groupId === `group_${groupId}`) {
+        alreadyMember = true;
+        break;
+      } else continue;
+    }
+    if (alreadyMember) {
+      alert(
+        "You are already a member of this group! Please search for another group."
+      );
+      commit("reset");
+    } else {
+      API.get("undercoverElfApi", `/groups?id=${groupId}`, {})
+        .then((response) => {
+          console.log(response);
+          commit("setFoundGroupInfo", response);
+        })
+        .catch((err) => {
+          console.log(err);
+          return;
+        });
+    }
   },
 
   // reset state to default when user clicks button
@@ -199,7 +220,7 @@ const actions = {
   },
 
   fetchUserGroupInfo({ commit }, { userId, groupId }) {
-    console.log("fetchUserGroupInfo");
+    console.log("fetchUserGroupInfo", userId, groupId);
     const split = groupId.split("_");
     const id = split[1];
     API.get("undercoverElfApi", `/users/${userId}/groups?groupId=${id}`, {})
@@ -256,6 +277,11 @@ const actions = {
       .catch((err) => {
         console.log(err);
       });
+  },
+
+  resetCreateGroup({ commit }) {
+    console.log("reset create group");
+    commit("resetCreatedGroupId");
   },
 
   updateGroup({ rootState }, { groupId, groupInfoToUpdate }) {
