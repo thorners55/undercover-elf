@@ -13,32 +13,35 @@
         })
       "
     >Leave group</button>
+    <router-link
+      id="view-my-wishlist"
+      :to="`/my-wishlist?groupId=${groupId}`"
+    >View my wishlist for this group</router-link>
     <div id="group-info">
       <router-link v-if="userGroupInfo.admin" :to="`/groups/edit?groupId=${groupId}`">Group settings</router-link>
       <h3>Group members:</h3>
       <ul>
         <li v-for="member in groupInfo.members" :key="member.pk">{{ member.name }}</li>
       </ul>
-      <h3>Exchange date:</h3>
-      <p>{{ groupInfo.exchange }}</p>
-      <p></p>
-      <h3>Budget:</h3>
-      <p>{{ groupInfo.budget }}</p>
-      <div v-if="groupInfo.closed === 1">
-        <p>You are buying for: {{ userGroupInfo.buyingForName }}</p>
-        <router-link
-          :to="`/wishlist/${userGroupInfo.buyingForUserId}?groupId=${groupId}`"
-        >View {{ userGroupInfo.buyingForName }}'s wishlist</router-link>
+      <div>
+        <h3>Exchange date:</h3>
+        <p>{{ groupInfo.exchange }}</p>
+      </div>
+      <div>
+        <h3>Budget:</h3>
+        <p>{{ groupInfo.budget }}</p>
+      </div>
+      <div>
+        <h3>You are buying for:</h3>
+        <div v-if="groupInfo.closed === 1">
+          <p>{{ userGroupInfo.buyingForName }}</p>
+          <router-link
+            :to="`/wishlist/${userGroupInfo.buyingForUserId}?groupId=${groupId}`"
+          >View {{ userGroupInfo.buyingForName }}'s wishlist</router-link>
+        </div>
+        <p v-if="groupInfo.closed === 0">Names have not been drawn yet!</p>
       </div>
     </div>
-    <p v-if="groupInfo.closed === 0">
-      Names have not been drawn yet, but you can still get started on your
-      wishlist!
-    </p>
-    <button
-      type="button"
-      v-on:click="$router.push(`/my-wishlist?groupId=${groupId}`)"
-    >Go to my wishlist</button>
   </div>
 </template>
 
@@ -48,7 +51,12 @@ import { mapActions, mapState } from "vuex";
 export default {
   name: "GroupPage",
   methods: {
-    ...mapActions("groups", ["fetchGroupInfo", "leaveGroup", "getGroupInfo"])
+    ...mapActions("groups", [
+      "fetchGroupInfo",
+      "leaveGroup",
+      "getGroupInfo",
+      "fetchUserGroupInfo"
+    ])
   },
   computed: {
     groupId() {
@@ -61,27 +69,35 @@ export default {
     console.log("GroupPage created");
     console.log(this.groupId, this.userId);
     this.fetchGroupInfo(this.groupId);
+    this.fetchUserGroupInfo({ userId: this.userId, groupId: this.groupId });
   }
 };
 </script>
 
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-  display: block;
+h2 {
+  font-size: 2.5rem;
+  margin: 1ch;
 }
 
-li {
-  margin: 1rem;
+h3 {
+  margin: 1.2rem 0;
+  display: inline;
 }
 
 a {
-  color: #42b983;
+  display: block;
+  margin: 1ch;
+}
+
+#view-my-wishlist {
+  margin-bottom: 3ch;
 }
 
 p {
   display: block;
   text-align: center;
+  margin: 1ch 0;
 }
 
 button {
@@ -95,5 +111,24 @@ button {
 
 #group-info {
   margin-bottom: 4rem;
+}
+
+#group-info > div > h3,
+#group-info > div > p,
+#group-info > div > div,
+#group-info > div > div > p {
+  display: inline;
+}
+
+#group-info > div > p {
+  padding-left: 1ch;
+}
+
+#group-info > div {
+  margin: 1.5ch;
+}
+
+#group-info > div > div > p {
+  padding-left: 1ch;
 }
 </style>

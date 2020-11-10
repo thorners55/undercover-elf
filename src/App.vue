@@ -138,11 +138,6 @@ input {
   color: #a81111;
 }
 
-a.router-link-active.back-to-home {
-  display: block;
-  margin: 2rem;
-}
-
 @media (max-width: 900px) {
   form {
     display: block;

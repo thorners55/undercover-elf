@@ -41,6 +41,7 @@ const mutations = {
     });
     userGroupInfo.wishlist = addIsEditing;
     state.userGroupInfo = userGroupInfo;
+    console.log(state.userGroupInfo);
   },
 
   reset(state) {
