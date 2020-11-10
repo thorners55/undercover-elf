@@ -16,9 +16,12 @@
         <router-link :to="`/groups/${group.groupId}/profile`">
           {{ group.groupName }}
         </router-link>
-        <router-link :to="`/groups/edit?groupId=${group.groupId}`"
-          >Group settings</router-link
+
+        <button
+          v-on:click="$router.push(`/groups/edit?groupId=${group.groupId}`)"
         >
+          <span class="settings"><i class="fas fa-cog"></i></span>
+        </button>
       </li>
     </ul>
   </div>
@@ -62,6 +65,14 @@ export default {
 <style scoped>
 #accountLogOut {
   display: none;
+}
+
+.settings {
+  font-size: 1.2rem;
+}
+
+button {
+  margin-left: 1ch;
 }
 
 @media (max-width: 900px) {

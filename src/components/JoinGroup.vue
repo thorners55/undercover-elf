@@ -6,7 +6,12 @@
       <!-- hides the input when begin search -->
       <form v-on:submit.prevent>
         <label for="groupId">Invitation ID</label>
-        <input type="text" id="groupId" v-model="groupId" v-on:keyup.enter="findGroup(groupId)" />
+        <input
+          type="text"
+          id="groupId"
+          v-model="groupId"
+          v-on:keyup.enter="findGroup(groupId)"
+        />
       </form>
       <button type="button" v-on:click="findGroup(groupId)">Find group</button>
       <!-- if group isn't found, shows this message -->
@@ -18,11 +23,13 @@
     <!-- if group is found, displays group info -->
     <div v-show="!findingGroup && !groupNotFound">
       <p>
-        Group name: {{ foundGroupName }}
+        <b>Group name:</b> {{ foundGroupName }}
         <br />
-        Exchange date: {{ foundGroupExchange }}
+        <b>Exchange date:</b> {{ foundGroupExchange }}
       </p>
-      <p>This group has {{ foundGroupMembers.length }} members</p>
+      <p>
+        <b>This group has {{ foundGroupMembers.length }} members:</b>
+      </p>
       <ul>
         <li v-for="member in foundGroupMembers" :key="member.pk">
           {{ member.name }}
@@ -35,16 +42,22 @@
           joinGroup({ name, userId, groupId, foundGroupName });
           groupId = '';
         "
-      >Join group</button>
+      >
+        Join group
+      </button>
       <p v-if="foundGroupClosed === 1" class="message">
         Cannot join group - this group has already drawn names and is closed to
         new members.
       </p>
       <!-- search again if want to search for different group -->
-      <button v-on:click="
+      <button
+        v-on:click="
           resetState();
           groupId = '';
-        ">Search again</button>
+        "
+      >
+        Search again
+      </button>
     </div>
     <!-- go back to main groups page -->
     <router-link to="/" class="back-to-home">Back to home</router-link>
@@ -64,11 +77,11 @@ export default {
       "foundGroupMembers",
       "foundGroupClosed",
       "findingGroup",
-      "groupNotFound"
-    ])
+      "groupNotFound",
+    ]),
   },
   methods: {
-    ...mapActions("groups", ["joinGroup", "findGroup", "resetState"])
+    ...mapActions("groups", ["joinGroup", "findGroup", "resetState"]),
   },
   mounted() {
     console.log(this.userId, this.name);
@@ -78,13 +91,22 @@ export default {
   },
   data() {
     return {
-      groupId: ""
+      groupId: "",
     };
-  }
+  },
 };
 </script>
 
 <style scoped>
+li {
+  margin: 0.5ch;
+}
+
+button {
+  display: block;
+  margin: 2ch auto 1ch;
+}
+
 input {
   margin: 1ch;
 }

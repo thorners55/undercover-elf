@@ -5,6 +5,11 @@
     <router-link :to="`/groups/${groupId}/profile`"
       >Back to {{ groupName }}</router-link
     >
+    <p>
+      <b
+        >REMEMBER: You are the only person who can see {{ name }}'s wishlist!</b
+      >
+    </p>
     <ul>
       <li
         v-for="item in wishlist"

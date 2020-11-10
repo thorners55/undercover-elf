@@ -3,7 +3,15 @@
     <img src="../assets/gift-bag.svg" id="logo" width="50rem" />
     <h2>{{ groupInfo.groupName }}</h2>
     <button
-      v-if="!userGroupInfo.admin === 0 && groupInfo.closed === 0"
+      class="settings"
+      v-if="userGroupInfo.admin === 1"
+      v-on:click="$router.push(`/groups/edit?groupId=${group.groupId}`)"
+    >
+      <span><i class="fas fa-cog"></i></span>
+    </button>
+    <button
+      id="leave-group-button"
+      v-if="userGroupInfo.admin === 0 && groupInfo.closed === 0"
       v-on:click="
         leaveGroup({
           userId,
@@ -12,16 +20,18 @@
           members: groupInfo.members,
         })
       "
-    >Leave group</button>
-    <router-link
-      id="view-my-wishlist"
-      :to="`/my-wishlist?groupId=${groupId}`"
-    >View my wishlist for this group</router-link>
+    >
+      Leave group
+    </button>
+    <router-link id="view-my-wishlist" :to="`/my-wishlist?groupId=${groupId}`"
+      >View my wishlist for this group</router-link
+    >
     <div id="group-info">
-      <router-link v-if="userGroupInfo.admin" :to="`/groups/edit?groupId=${groupId}`">Group settings</router-link>
       <h3>Group members:</h3>
       <ul>
-        <li v-for="member in groupInfo.members" :key="member.pk">{{ member.name }}</li>
+        <li v-for="member in groupInfo.members" :key="member.pk">
+          {{ member.name }}
+        </li>
       </ul>
       <div>
         <h3>Exchange date:</h3>
@@ -36,8 +46,11 @@
         <div v-if="groupInfo.closed === 1">
           <p>{{ userGroupInfo.buyingForName }}</p>
           <router-link
-            :to="`/wishlist/${userGroupInfo.buyingForUserId}?groupId=${groupId}`"
-          >View {{ userGroupInfo.buyingForName }}'s wishlist</router-link>
+            :to="
+              `/wishlist/${userGroupInfo.buyingForUserId}?groupId=${groupId}`
+            "
+            >View {{ userGroupInfo.buyingForName }}'s wishlist</router-link
+          >
         </div>
         <p v-if="groupInfo.closed === 0">Names have not been drawn yet!</p>
       </div>
@@ -55,22 +68,22 @@ export default {
       "fetchGroupInfo",
       "leaveGroup",
       "getGroupInfo",
-      "fetchUserGroupInfo"
-    ])
+      "fetchUserGroupInfo",
+    ]),
   },
   computed: {
     groupId() {
       return this.$route.params.groupId;
     },
     ...mapState("loggedIn", ["userId"]),
-    ...mapState("groups", ["groupInfo", "userGroupInfo"])
+    ...mapState("groups", ["groupInfo", "userGroupInfo"]),
   },
   created() {
     console.log("GroupPage created");
     console.log(this.groupId, this.userId);
     this.fetchGroupInfo(this.groupId);
     this.fetchUserGroupInfo({ userId: this.userId, groupId: this.groupId });
-  }
+  },
 };
 </script>
 
@@ -78,11 +91,26 @@ export default {
 h2 {
   font-size: 2.5rem;
   margin: 1ch;
+  display: inline;
 }
 
 h3 {
   margin: 1.2rem 0;
   display: inline;
+}
+
+img {
+  display: block;
+  margin: auto;
+  margin-bottom: 2ch;
+}
+
+ul {
+  margin: 1ch;
+}
+
+li {
+  margin: 0;
 }
 
 a {
@@ -100,8 +128,11 @@ p {
   margin: 1ch 0;
 }
 
-button {
-  margin: 1ch;
+.settings {
+  font-size: 1.2rem;
+  padding: 0.5ch;
+  display: inline;
+  margin: auto;
 }
 
 .editing {
@@ -130,5 +161,22 @@ button {
 
 #group-info > div > div > p {
   padding-left: 1ch;
+}
+
+#leave-group-button {
+  margin-top: 0;
+}
+
+@media (max-width: 900px) {
+  h2 {
+    text-align: center;
+    display: block;
+  }
+
+  #leave-group-button {
+    display: block;
+    margin: auto;
+    margin-bottom: 3ch;
+  }
 }
 </style>
