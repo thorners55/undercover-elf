@@ -95,6 +95,11 @@ h1 {
   margin: 0.5rem;
 }
 
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
 .top-of-page {
   margin-top: 5ch;
 }
@@ -124,11 +129,6 @@ input {
   align-self: center;
   height: 3ch;
   font-size: 1rem;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
 }
 
 .message {

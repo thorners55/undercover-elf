@@ -1,23 +1,25 @@
 <template>
   <div class="top-of-page">
+    <img src="../assets/gift.svg" id="logo" width="50rem" />
     <h2>Wishlist</h2>
     <p
       v-if="userGroupInfo.wishlist && userGroupInfo.wishlist.length < 1"
     >You have no items on your wishlist! Press 'Add new item' to get started!</p>
     <p v-if="hasEdited">
       <b>
-        IMPORTANT: You must press 'Save all changes' to submit changes made to
+        IMPORTANT! You must press 'Save all changes' to submit changes made to
         your wishlist before leaving the page.
       </b>
     </p>
     <ul>
-      <li v-for="item in userGroupInfo.wishlist" :key="item.id">
-        <div class="wishlist-item-container">
+      <li v-for="item in userGroupInfo.wishlist" :key="item.id" :item="item">
+        <div class="wishlist-item-container" v-if="!item.isEditing">
           <div
-            class="wishlist-item"
+            :class="item.isEditing ? 'wishlist-item-editing wishlist-item' : 'wishlist-item'"
             v-if="!item.isEditing"
-            v-bind:class="{ editing: item.isEditing }"
           >
+            <!--   v-bind:class="{ editing: item.isEditing }" -->
+
             <div>
               <p class="description">{{ item.description }}</p>
               <p>
@@ -31,17 +33,19 @@
 
           <div class="wishlist-item-buttons">
             <button
+              class="edit"
               v-on:click="
               item.isEditing = !item.isEditing;
               hasEdited = true;
             "
-              :disabled="!item.isEditing && hasEdited ? true : false"
+              :disabled="item.isEditing === false && hasEdited ? true : false"
             >
               <span class="edit-delete">
                 <i class="fas fa-pencil-alt"></i>
               </span>
             </button>
             <button
+              class="delete"
               type="button"
               v-on:click="
               deleteItem(item.id);
@@ -55,24 +59,30 @@
           </div>
         </div>
 
-        <div v-if="item.isEditing" v-bind:class="{ editing: item.isEditing }">
+        <div v-if="item.isEditing" class="wishlist-item-container-form-editing">
           <form
-            id="add-wishlist-item"
+            id="edit-wishlist-item"
+            class="edit-wishlist-item"
             v-on:submit.prevent
             v-on:keyup.enter="
               updateWishlistItem(item.id);
               item.isEditing = false;
             "
           >
+            <label for="update-item-description">Description:</label>
             <input
               type="text"
+              id="update-item-description"
               :value="`${item.description}`"
               v-on:input="(event) => updateDescription(event)"
               required
             />
+            <label for="update-item-url">Link to item:</label>
             <input type="text" :value="`${item.url}`" v-on:input="(event) => updateUrl(event)" />
+            <label for="update-item-comment">Comment:</label>
             <input
               type="text"
+              id="update-item-comment"
               :value="`${item.comment}`"
               v-on:input="(event) => updateComment(event)"
             />
@@ -84,7 +94,7 @@
               "
             >Save changes</button>
             <button
-              for="add-wishlist-item"
+              for="edit-wishlist-item"
               type="button"
               v-on:click="item.isEditing = !item.isEditing; hasEdited = false"
             >Cancel editing</button>
@@ -99,24 +109,25 @@
         addingItem = true;
         hasEdited = true;
       "
-    >Add new item</button>
-    <div v-if="addingItem">
+    >Add new wishlist item</button>
+    <div v-if="addingItem" class="wishlist-item-container-form-editing">
       <!-- required does not work because button is outside of form for styling purposes and on key up submits form automatically -->
-      <form v-on:submit.prevent v-if="addingItem" v-on:keyup.enter="addItem">
-        Description:
+      <form
+        id="add-wishlist-item-form"
+        v-on:submit.prevent
+        v-if="addingItem"
+        v-on:keyup.enter="addItem"
+      >
+        <label for="add-new-item-description">Description:</label>
         <input
           type="text"
           id="add-new-item-description"
           v-model="addItemDescription"
           placeholder="e.g. Socks"
         />
-        Link to item:
-        <input
-          type="text"
-          id="add-new-item-url"
-          v-model="addItemUrl"
-          placeholder
-        /> Comment:
+        <label for="add-new-item-url">Link to item:</label>
+        <input type="text" id="add-new-item-url" v-model="addItemUrl" placeholder />
+        <label for="add-new-item-comment">Comment:</label>
         <textarea
           type="text"
           id="add-new-item-comment"
@@ -126,14 +137,21 @@
           maxlength="250"
         />
       </form>
-      <button type="button" v-on:click="addItem">Add item</button>
-      <button type="button" v-on:click="cancelAddItem">Cancel</button>
     </div>
+    <button
+      for="add-wishlist-item-form"
+      type="button"
+      v-on:click="addItem"
+      id="add-item-button"
+      v-if="addingItem"
+    >Add this item</button>
+
+    <button type="button" v-if="addingItem" v-on:click="cancelAddItem">Cancel changes</button>
     <button
       type="button"
       v-if="hasEdited && !addingItem && userGroupInfo.wishlist.length > 0"
       v-on:click="
-        updateWishlist({ userId, groupId, wishlist: userGroupInfo.wishlist })
+        updateWishlist({ userId, groupId, wishlist: userGroupInfo.wishlist }); hasEdited = false;
       "
     >Save all changes</button>
   </div>
@@ -258,22 +276,33 @@ export default {
 .top-of-page {
   width: 70%;
   margin: auto;
+  margin-top: 5ch;
 }
 
 button {
   display: block;
   margin: 1rem auto;
 }
-form {
-  display: grid;
-  grid-template-columns: 40% auto;
-  row-gap: 1ch;
-  margin-left: auto;
-  margin-right: auto;
-  width: 40%;
+
+button:disabled {
+  background-color: rgb(206, 203, 203);
+  color: grey;
 }
+
+input {
+  margin: 1ch;
+}
+
+form {
+  display: block;
+  padding: 1rem 0;
+  margin: auto;
+  width: auto;
+}
+
 label {
-  text-align: left;
+  text-align: center;
+  display: block;
 }
 
 textarea {
@@ -294,9 +323,18 @@ div.wishlist-item > div > p {
 .wishlist-item-container {
   display: flex;
   flex-direction: row;
-  box-shadow: 0 4px 8px 0 #2c3e50;
+  border: 2px solid #2c3e50;
   border-radius: 1rem;
-  background-color: #f1d8ce;
+  margin: 2rem 0;
+  justify-content: center;
+}
+
+.wishlist-item-container-form-editing {
+  display: flex;
+  flex-direction: row;
+  border: 2px solid #2c3e50;
+  background-color: #f0da9e;
+  border-radius: 1rem;
   margin: 2rem 0;
   justify-content: center;
 }
@@ -307,12 +345,41 @@ div.wishlist-item > div > p {
   flex-direction: column;
   margin-right: 1rem;
 }
+
+.wishlist-item-editing {
+  background-color: #f0da9e;
+}
+
+button:hover {
+  background-color: #fefefa;
+}
+
+.edit {
+  background-color: rgb(91, 175, 91);
+}
+
+.delete {
+  background-color: rgb(226, 83, 83);
+}
+
 .description {
   font-weight: bold;
   font-size: 1.3rem;
 }
-.edit-delete {
-  font-size: 1.2rem;
-  color: #2c3e50;
+
+#add-item-button {
+  margin-top: -1rem;
+  margin-bottom: 4rem;
+}
+
+@media (max-width: 800px) {
+  .top-of-page {
+    width: 50%;
+  }
+
+  .wishlist-item-container {
+    display: flex;
+    flex-direction: row;
+  }
 }
 </style>
