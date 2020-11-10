@@ -24,17 +24,6 @@ const state = {
 const getters = {};
 
 const mutations = {
-  /* setGroups(state, groups) {
-    state.groups = groups;
-    // loop through the groups array which has all the group info
-    // set state of the groupId with value which is object with group info
-    for (let i = 0; i < groups.length; i++) {
-      console.log(groups[i]);
-      state[groups[i].sk] = groups[i];
-      return;
-    }
-  },*/
-
   setUserGroupInfo(state, userGroupInfo) {
     const addIsEditing = userGroupInfo.wishlist.map((item) => {
       item.isEditing = false;
@@ -94,19 +83,6 @@ const mutations = {
 };
 
 const actions = {
-  // searches database to find groups a user is a part of
-  /*fetchGroups({ commit }, userId) {
-    console.log(userId);
-    API.get("undercoverElfApi", `/users/${userId}/groups`, {})
-      .then((groups) => {
-        console.log(groups);
-        commit("setGroups", groups);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  },*/
-
   // searches to find a group using the ID the user has input
   findGroup({ commit }, groupId) {
     console.log(groupId);
@@ -166,11 +142,6 @@ const actions = {
         pk: `user_${userId}`, //HERE!
         name,
       });
-      /*let userProfileGroups = {
-        admin: 0,
-        groupName: foundGroupName,
-        groupId,
-      };*/
 
       const updatedGroupArray = rootState.profile.groups.map((group) => {
         return group;
@@ -204,6 +175,7 @@ const actions = {
           alert(`Successfully joined group!`);
           localStorage.undercoverElfGroups = updatedGroupArray;
           router.push({ path: "/" });
+          rootState.profile.groups = updatedGroupArray;
         })
         .catch((err) => {
           console.log(err, "postUserInGroup error");
@@ -279,6 +251,7 @@ const actions = {
     })
       .then((response) => {
         console.log(response);
+        rootState.profile.groups = updatedGroupArray;
         commit("setCreatedGroupId", { groupId, updatedGroupArray });
       })
       .catch((err) => {
@@ -406,20 +379,25 @@ const actions = {
 
   drawNames({ dispatch }, { groupId }) {
     console.log("drawNames", groupId);
+    var result = confirm(
+      "Are you sure you want to draw names? The group will be closed and no new members will be able to join."
+    );
 
-    const split = groupId.split("_");
-    const id = split[1];
+    if (result) {
+      const split = groupId.split("_");
+      const id = split[1];
 
-    API.get("undercoverElfApi", `/draw-groups?id=${id}`, {})
-      .then(({ body }) => {
-        console.log(body, typeof body);
-        let response = body;
-        let copyResponse = body.map((x) => x);
-        dispatch("assignNames", { response, copyResponse, id });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      API.get("undercoverElfApi", `/draw-groups?id=${id}`, {})
+        .then(({ body }) => {
+          console.log(body, typeof body);
+          let response = body;
+          let copyResponse = body.map((x) => x);
+          dispatch("assignNames", { response, copyResponse, id });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else return;
   },
 
   async pickNames(context, { response, copyResponse }) {

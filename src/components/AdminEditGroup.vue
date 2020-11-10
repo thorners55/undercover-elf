@@ -1,75 +1,85 @@
 <template>
   <div>
-    <h2>Edit group settings for {{groupInfo.groupName}}</h2>
-
     <router-link :to="`/groups/${groupInfo.pk}/profile`">Back to {{groupInfo.groupName}} page</router-link>
-    <p>Invitation ID: {{groupInfo.inviteId}}</p>
+    <div class="top-of-page">
+      <h2>Edit group settings for {{groupInfo.groupName}}</h2>
+      <p>
+        <b>IMPORTANT: Press "Submit" at the bottom of the page after making changes!</b>
+      </p>
 
-    <div>
-      <input
-        type="text"
-        v-model="groupInfoToUpdate.groupName"
-        v-on:keyup.enter="
+      <div class="info">
+        <h3>Invitation ID:</h3>
+        <p>{{groupInfo.inviteId}}</p>
+        <button v-if="groupInfo.closed === 0" v-on:click="drawNames({ groupId })">Draw names</button>
+      </div>
+
+      <div class="info">
+        <h3>Group name:</h3>
+        <input
+          type="text"
+          v-model="groupInfoToUpdate.groupName"
+          v-on:keyup.enter="
           updateGroup({
             groupId,
             groupInfoToUpdate,
           })
         "
-      />
-    </div>
-    <ul>
-      <li v-for="member in groupInfo.members" :key="member.pk">
-        {{ member.name }}
-        <p v-if="member.pk === userId">(me)</p>
+        />
+      </div>
+      <h3>Group members:</h3>
+      <ul>
+        <li v-for="member in groupInfo.members" :key="member.pk">
+          <p v-if="member.pk === userId">{{ member.name }} (you)</p>
+          <p v-if="member.pk !== userId">
+            {{member.name}}
+            <button
+              v-if="member.pk !== userId"
+              v-on:click="removeUser(member.pk, groupInfo.pk)"
+            >Remove user from group</button>
+          </p>
+        </li>
+      </ul>
+
+      <div class="info">
+        <h3>Exchange date:</h3>
+        <input
+          type="date"
+          v-model="groupInfoToUpdate.exchange"
+          v-on:keyup.enter="
+          updateGroup({
+            groupId,
+            groupInfoToUpdate,
+          })
+        "
+        />
+      </div>
+
+      <div class="info">
+        <h3>Budget:</h3>
+        <input
+          type="text"
+          v-model="groupInfoToUpdate.budget"
+          v-on:keyup.enter="
+          updateGroup({
+            groupId,
+            groupInfoToUpdate,
+          })"
+          placeholder="e.g. £15"
+          size="5"
+        />
+      </div>
+      <div class="edit-group-buttons">
+        <button type="button" v-on:click="resetInfo">Reset fields</button>
         <button
-          v-if="member.pk !== userId"
-          v-on:click="removeUser(member.pk, groupInfo.pk)"
-        >Remove user from group</button>
-      </li>
-    </ul>
-
-    <p>Exchange date:</p>
-
-    <p>{{ groupInfo.exchange }}</p>
-
-    <div>
-      <input
-        type="date"
-        v-model="groupInfoToUpdate.exchange"
-        v-on:keyup.enter="
-          updateGroup({
-            groupId,
-            groupInfoToUpdate,
-          })
-        "
-      />
-    </div>
-
-    <p>Budget: £</p>
-    <p>{{ groupInfo.budget }}</p>
-    <div>
-      <input
-        type="text"
-        v-model="groupInfoToUpdate.budget"
-        v-on:keyup.enter="
-          updateGroup({
-            groupId,
-            groupInfoToUpdate,
-          })
-        "
-      />
-    </div>
-    <button
-      v-on:click="
+          v-on:click="
         updateGroup({
           groupId,
           groupInfoToUpdate,
         })
       "
-    >Submit</button>
-    <button type="button" v-on:click="resetInfo">Reset</button>
-
-    <button v-if="groupInfo.closed === 0" v-on:click="drawNames({ groupId })">Draw names</button>
+        >Submit</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -111,4 +121,56 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+a {
+  margin: 2ch;
+}
+
+h3 {
+  margin-top: 2ch;
+  margin-bottom: 1ch;
+}
+
+li {
+  margin: 0;
+}
+
+button {
+  margin: 1ch 0;
+}
+
+p {
+  margin: 0 1ch;
+}
+
+input {
+  margin: 1ch;
+}
+
+.info {
+  margin: 2ch 0;
+}
+
+.info > h3,
+.info > p,
+.info > input {
+  display: inline;
+}
+
+.edit-group-buttons > button {
+  display: block;
+  margin: 1ch auto;
+}
+
+@media (max-width: 900px) {
+  .info > h3,
+  .info > p,
+  .info > input {
+    display: block;
+  }
+
+  input {
+    margin: auto;
+  }
+}
+</style>

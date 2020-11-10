@@ -12,6 +12,7 @@ const getters = {
     const adminGroups = state.groups.filter((group) => {
       return group.admin === 1;
     });
+    console.log(adminGroups);
     return adminGroups;
   },
 };

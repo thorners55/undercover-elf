@@ -6,21 +6,26 @@
       <LogOut id="accountLogOut" />
       <h3>Profile</h3>
     </div>
-    <p>Name: {{ name }}</p>
-    <p>Email: {{ email }}</p>
+    <p>
+      <b>Name:</b>
+      {{ name }}
+    </p>
+    <p>
+      <b>Email:</b>
+      {{ email }}
+    </p>
 
+    <p id="draw-names-instruction">To draw names for groups, go to the group's settings.</p>
     <h3>Group admin for</h3>
     <p v-if="groupAdmin.length < 1">You are not admin for any groups!</p>
     <ul>
       <li v-for="group in groupAdmin" :key="group.groupId">
-        <router-link :to="`/groups/${group.groupId}/profile`">
-          {{ group.groupName }}
-        </router-link>
+        <router-link :to="`/groups/${group.groupId}/profile`">{{ group.groupName }}</router-link>
 
-        <button
-          v-on:click="$router.push(`/groups/edit?groupId=${group.groupId}`)"
-        >
-          <span class="settings"><i class="fas fa-cog"></i></span>
+        <button v-on:click="$router.push(`/groups/edit?groupId=${group.groupId}`)">
+          <span class="settings">
+            <i class="fas fa-cog"></i>
+          </span>
         </button>
       </li>
     </ul>
@@ -37,18 +42,18 @@ import LogOut from "./LogOut.vue";
 export default {
   name: "Profile",
   components: {
-    LogOut,
+    LogOut
   },
   methods: {
     async getEmail() {
       const userEmail = await Auth.currentUserInfo();
       this.email = userEmail.attributes.email;
     },
-    ...mapActions("profile", ["fetchUserProfile"]),
+    ...mapActions("profile", ["fetchUserProfile"])
   },
   computed: {
     ...mapState("loggedIn", ["userId", "name", "groups"]),
-    ...mapGetters("profile", ["groupAdmin"]),
+    ...mapGetters("profile", ["groupAdmin"])
   },
   created() {
     this.fetchUserProfile(this.userId);
@@ -56,9 +61,9 @@ export default {
   },
   data() {
     return {
-      email: "",
+      email: ""
     };
-  },
+  }
 };
 </script>
 
@@ -73,6 +78,10 @@ export default {
 
 button {
   margin-left: 1ch;
+}
+
+#draw-names-instruction {
+  font-size: 1.5rem;
 }
 
 @media (max-width: 900px) {

@@ -4,41 +4,31 @@
     <h2>Create group</h2>
     <div v-if="!createGroupSuccess">
       <!-- can't put button inside form for styling reasons--->
-      <form
-        id="create-group-form"
-        v-on:submit.prevent
-        v-on:keyup.enter="createGroup"
-      >
+      <form id="create-group-form" v-on:submit="createGroup">
         <label for="group-name">Group name</label>
-        <input type="text" id="group-name" v-model="newGroup.groupName" />
+        <input type="text" id="group-name" v-model="newGroup.groupName" required />
         <label for="exchange">Gift exchange</label>
-        <input type="date" id="exchange" v-model="newGroup.exchange" />
+        <input type="date" id="exchange" v-model="newGroup.exchange" required />
         <label for="budget">Budget</label>
-        <input
-          type="text"
-          id="budget"
-          v-model="newGroup.budget"
-          placeholder="e.g. £15"
-        />
+        <input type="text" id="budget" v-model="newGroup.budget" placeholder="e.g. £15" required />
       </form>
-      <button type="submit" for="create-group-form" v-on:click="createGroup">
-        Create group
-      </button>
+      <button type="submit" for="create-group-form" v-on:click="createGroup">Create group</button>
     </div>
     <div v-if="createGroupSuccess">
       <p>Group successfully created!</p>
-      <p>Group ID for {{ newGroup.groupName }} is: {{ createdGroupId }}</p>
-      <p>
-        To invite people to this group, send them the group ID that has been
-        generated for you, as shown above. They can join this group by searching
-        for this ID in the 'Join Group' section. The group invitation ID can be
-        found in group settings.
-      </p>
-      <router-link :to="`/groups/group_${createdGroupId}/profile`"
-        >View group page</router-link
-      >
+      <div id="created-group-instructions">
+        <p>
+          Group ID for {{ newGroup.groupName }} is:
+          <b>{{ createdGroupId }}</b>
+        </p>
+        <p>
+          To invite people to this group, send them the group ID that has been
+          generated for you, as shown above. They can join this group by searching
+          for this ID by clicking the 'Join Group' button on the homepage. The group invitation ID can be also found in the group settings.
+        </p>
+      </div>
+      <router-link :to="`/groups/group_${createdGroupId}/profile`">View group page</router-link>
     </div>
-    <router-link to="/" class="back-to-home">Back to home</router-link>
   </div>
 </template>
 
@@ -63,11 +53,11 @@ export default {
         this.postGroup(this.newGroup);
       }
     },
-    ...mapActions("groups", ["postGroup", "resetCreateGroup"]),
+    ...mapActions("groups", ["postGroup", "resetCreateGroup"])
   },
   computed: {
     ...mapState("profile", ["name", "userId"]),
-    ...mapState("groups", ["createdGroupId", "groups", "createGroupSuccess"]),
+    ...mapState("groups", ["createdGroupId", "groups", "createGroupSuccess"])
   },
   beforeDestroy() {
     console.log("before destroy");
@@ -79,10 +69,10 @@ export default {
         groupName: "",
         exchange: "",
         members: "",
-        budget: "",
-      },
+        budget: ""
+      }
     };
-  },
+  }
 };
 </script>
 
@@ -103,6 +93,11 @@ label {
   text-align: right;
 }
 
+#created-group-instructions {
+  width: 70%;
+  margin: 2ch auto;
+}
+
 button {
   margin: 1rem;
   margin-bottom: 6ch;
@@ -119,6 +114,10 @@ button {
   label {
     text-align: center;
     display: block;
+  }
+
+  #budget {
+    width: 40%;
   }
 }
 </style>

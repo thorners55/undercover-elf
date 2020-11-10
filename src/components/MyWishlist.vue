@@ -1,153 +1,171 @@
 <template>
-  <div class="top-of-page">
-    <img src="../assets/gift.svg" id="logo" width="50rem" />
-    <h2>Wishlist</h2>
-    <div v-if="fetchedUserGroupInfo">
-      <router-link :to="`/groups/${groupId}/profile`">Back to {{ userGroupInfo.groupName }}</router-link>
-      <p
-        v-if="userGroupInfo.wishlist && userGroupInfo.wishlist.length < 1"
-      >You have no items on your wishlist! Press 'Add new item' to get started!</p>
-      <ul>
-        <li v-for="(item, index) in userGroupInfo.wishlist" :key="item.id" :item="item">
-          <div class="wishlist-item-container" v-if="!item.isEditing">
-            <div
-              :class="
+  <div>
+    <router-link :to="`/groups/${groupId}/profile`">Back to {{ userGroupInfo.groupName }}</router-link>
+    <div v-if="!fetchedUserGroupInfo">
+      <Loading />
+    </div>
+    <div v-show="fetchedUserGroupInfo">
+      <div class="top-of-page">
+        <img src="../assets/gift.svg" id="logo" width="50rem" />
+        <h2>Wishlist</h2>
+        <div v-if="fetchedUserGroupInfo">
+          <p
+            v-if="userGroupInfo.wishlist && userGroupInfo.wishlist.length < 1"
+          >You have no items on your wishlist! Press 'Add new item' to get started!</p>
+          <ul>
+            <li v-for="(item, index) in userGroupInfo.wishlist" :key="item.id" :item="item">
+              <div class="wishlist-item-container" v-if="!item.isEditing">
+                <div
+                  :class="
               item.isEditing
                 ? 'wishlist-item-editing wishlist-item'
                 : 'wishlist-item'
             "
-              v-if="!item.isEditing"
-            >
-              <!--   v-bind:class="{ editing: item.isEditing }" -->
+                  v-if="!item.isEditing"
+                >
+                  <!--   v-bind:class="{ editing: item.isEditing }" -->
 
-              <div>
-                <p class="description">{{ item.description }}</p>
-                <a class="item-link" :href="`${item.url}`">{{ item.url }}</a>
-                <p>{{ item.comment }}</p>
-              </div>
-            </div>
+                  <div>
+                    <p class="description">{{ item.description }}</p>
+                    <a class="item-link" :href="`${item.url}`">{{ item.url }}</a>
+                    <p>{{ item.comment }}</p>
+                  </div>
+                </div>
 
-            <!-- if this item isnt being edited, all other edit item buttons are disabled -->
+                <!-- if this item isnt being edited, all other edit item buttons are disabled -->
 
-            <div class="wishlist-item-buttons">
-              <button
-                class="edit"
-                v-on:click="
+                <div class="wishlist-item-buttons">
+                  <button
+                    class="edit"
+                    v-on:click="
                 item.isEditing = !item.isEditing;
                 editing = true;
               "
-                :disabled="item.isEditing === false && editing ? true : false"
-              >
-                <span class="edit-delete">
-                  <i class="fas fa-pencil-alt"></i>
-                </span>
-              </button>
-              <button
-                class="delete"
-                type="button"
-                v-on:click="
+                    :disabled="item.isEditing === false && editing ? true : false"
+                  >
+                    <span class="edit-delete">
+                      <i class="fas fa-pencil-alt"></i>
+                    </span>
+                  </button>
+                  <button
+                    class="delete"
+                    type="button"
+                    v-on:click="
                 deleteItem(item.id); editing = false;
               "
-              >
-                <span class="edit-delete">
-                  <i class="fas fa-trash-alt"></i>
-                </span>
-              </button>
-            </div>
-          </div>
+                  >
+                    <span class="edit-delete">
+                      <i class="fas fa-trash-alt"></i>
+                    </span>
+                  </button>
+                </div>
+              </div>
 
-          <div v-if="item.isEditing" class="wishlist-item-container-form-editing">
-            <form
-              id="edit-wishlist-item"
-              class="edit-wishlist-item"
-              v-on:submit="updateWishlistItem(item.id)"
-            >
-              <label for="update-item-description">Description:</label>
-              <input
-                type="text"
-                id="update-item-description"
-                :value="`${item.description}`"
-                v-on:input="updateItem($event, index, 'description')"
-                maxlength="40"
-              />
-              <label for="update-item-url">Link to item:</label>
-              <input
-                type="text"
-                :value="`${item.url}`"
-                v-on:input="updateItem($event, index, 'url')"
-                maxlength="200"
-              />
-              <label for="update-item-comment">Comment:</label>
-              <textarea
-                type="text"
-                id="update-item-comment"
-                :value="`${item.comment}`"
-                v-on:input="updateItem($event, index, 'comment')"
-                rows="6"
-                maxlength="250"
-              />
-              <button type="submit" for="edit-wishlist-item">Save changes</button>
-              <button
-                for="edit-wishlist-item"
-                type="button"
-                v-on:click="
+              <div v-if="item.isEditing" class="wishlist-item-container-form-editing">
+                <form
+                  id="edit-wishlist-item"
+                  class="edit-wishlist-item"
+                  v-on:submit="updateWishlistItem(item.id)"
+                >
+                  <label for="update-item-description">Description:</label>
+                  <input
+                    type="text"
+                    id="update-item-description"
+                    :value="`${item.description}`"
+                    v-on:input="updateItem($event, index, 'description')"
+                    maxlength="40"
+                  />
+                  <label for="update-item-url">Link to item:</label>
+                  <input
+                    type="text"
+                    :value="`${item.url}`"
+                    v-on:input="updateItem($event, index, 'url')"
+                    maxlength="200"
+                  />
+                  <label for="update-item-comment">Comment:</label>
+                  <textarea
+                    type="text"
+                    id="update-item-comment"
+                    :value="`${item.comment}`"
+                    v-on:input="updateItem($event, index, 'comment')"
+                    rows="6"
+                    maxlength="250"
+                  />
+                  <button type="submit" for="edit-wishlist-item">Save changes</button>
+                  <button
+                    for="edit-wishlist-item"
+                    type="button"
+                    v-on:click="
                 cancelEdit(index);
                 item.isEditing = false;
                 editing = false;
               "
-              >Cancel editing</button>
+                  >Cancel editing</button>
+                </form>
+              </div>
+            </li>
+          </ul>
+          <button
+            type="button"
+            v-if="!addingItem"
+            v-on:click="addingItem = true;"
+            :disabled="editing"
+          >Add new wishlist item</button>
+          <div v-if="addingItem" class="wishlist-item-container-form-editing">
+            <form id="add-wishlist-item-form" v-on:submit="addItem" v-if="addingItem">
+              <label for="add-new-item-description">Description:</label>
+              <input
+                type="text"
+                id="add-new-item-description"
+                v-model="addItemDescription"
+                placeholder="e.g. Socks"
+                maxlength="40"
+                required
+              />
+              <label for="add-new-item-url">Link to item:</label>
+              <input
+                type="text"
+                id="add-new-item-url"
+                v-model="addItemUrl"
+                placeholder
+                maxlength="200"
+              />
+              <label for="add-new-item-comment">Comment:</label>
+              <textarea
+                type="text"
+                id="add-new-item-comment"
+                v-model="addItemComment"
+                placeholder="Any above ankle length socks"
+                rows="6"
+                maxlength="250"
+              />
             </form>
           </div>
-        </li>
-      </ul>
-      <button
-        type="button"
-        v-if="!addingItem"
-        v-on:click="addingItem = true;"
-        :disabled="editing"
-      >Add new wishlist item</button>
-      <div v-if="addingItem" class="wishlist-item-container-form-editing">
-        <form id="add-wishlist-item-form" v-on:submit="addItem" v-if="addingItem">
-          <label for="add-new-item-description">Description:</label>
-          <input
-            type="text"
-            id="add-new-item-description"
-            v-model="addItemDescription"
-            placeholder="e.g. Socks"
-            maxlength="40"
-            required
-          />
-          <label for="add-new-item-url">Link to item:</label>
-          <input type="text" id="add-new-item-url" v-model="addItemUrl" placeholder maxlength="200" />
-          <label for="add-new-item-comment">Comment:</label>
-          <textarea
-            type="text"
-            id="add-new-item-comment"
-            v-model="addItemComment"
-            placeholder="Any above ankle length socks"
-            rows="6"
-            maxlength="250"
-          />
-        </form>
-      </div>
-      <button
-        for="add-wishlist-item-form"
-        type="submit"
-        id="add-item-button"
-        v-if="addingItem"
-      >Add this item</button>
+          <button
+            for="add-wishlist-item-form"
+            type="submit"
+            id="add-item-button"
+            v-on:click="addItem"
+            v-if="addingItem"
+          >Add this item</button>
 
-      <button type="button" v-if="addingItem" v-on:click="cancelAddItem">Cancel changes</button>
+          <button type="button" v-if="addingItem" v-on:click="cancelAddItem">Cancel changes</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import Loading from "./Loading.vue";
 import { mapActions, mapState } from "vuex";
 import { v4 as uuidv4 } from "uuid";
 
 export default {
   name: "MyWishlist",
+  components: {
+    Loading
+  },
   computed: {
     groupId() {
       return this.$route.query.groupId;

@@ -1,39 +1,41 @@
 <template>
-  <div class="top-of-page">
-    <img src="../assets/sock.svg" id="logo" width="50rem" />
-    <h2>{{ name }}'s Wishlist</h2>
+  <div>
     <router-link :to="`/groups/${groupId}/profile`">Back to {{ groupName }}</router-link>
-    <p>
-      <b>REMEMBER: You are the only person who can see {{ name }}'s wishlist!</b>
-    </p>
-    <p v-if="wishlist.length < 1">{{name}} has not added anything to their wishlist yet!</p>
-    <ul>
-      <li v-for="item in wishlist" :key="item.id" class="wishlist-item-container">
-        <div class="wishlist-item">
-          <ul>
-            <li>
-              <p>
-                <b>Description:</b>
-              </p>
-              <p>{{ item.description }}</p>
-            </li>
-            <li v-show="item.url">
-              <p>
-                <b>Link to item:</b>
-              </p>
+    <div class="top-of-page">
+      <img src="../assets/sock.svg" id="logo" width="50rem" />
+      <h2>{{ name }}'s Wishlist</h2>
+      <p>
+        <b>REMEMBER: You are the only person who can see {{ name }}'s wishlist!</b>
+      </p>
+      <p v-if="wishlist.length < 1">{{name}} has not added anything to their wishlist yet!</p>
+      <ul>
+        <li v-for="item in wishlist" :key="item.id" class="wishlist-item-container">
+          <div class="wishlist-item">
+            <ul>
+              <li>
+                <p>
+                  <b>Description:</b>
+                </p>
+                <p>{{ item.description }}</p>
+              </li>
+              <li v-show="item.url">
+                <p>
+                  <b>Link to item:</b>
+                </p>
 
-              <a :href="item.url">{{ item.url }}</a>
-            </li>
-            <li v-show="item.comment">
-              <p>
-                <b>Comment:</b>
-              </p>
-              <p>{{ item.comment }}</p>
-            </li>
-          </ul>
-        </div>
-      </li>
-    </ul>
+                <a :href="item.url">{{ item.url }}</a>
+              </li>
+              <li v-show="item.comment">
+                <p>
+                  <b>Comment:</b>
+                </p>
+                <p>{{ item.comment }}</p>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
