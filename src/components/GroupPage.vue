@@ -71,11 +71,6 @@ h3 {
   display: block;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
 li {
   margin: 1rem;
 }
@@ -100,17 +95,5 @@ button {
 
 #group-info {
   margin-bottom: 4rem;
-}
-
-form {
-  display: grid;
-  grid-template-columns: 40% auto;
-  row-gap: 1ch;
-  margin-left: auto;
-  margin-right: auto;
-  width: 40%;
-}
-label {
-  text-align: left;
 }
 </style>

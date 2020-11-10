@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div class="top-of-page">
     <h2>Wishlist</h2>
     <p
-      v-if="userGroupInfo.wishlist.length < 1"
+      v-if="userGroupInfo.wishlist && userGroupInfo.wishlist.length < 1"
     >You have no items on your wishlist! Press 'Add new item' to get started!</p>
     <p v-if="hasEdited">
       <b>
@@ -12,26 +12,47 @@
     </p>
     <ul>
       <li v-for="item in userGroupInfo.wishlist" :key="item.id">
-        <div v-if="!item.isEditing" v-bind:class="{ editing: item.isEditing }">
-          <p>{{ item.description }}</p>
-          <p>{{ item.url }}</p>
-          <p>{{ item.comment }}</p>
+        <div class="wishlist-item-container">
+          <div
+            class="wishlist-item"
+            v-if="!item.isEditing"
+            v-bind:class="{ editing: item.isEditing }"
+          >
+            <div>
+              <p class="description">{{ item.description }}</p>
+              <p>
+                <a :href="`${item.url}`">{{ item.url }}</a>
+              </p>
+              <p>{{ item.comment }}</p>
+            </div>
+          </div>
 
           <!-- if this item isnt being edited, all other edit item buttons are disabled -->
-          <button
-            v-on:click="
+
+          <div class="wishlist-item-buttons">
+            <button
+              v-on:click="
               item.isEditing = !item.isEditing;
               hasEdited = true;
             "
-            :disabled="!item.isEditing && hasEdited ? true : false"
-          >Edit item</button>
-          <button
-            type="button"
-            v-on:click="
+              :disabled="!item.isEditing && hasEdited ? true : false"
+            >
+              <span class="edit-delete">
+                <i class="fas fa-pencil-alt"></i>
+              </span>
+            </button>
+            <button
+              type="button"
+              v-on:click="
               deleteItem(item.id);
               hasEdited = true;
             "
-          >Delete item</button>
+            >
+              <span class="edit-delete">
+                <i class="fas fa-trash-alt"></i>
+              </span>
+            </button>
+          </div>
         </div>
 
         <div v-if="item.isEditing" v-bind:class="{ editing: item.isEditing }">
@@ -80,22 +101,37 @@
       "
     >Add new item</button>
     <div v-if="addingItem">
+      <!-- required does not work because button is outside of form for styling purposes and on key up submits form automatically -->
       <form v-on:submit.prevent v-if="addingItem" v-on:keyup.enter="addItem">
         Description:
         <input
           type="text"
           id="add-new-item-description"
           v-model="addItemDescription"
-          required
+          placeholder="e.g. Socks"
         />
         Link to item:
-        <input type="text" id="add-new-item-url" v-model="addItemUrl" /> Comment:
-        <input type="text" id="add-new-item-comment" v-model="addItemComment" />
+        <input
+          type="text"
+          id="add-new-item-url"
+          v-model="addItemUrl"
+          placeholder
+        /> Comment:
+        <textarea
+          type="text"
+          id="add-new-item-comment"
+          v-model="addItemComment"
+          placeholder="Any above ankle length socks"
+          rows="6"
+          maxlength="250"
+        />
       </form>
       <button type="button" v-on:click="addItem">Add item</button>
+      <button type="button" v-on:click="cancelAddItem">Cancel</button>
     </div>
     <button
-      v-if="hasEdited && addingItem"
+      type="button"
+      v-if="hasEdited && !addingItem && userGroupInfo.wishlist.length > 0"
       v-on:click="
         updateWishlist({ userId, groupId, wishlist: userGroupInfo.wishlist })
       "
@@ -156,7 +192,12 @@ export default {
     addItem() {
       console.log("addItem");
 
-      if (!this.addItemComment || this.addItemUrl) {
+      if (!this.addItemComment && !this.addItemUrl) {
+        console.log(
+          this.addItemComment,
+          this.addItemUrl,
+          this.addItemDescription
+        );
         alert(
           "Item must have either a link to where the item is sold, or a comment."
         );
@@ -170,13 +211,19 @@ export default {
         };
         this.userGroupInfo.wishlist.push(addedItem);
 
-        this.hasEdited = false;
-        (this.addItemDescription = ""),
-          (this.addItemUrl = ""),
-          (this.addItemComment = "");
+        this.hasEdited = true;
+        this.addItemDescription = "";
+        this.addItemUrl = "";
+        this.addItemComment = "";
         this.addingItem = false;
         console.log(this.userGroupInfo.wishlist);
       }
+    },
+    cancelAddItem() {
+      this.addItemDescription = "";
+      this.addItemUrl = "";
+      this.addItemComment = "";
+      this.addingItem = false;
     },
     deleteItem(id) {
       var result = confirm("Are you sure you want to delete this item?");
@@ -207,5 +254,65 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.top-of-page {
+  width: 70%;
+  margin: auto;
+}
+
+button {
+  display: block;
+  margin: 1rem auto;
+}
+form {
+  display: grid;
+  grid-template-columns: 40% auto;
+  row-gap: 1ch;
+  margin-left: auto;
+  margin-right: auto;
+  width: 40%;
+}
+label {
+  text-align: left;
+}
+
+textarea {
+  font-family: Sans-serif;
+}
+
+p {
+  width: 60%;
+  margin: 2rem auto;
+}
+
+div.wishlist-item > div > p {
+  margin-right: 1rem;
+  padding: 0 1rem;
+  width: auto;
+}
+
+.wishlist-item-container {
+  display: flex;
+  flex-direction: row;
+  box-shadow: 0 4px 8px 0 #2c3e50;
+  border-radius: 1rem;
+  background-color: #f1d8ce;
+  margin: 2rem 0;
+  justify-content: center;
+}
+
+.wishlist-item-buttons {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin-right: 1rem;
+}
+.description {
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+.edit-delete {
+  font-size: 1.2rem;
+  color: #2c3e50;
+}
 </style>

@@ -126,6 +126,11 @@ input {
   font-size: 1rem;
 }
 
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
 .message {
   margin-left: 30%;
   margin-right: 30%;
