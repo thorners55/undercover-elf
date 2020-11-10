@@ -16,6 +16,7 @@ const state = {
   groupInfo: {},
   groupInfoToUpdate: {},
   userGroupInfo: {},
+  fetchedUserGroupInfo: false,
   createGroupSuccess: false,
   createdGroupId: "",
 };
@@ -41,7 +42,12 @@ const mutations = {
     });
     userGroupInfo.wishlist = addIsEditing;
     state.userGroupInfo = userGroupInfo;
+
     console.log(state.userGroupInfo);
+
+    const localStorageName = `undercoverElfMyWishlist${userGroupInfo.sk}`;
+    localStorage.setItem(localStorageName, JSON.stringify(userGroupInfo));
+    state.fetchedUserGroupInfo = true;
   },
 
   reset(state) {
@@ -503,7 +509,7 @@ const actions = {
     }
   },
 
-  updateWishlist(content, { userId, groupId, wishlist }) {
+  updateWishlist(context, { userId, groupId, wishlist, localStorageName }) {
     console.log("update wishlist", userId, groupId, wishlist);
 
     API.patch(
@@ -516,6 +522,7 @@ const actions = {
       .then((response) => {
         console.log(response);
         alert("Wishlist has been successfully updated!");
+        localStorage[localStorageName] = JSON.stringify(wishlist);
       })
       .catch((err) => {
         console.log(err);
