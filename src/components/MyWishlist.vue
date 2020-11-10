@@ -274,9 +274,12 @@ export default {
 
 <style scoped>
 .top-of-page {
+  margin-top: 5ch;
+}
+
+ul {
   width: 70%;
   margin: auto;
-  margin-top: 5ch;
 }
 
 button {
@@ -373,13 +376,18 @@ button:hover {
 }
 
 @media (max-width: 800px) {
-  .top-of-page {
-    width: 50%;
+  p {
+    width: 60%;
+  }
+
+  .wishlist-item > div > p {
+    width: 70%;
+    word-wrap: break-word;
   }
 
   .wishlist-item-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
   }
 }
 </style>
