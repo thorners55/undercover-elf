@@ -111,12 +111,13 @@ app.get("/users/:id/groups", function(request, response) {
               statusCode: 404,
               error: "User or group not found",
             });
+          } else {
+            response.json({
+              statusCode: 200,
+              url: request.url,
+              body: result.Item,
+            });
           }
-          response.json({
-            statusCode: 200,
-            url: request.url,
-            body: result.Item,
-          });
         }
       });
     } else {

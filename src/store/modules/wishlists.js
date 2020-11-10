@@ -1,6 +1,5 @@
 import { API } from "aws-amplify";
 
-//import { API } from "aws-amplify";
 const namespaced = true;
 
 const state = {

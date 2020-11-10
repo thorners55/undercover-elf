@@ -2,6 +2,7 @@
   <div class="top-of-page">
     <img src="../assets/gift.svg" id="logo" width="50rem" />
     <h2>Wishlist</h2>
+    <router-link :to="`/groups/${groupId}/profile`">Back to {{userGroupInfo.groupName}}</router-link>
     <p
       v-if="userGroupInfo.wishlist && userGroupInfo.wishlist.length < 1"
     >You have no items on your wishlist! Press 'Add new item' to get started!</p>
