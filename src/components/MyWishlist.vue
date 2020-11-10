@@ -57,20 +57,24 @@
           </div>
 
           <div v-if="item.isEditing" class="wishlist-item-container-form-editing">
-            <form id="edit-wishlist-item" class="edit-wishlist-item" v-on:submit.prevent="onSubmit">
+            <form
+              id="edit-wishlist-item"
+              class="edit-wishlist-item"
+              v-on:submit="updateWishlistItem(item.id)"
+            >
               <label for="update-item-description">Description:</label>
               <input
                 type="text"
                 id="update-item-description"
                 :value="`${item.description}`"
-                v-on:change="(event) => updateItem(event, index, 'description')"
+                v-on:input="updateItem($event, index, 'description')"
                 maxlength="40"
               />
               <label for="update-item-url">Link to item:</label>
               <input
                 type="text"
                 :value="`${item.url}`"
-                v-on:change="(event) => updateItem(event, index, 'url')"
+                v-on:input="updateItem($event, index, 'url')"
                 maxlength="200"
               />
               <label for="update-item-comment">Comment:</label>
@@ -78,24 +82,16 @@
                 type="text"
                 id="update-item-comment"
                 :value="`${item.comment}`"
-                v-on:change="(event) => updateItem(event, index, 'comment')"
+                v-on:input="updateItem($event, index, 'comment')"
                 rows="6"
                 maxlength="250"
               />
-              <button
-                type="submit"
-                for="edit-wishlist-item"
-                v-on:click="
-                updateWishlistItem(item.id);
-                item.isEditing = false;
-                editing = false;
-              "
-              >Save changes</button>
+              <button type="submit" for="edit-wishlist-item">Save changes</button>
               <button
                 for="edit-wishlist-item"
                 type="button"
                 v-on:click="
-                cancelEdit;
+                cancelEdit(index);
                 item.isEditing = false;
                 editing = false;
               "
@@ -111,8 +107,7 @@
         :disabled="editing"
       >Add new wishlist item</button>
       <div v-if="addingItem" class="wishlist-item-container-form-editing">
-        <!-- required does not work because button is outside of form for styling purposes and on key up submits form automatically -->
-        <form id="add-wishlist-item-form" v-on:submit.prevent="onSubmit" v-if="addingItem">
+        <form id="add-wishlist-item-form" v-on:submit="addItem" v-if="addingItem">
           <label for="add-new-item-description">Description:</label>
           <input
             type="text"
@@ -120,6 +115,7 @@
             v-model="addItemDescription"
             placeholder="e.g. Socks"
             maxlength="40"
+            required
           />
           <label for="add-new-item-url">Link to item:</label>
           <input type="text" id="add-new-item-url" v-model="addItemUrl" placeholder maxlength="200" />
@@ -137,20 +133,11 @@
       <button
         for="add-wishlist-item-form"
         type="submit"
-        v-on:click="addItem"
         id="add-item-button"
         v-if="addingItem"
       >Add this item</button>
 
       <button type="button" v-if="addingItem" v-on:click="cancelAddItem">Cancel changes</button>
-      <!--  <button
-      type="button"
-      v-if="hasEdited && !addingItem && userGroupInfo.wishlist.length > 0"
-      v-on:click="
-        updateWishlist({ userId, groupId, wishlist: userGroupInfo.wishlist });
-        hasEdited = false;
-      "
-      >Save all changes</button>-->
     </div>
   </div>
 </template>
@@ -173,11 +160,6 @@ export default {
     this.fetchUserGroupInfo({ userId: this.userId, groupId: this.groupId });
     this.localStorageName = `undercoverElfMyWishlist${this.groupId}`;
     this.userGroupInfo = JSON.parse(localStorage[this.localStorageName]);
-    const copiedWishlist = this.userGroupInfo.wishlist.map(item => {
-      return item;
-    });
-    this.copiedWishlist = copiedWishlist;
-    console.log(this.userGroupInfo, "user group info");
   },
   beforeDestroy() {
     localStorage.removeItem(this.localStorageName);
@@ -188,64 +170,30 @@ export default {
       this.copiedUserGroupInfo.description = event.target.value;
     },
     updateItem(event, index, type) {
-      this.copiedWishlist[index][type] = event.target.value;
+      this.userGroupInfo.wishlist[index][type] = event.target.value;
     },
     updateWishlistItem(id) {
-      // if updated description, url or comment is undefined, don't update it
-      // Can't use v-model because using value to fill in the input box, so have to use the on input function. So, if only edit one thing, everything else will be blank, so have to separate them out like this because otherwise tries to submit blank values.
-
-      // if the updated item doesn't have a url or comment, alert that it must have it
-
-      this.userGroupInfo.wishlist.forEach((item, i) => {
+      console.log("update wishlist item");
+      this.userGroupInfo.wishlist.forEach(item => {
         if (item.id === id) {
-          console.log(
-            item.description,
-            "<--- item desc",
-            this.copiedWishlist[i].description,
-            "<--- desc",
-            item.url,
-            "<--- item url",
-            this.copiedWishlist[i].url,
-            "<--- url",
-            item.comment,
-            "<--- item comment",
-            this.copiedWishlist[i].comment,
-            "<--- comment"
-          );
-
-          if (item.description !== this.copiedWishlist[i].description) {
-            item.description = this.copiedWishlist[i].description;
-          }
-
-          if (item.url !== this.copiedWishlist[i].url) {
-            console.log("desc if");
-            item.url = this.copiedWishlist[i].url;
-          }
-
-          if (item.comment !== this.copiedWishlist[i].comment) {
-            item.comment = this.copiedWishlist[i].comment;
-          }
-
+          console.log(item);
           console.log(item.url, item.comment, item.comment.length);
           console.log(!item.url, !item.comment);
           if (!item.description) {
             alert("Item must have a description");
           } else if (!item.url && !item.comment) {
-            // set wishlist back to how it was originally
-            this.copiedWishlist[i] = item;
+            // stop from closing the edit form
             alert("Item must have a link or a comment");
-            console.log(item, this.copiedWishlist[i]);
             return;
           } else {
             item.isEditing = false;
             this.editing = false;
-            console.log(item.isEditing);
-            /* this.updateWishlist({
+            this.updateWishlist({
               userId: this.userId,
               groupId: this.groupId,
               wishlist: this.userGroupInfo.wishlist,
               localStorageName: this.localStorageName
-            });*/
+            });
             console.log(this.userGroupInfo.wishlist);
             localStorage[this.localStorageName] = JSON.stringify(
               this.userGroupInfo.wishlist
@@ -289,10 +237,14 @@ export default {
         });
       }
     },
-    cancelEdit() {
-      this.updatedDescription = "";
-      this.updatedUrl = "";
-      this.updatedComment = "";
+    cancelEdit(index) {
+      console.log("cancel edit");
+      console.log(index);
+      console.log(this.localStorageName);
+      let originalWishlist = JSON.parse(localStorage[this.localStorageName]);
+
+      let originalItem = originalWishlist.wishlist[index];
+      this.userGroupInfo.wishlist[index] = originalItem;
     },
     cancelAddItem() {
       this.addItemDescription = "";
@@ -322,10 +274,6 @@ export default {
       localStorageName: "",
       editing: false,
       addingItem: false,
-      copiedWishlist: [],
-      updatedDescription: "",
-      updatedUrl: "",
-      updatedComment: "",
       addItemDescription: "",
       addItemUrl: "",
       addItemComment: ""

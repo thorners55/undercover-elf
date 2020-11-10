@@ -5,9 +5,11 @@
     <button
       class="settings"
       v-if="userGroupInfo.admin === 1"
-      v-on:click="$router.push(`/groups/edit?groupId=${group.groupId}`)"
+      v-on:click="$router.push(`/groups/edit?groupId=${groupId}`)"
     >
-      <span><i class="fas fa-cog"></i></span>
+      <span>
+        <i class="fas fa-cog"></i>
+      </span>
     </button>
     <button
       id="leave-group-button"
@@ -20,18 +22,15 @@
           members: groupInfo.members,
         })
       "
-    >
-      Leave group
-    </button>
-    <router-link id="view-my-wishlist" :to="`/my-wishlist?groupId=${groupId}`"
-      >View my wishlist for this group</router-link
-    >
+    >Leave group</button>
+    <router-link
+      id="view-my-wishlist"
+      :to="`/my-wishlist?groupId=${groupId}`"
+    >View my wishlist for this group</router-link>
     <div id="group-info">
       <h3>Group members:</h3>
       <ul>
-        <li v-for="member in groupInfo.members" :key="member.pk">
-          {{ member.name }}
-        </li>
+        <li v-for="member in groupInfo.members" :key="member.pk">{{ member.name }}</li>
       </ul>
       <div>
         <h3>Exchange date:</h3>
@@ -49,8 +48,7 @@
             :to="
               `/wishlist/${userGroupInfo.buyingForUserId}?groupId=${groupId}`
             "
-            >View {{ userGroupInfo.buyingForName }}'s wishlist</router-link
-          >
+          >View {{ userGroupInfo.buyingForName }}'s wishlist</router-link>
         </div>
         <p v-if="groupInfo.closed === 0">Names have not been drawn yet!</p>
       </div>
@@ -68,22 +66,22 @@ export default {
       "fetchGroupInfo",
       "leaveGroup",
       "getGroupInfo",
-      "fetchUserGroupInfo",
-    ]),
+      "fetchUserGroupInfo"
+    ])
   },
   computed: {
     groupId() {
       return this.$route.params.groupId;
     },
     ...mapState("loggedIn", ["userId"]),
-    ...mapState("groups", ["groupInfo", "userGroupInfo"]),
+    ...mapState("groups", ["groupInfo", "userGroupInfo"])
   },
   created() {
     console.log("GroupPage created");
     console.log(this.groupId, this.userId);
     this.fetchGroupInfo(this.groupId);
     this.fetchUserGroupInfo({ userId: this.userId, groupId: this.groupId });
-  },
+  }
 };
 </script>
 
