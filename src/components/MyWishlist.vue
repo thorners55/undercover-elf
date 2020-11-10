@@ -2,10 +2,12 @@
   <div class="top-of-page">
     <img src="../assets/gift.svg" id="logo" width="50rem" />
     <h2>Wishlist</h2>
-    <router-link :to="`/groups/${groupId}/profile`">Back to {{userGroupInfo.groupName}}</router-link>
-    <p
-      v-if="userGroupInfo.wishlist && userGroupInfo.wishlist.length < 1"
-    >You have no items on your wishlist! Press 'Add new item' to get started!</p>
+    <router-link :to="`/groups/${groupId}/profile`"
+      >Back to {{ userGroupInfo.groupName }}</router-link
+    >
+    <p v-if="userGroupInfo.wishlist && userGroupInfo.wishlist.length < 1">
+      You have no items on your wishlist! Press 'Add new item' to get started!
+    </p>
     <p v-if="hasEdited">
       <b>
         IMPORTANT! You must press 'Save all changes' to submit changes made to
@@ -16,7 +18,11 @@
       <li v-for="item in userGroupInfo.wishlist" :key="item.id" :item="item">
         <div class="wishlist-item-container" v-if="!item.isEditing">
           <div
-            :class="item.isEditing ? 'wishlist-item-editing wishlist-item' : 'wishlist-item'"
+            :class="
+              item.isEditing
+                ? 'wishlist-item-editing wishlist-item'
+                : 'wishlist-item'
+            "
             v-if="!item.isEditing"
           >
             <!--   v-bind:class="{ editing: item.isEditing }" -->
@@ -36,9 +42,9 @@
             <button
               class="edit"
               v-on:click="
-              item.isEditing = !item.isEditing;
-              hasEdited = true;
-            "
+                item.isEditing = !item.isEditing;
+                hasEdited = true;
+              "
               :disabled="item.isEditing === false && hasEdited ? true : false"
             >
               <span class="edit-delete">
@@ -49,9 +55,9 @@
               class="delete"
               type="button"
               v-on:click="
-              deleteItem(item.id);
-              hasEdited = true;
-            "
+                deleteItem(item.id);
+                hasEdited = true;
+              "
             >
               <span class="edit-delete">
                 <i class="fas fa-trash-alt"></i>
@@ -79,7 +85,11 @@
               required
             />
             <label for="update-item-url">Link to item:</label>
-            <input type="text" :value="`${item.url}`" v-on:input="(event) => updateUrl(event)" />
+            <input
+              type="text"
+              :value="`${item.url}`"
+              v-on:input="(event) => updateUrl(event)"
+            />
             <label for="update-item-comment">Comment:</label>
             <input
               type="text"
@@ -93,12 +103,19 @@
                 updateWishlistItem(item.id);
                 item.isEditing = false;
               "
-            >Save changes</button>
+            >
+              Save changes
+            </button>
             <button
               for="edit-wishlist-item"
               type="button"
-              v-on:click="item.isEditing = !item.isEditing; hasEdited = false"
-            >Cancel editing</button>
+              v-on:click="
+                item.isEditing = !item.isEditing;
+                hasEdited = false;
+              "
+            >
+              Cancel editing
+            </button>
           </form>
         </div>
       </li>
@@ -110,7 +127,9 @@
         addingItem = true;
         hasEdited = true;
       "
-    >Add new wishlist item</button>
+    >
+      Add new wishlist item
+    </button>
     <div v-if="addingItem" class="wishlist-item-container-form-editing">
       <!-- required does not work because button is outside of form for styling purposes and on key up submits form automatically -->
       <form
@@ -127,7 +146,12 @@
           placeholder="e.g. Socks"
         />
         <label for="add-new-item-url">Link to item:</label>
-        <input type="text" id="add-new-item-url" v-model="addItemUrl" placeholder />
+        <input
+          type="text"
+          id="add-new-item-url"
+          v-model="addItemUrl"
+          placeholder
+        />
         <label for="add-new-item-comment">Comment:</label>
         <textarea
           type="text"
@@ -145,16 +169,23 @@
       v-on:click="addItem"
       id="add-item-button"
       v-if="addingItem"
-    >Add this item</button>
+    >
+      Add this item
+    </button>
 
-    <button type="button" v-if="addingItem" v-on:click="cancelAddItem">Cancel changes</button>
+    <button type="button" v-if="addingItem" v-on:click="cancelAddItem">
+      Cancel changes
+    </button>
     <button
       type="button"
       v-if="hasEdited && !addingItem && userGroupInfo.wishlist.length > 0"
       v-on:click="
-        updateWishlist({ userId, groupId, wishlist: userGroupInfo.wishlist }); hasEdited = false;
+        updateWishlist({ userId, groupId, wishlist: userGroupInfo.wishlist });
+        hasEdited = false;
       "
-    >Save all changes</button>
+    >
+      Save all changes
+    </button>
   </div>
 </template>
 
@@ -169,7 +200,7 @@ export default {
       return this.$route.query.groupId;
     },
     ...mapState("loggedIn", ["userId"]),
-    ...mapState("groups", ["groupInfo", "userGroupInfo"])
+    ...mapState("groups", ["groupInfo", "userGroupInfo"]),
   },
   created() {
     this.fetchUserGroupInfo({ userId: this.userId, groupId: this.groupId });
@@ -193,7 +224,7 @@ export default {
       if (!this.updatedUrl || !this.updatedComment) {
         alert("Item must have either a link to the item or a comment.");
       } else {
-        this.userGroupInfo.wishlist.forEach(item => {
+        this.userGroupInfo.wishlist.forEach((item) => {
           if (item.id === id) {
             if (this.updatedDescription) {
               item.description = this.updatedDescription;
@@ -226,7 +257,7 @@ export default {
           url: this.addItemUrl,
           comment: this.addItemComment,
           isEditing: false,
-          id: uuidv4()
+          id: uuidv4(),
         };
         this.userGroupInfo.wishlist.push(addedItem);
 
@@ -247,7 +278,7 @@ export default {
     deleteItem(id) {
       var result = confirm("Are you sure you want to delete this item?");
       if (result) {
-        const updatedWishlist = this.userGroupInfo.wishlist.filter(item => {
+        const updatedWishlist = this.userGroupInfo.wishlist.filter((item) => {
           return item.id !== id;
         });
 
@@ -256,7 +287,7 @@ export default {
           "Item deleted - please press 'Save all changes' to submit your updated wishlist."
         );
       }
-    }
+    },
   },
   data() {
     return {
@@ -267,9 +298,9 @@ export default {
       updatedComment: undefined,
       addItemDescription: "",
       addItemUrl: "",
-      addItemComment: ""
+      addItemComment: "",
     };
-  }
+  },
 };
 </script>
 
@@ -376,7 +407,7 @@ button:hover {
   margin-bottom: 4rem;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 900px) {
   p {
     width: 60%;
   }

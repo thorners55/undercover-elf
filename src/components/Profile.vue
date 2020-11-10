@@ -14,11 +14,11 @@
     <ul>
       <li v-for="group in groupAdmin" :key="group.groupId">
         <router-link :to="`/groups/${group.groupId}/profile`">
-          {{
-          group.groupName
-          }}
+          {{ group.groupName }}
         </router-link>
-        <router-link :to="`/groups/edit?groupId=${group.groupId}`">Group settings</router-link>
+        <router-link :to="`/groups/edit?groupId=${group.groupId}`"
+          >Group settings</router-link
+        >
       </li>
     </ul>
   </div>
@@ -34,18 +34,18 @@ import LogOut from "./LogOut.vue";
 export default {
   name: "Profile",
   components: {
-    LogOut
+    LogOut,
   },
   methods: {
     async getEmail() {
       const userEmail = await Auth.currentUserInfo();
       this.email = userEmail.attributes.email;
     },
-    ...mapActions("profile", ["fetchUserProfile"])
+    ...mapActions("profile", ["fetchUserProfile"]),
   },
   computed: {
     ...mapState("loggedIn", ["userId", "name", "groups"]),
-    ...mapGetters("profile", ["groupAdmin"])
+    ...mapGetters("profile", ["groupAdmin"]),
   },
   created() {
     this.fetchUserProfile(this.userId);
@@ -53,9 +53,9 @@ export default {
   },
   data() {
     return {
-      email: ""
+      email: "",
     };
-  }
+  },
 };
 </script>
 

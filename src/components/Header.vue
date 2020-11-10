@@ -23,9 +23,9 @@ export default {
   name: "Header",
   components: {
     NavBar,
-    LogOut
+    LogOut,
   },
-  computed: mapState("loggedIn", ["loggedIn"])
+  computed: mapState("loggedIn", ["loggedIn"]),
 };
 </script>
 

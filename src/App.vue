@@ -43,12 +43,12 @@ export default {
     JoinGroup,
     AdminEditGroup,
     BuyingForWishlist,
-    MyWishlist
+    MyWishlist,
   },
   computed: mapState("loggedIn", ["loggedIn"]),
   mounted() {
     console.log(this.loggedIn);
-  }
+  },
 };
 // hat buckle colour f8ca4f
 </script>
