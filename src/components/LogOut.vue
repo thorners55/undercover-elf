@@ -13,7 +13,7 @@ export default {
   name: "LogOut",
   computed: {
     ...mapState("loggedIn", ["loggedIn", "name"]),
-    ...mapActions("loggedIn", ["logIn", "logOut"])
+    ...mapActions("loggedIn", ["logIn", "logOut"]),
   },
   methods: {
     async signOut() {
@@ -22,10 +22,6 @@ export default {
         try {
           await Auth.signOut();
           this.logOut();
-          localStorage.removeItem("undercoverElfUserId");
-          localStorage.removeItem("undercoverElfName");
-          localStorage.removeItem("undercoverElfGroups");
-          localStorage.undercoverElfLoggedIn = false;
           if (this.$route.path !== "/") {
             this.$router.push({ path: "/" });
           }
@@ -34,8 +30,8 @@ export default {
           return;
         }
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

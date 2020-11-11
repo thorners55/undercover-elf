@@ -11,7 +11,6 @@ const getters = {};
 
 const mutations = {
   setUserId(state, { userId, name }) {
-    console.log("log in mutation");
     state.userId = userId;
     state.loggedIn = true;
     state.name = name;
@@ -28,16 +27,13 @@ const mutations = {
     state.loggedIn = false;
     state.userId = "";
     state.name = "";
-    localStorage.removeItem("undercoverElfLoggedIn");
     localStorage.removeItem("undercoverElfName");
-    localStorage.removeItem("undercoverElfUserId");
-    localStorage.removeItem("undercoverElfGroups");
+    localStorage.undercoverElfGroups = "[]";
   },
 };
 
 const actions = {
   logIn({ commit }, { userId, name }) {
-    console.log("log in action");
     commit("setUserId", { userId, name });
     localStorage.setItem("undercoverElfUserId", userId);
     localStorage.setItem("undercoverElfLoggedIn", "true");
@@ -45,6 +41,7 @@ const actions = {
   },
 
   logOut({ commit }) {
+    localStorage.undercoverElfLoggedIn = false;
     commit("setLoggedOut");
   },
 };

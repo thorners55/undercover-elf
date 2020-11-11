@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 import Header from "./components/Header.vue";
 import SignIn from "./components/SignIn.vue";
 import Profile from "./components/Profile.vue";
@@ -43,9 +43,17 @@ export default {
     JoinGroup,
     AdminEditGroup,
     BuyingForWishlist,
-    MyWishlist
+    MyWishlist,
   },
-  computed: mapState("loggedIn", ["loggedIn"])
+  computed: mapState("loggedIn", ["loggedIn"]),
+  methods: {
+    ...mapActions("profile", ["fetchUserProfile"]),
+  },
+  created() {
+    if (this.loggedIn) {
+      this.fetchUserProfile(this.userId);
+    }
+  },
 };
 </script>
 
