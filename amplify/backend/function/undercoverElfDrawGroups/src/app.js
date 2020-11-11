@@ -15,7 +15,7 @@ AWS.config.update({ region: process.env.TABLE_REGION });
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
-let indexName = "sk-pk-index";
+let indexName = "sk-pk-index-prod";
 let tableName = "undercoverElfTable";
 if (process.env.ENV && process.env.ENV !== "NONE") {
   tableName = tableName + "-" + process.env.ENV;

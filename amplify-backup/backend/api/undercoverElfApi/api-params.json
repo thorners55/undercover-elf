@@ -1,0 +1,127 @@
+{
+    "paths": [
+        {
+            "name": "/users/{id}/groups",
+            "lambdaFunction": "undercoverElfUserGroups",
+            "privacy": {
+                "private": true,
+                "auth": [
+                    "/POST",
+                    "/GET"
+                ]
+            }
+        },
+        {
+            "name": "/groups",
+            "lambdaFunction": "undercoverElfGroups",
+            "privacy": {
+                "private": true,
+                "auth": [
+                    "/POST",
+                    "/GET",
+                    "/PUT",
+                    "/PATCH",
+                    "/DELETE"
+                ]
+            }
+        },
+        {
+            "name": "/users/{id}/profile",
+            "lambdaFunction": "undercoverElfUserProfile",
+            "privacy": {
+                "private": true,
+                "auth": [
+                    "/GET"
+                ]
+            }
+        },
+        {
+            "name": "/draw-groups",
+            "lambdaFunction": "undercoverElfDrawGroups",
+            "privacy": {
+                "private": true,
+                "auth": [
+                    "/GET"
+                ]
+            }
+        },
+        {
+            "name": "/draw-names",
+            "lambdaFunction": "undercoverElfDrawNames",
+            "privacy": {
+                "private": true,
+                "auth": [
+                    "/GET"
+                ]
+            }
+        }
+    ],
+    "resourceName": "undercoverElfApi",
+    "apiName": "undercoverElfApi",
+    "functionArns": [
+        {
+            "lambdaFunction": "undercoverElfUserGroups"
+        },
+        {
+            "lambdaFunction": "undercoverElfGroups"
+        },
+        {
+            "lambdaFunction": "undercoverElfUserProfile"
+        },
+        {
+            "lambdaFunction": "undercoverElfDrawGroups"
+        },
+        {
+            "lambdaFunction": "undercoverElfDrawNames"
+        }
+    ],
+    "privacy": {
+        "auth": 5,
+        "unauth": 0,
+        "authRoleName": "amplify-undercoverelf-dev-123607-authRole",
+        "unAuthRoleName": "amplify-undercoverelf-dev-123607-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "undercoverElfUserGroups",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        },
+        {
+            "category": "function",
+            "resourceName": "undercoverElfGroups",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        },
+        {
+            "category": "function",
+            "resourceName": "undercoverElfUserProfile",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        },
+        {
+            "category": "function",
+            "resourceName": "undercoverElfDrawGroups",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        },
+        {
+            "category": "function",
+            "resourceName": "undercoverElfDrawNames",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ],
+    "uuid": "1e5fc81d"
+}

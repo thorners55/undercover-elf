@@ -224,6 +224,7 @@ app.patch("/groups", async function(request, response) {
         memberIds.map((id) => {
           paramsUpdateUserGroup.Key.pk = id;
           paramsUpdateUserGroup.Key.sk = `group_${groupId}`;
+          console.log(paramsUpdateUserGroup, "<--- params user group");
           const updatedUserGroup = dynamodb
             .update(paramsUpdateUserGroup)
             .promise();

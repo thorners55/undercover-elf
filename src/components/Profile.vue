@@ -17,17 +17,20 @@
         {{ email }}
       </p>
 
-      <p
-        v-if="groupAdmin.length > 0"
-        id="draw-names-instruction"
-      >To draw names for groups, go to the group's settings.</p>
+      <p v-if="groupAdmin.length > 0" id="draw-names-instruction">
+        To draw names for groups, go to the group's page.
+      </p>
       <h3>Group admin for</h3>
       <p v-if="groupAdmin.length < 1">You are not admin for any groups!</p>
       <ul>
         <li v-for="group in groupAdmin" :key="group.groupId">
-          <router-link :to="`/groups/${group.groupId}/profile`">{{ group.groupName }}</router-link>
+          <router-link :to="`/groups/${group.groupId}/profile`">{{
+            group.groupName
+          }}</router-link>
 
-          <button v-on:click="$router.push(`/groups/edit?groupId=${group.groupId}`)">
+          <button
+            v-on:click="$router.push(`/groups/edit?groupId=${group.groupId}`)"
+          >
             <span class="settings">
               <i class="fas fa-cog"></i>
             </span>
@@ -50,19 +53,19 @@ export default {
   name: "Profile",
   components: {
     Loading,
-    LogOut
+    LogOut,
   },
   methods: {
     async getEmail() {
       const userEmail = await Auth.currentUserInfo();
       this.email = userEmail.attributes.email;
     },
-    ...mapActions("profile", ["fetchUserProfile"])
+    ...mapActions("profile", ["fetchUserProfile"]),
   },
   computed: {
     ...mapState("loggedIn", ["userId", "name", "groups"]),
     ...mapState("profile", ["loadingUserProfile"]),
-    ...mapGetters("profile", ["groupAdmin"])
+    ...mapGetters("profile", ["groupAdmin"]),
   },
   created() {
     this.fetchUserProfile(this.userId);
@@ -70,9 +73,9 @@ export default {
   },
   data() {
     return {
-      email: ""
+      email: "",
     };
-  }
+  },
 };
 </script>
 
