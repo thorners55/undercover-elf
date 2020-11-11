@@ -75,10 +75,16 @@
                 v-model="forgottenPasswordNewPasswordRetype"
               />
             </form>
-            <p class="message" v-if="passwordFormatMessage">
-              Password must be a minimum of 8 characters, contain at least one
-              uppercase and one lowercase character, and one special character
-            </p>
+            <p
+              class="password-instructions"
+              v-if="passwordFormatMessage"
+            >Password must be a minimum of 8 characters and contain:</p>
+            <ul class="password-instructions" v-if="passwordFormatMessage">
+              <li>At least one uppercase character</li>
+              <li>At least one lowercase character</li>
+              <li>A special character</li>
+              <li>A number</li>
+            </ul>
             <p class="message" v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
             <button
               type="button"
@@ -140,10 +146,16 @@
             />
           </form>
         </div>
-        <p class="message" v-if="passwordFormatMessage">
-          Password must be a minimum of 8 characters, contain at least one
-          uppercase and one lowercase character, and one special character
-        </p>
+        <p
+          class="password-instructions"
+          v-if="passwordFormatMessage"
+        >Password must be a minimum of 8 characters and contain:</p>
+        <ul class="password-instructions" v-if="passwordFormatMessage">
+          <li>At least one uppercase character</li>
+          <li>At least one lowercase character</li>
+          <li>A special character</li>
+          <li>A number</li>
+        </ul>
         <p class="message" v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
         <button type="button" v-on:click="createAccount" :disabled="!validPassword">Create account</button>
 
@@ -453,8 +465,19 @@ form {
   margin-right: auto;
   width: 40%;
 }
+
 label {
   text-align: left;
+}
+
+.password-instructions {
+  color: #2c3e50;
+  font-weight: bold;
+  margin-bottom: 2ch;
+}
+
+.password-instructions > li {
+  margin: 0.5ch;
 }
 
 @media (max-width: 900px) {
