@@ -17,7 +17,6 @@ const mutations = {
     state.name = name;
   },
   isLoggedIn(state) {
-    console.log(localStorage.undercoverElfLoggedIn === "true");
     if (localStorage.undercoverElfLoggedIn === "true") {
       state.loggedIn = true;
       state.userId = localStorage.undercoverElfUserId;

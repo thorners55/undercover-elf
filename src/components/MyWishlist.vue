@@ -1,23 +1,30 @@
 <template>
   <div>
-    <router-link :to="`/groups/${groupId}/profile`">Back to {{ userGroupInfo.groupName }}</router-link>
+    <router-link :to="`/groups/${groupId}/profile`"
+      >Back to {{ userGroupInfo.groupName }}</router-link
+    >
     <div class="top-of-page">
       <img src="../assets/gift.svg" id="logo" width="50rem" />
       <h2>Wishlist</h2>
       <Loading v-if="!fetchedUserGroupInfo" />
       <div v-if="fetchedUserGroupInfo">
-        <p
-          v-if="userGroupInfo.wishlist && userGroupInfo.wishlist.length < 1"
-        >You have no items on your wishlist! Press 'Add new item' to get started!</p>
+        <p v-if="userGroupInfo.wishlist && userGroupInfo.wishlist.length < 1">
+          You have no items on your wishlist! Press 'Add new item' to get
+          started!
+        </p>
         <ul>
-          <li v-for="(item, index) in userGroupInfo.wishlist" :key="item.id" :item="item">
+          <li
+            v-for="(item, index) in userGroupInfo.wishlist"
+            :key="item.id"
+            :item="item"
+          >
             <div class="wishlist-item-container" v-if="!item.isEditing">
               <div
                 :class="
-              item.isEditing
-                ? 'wishlist-item-editing wishlist-item'
-                : 'wishlist-item'
-            "
+                  item.isEditing
+                    ? 'wishlist-item-editing wishlist-item'
+                    : 'wishlist-item'
+                "
                 v-if="!item.isEditing"
               >
                 <!--   v-bind:class="{ editing: item.isEditing }" -->
@@ -35,9 +42,9 @@
                 <button
                   class="edit"
                   v-on:click="
-                item.isEditing = !item.isEditing;
-                editing = true;
-              "
+                    item.isEditing = !item.isEditing;
+                    editing = true;
+                  "
                   :disabled="item.isEditing === false && editing ? true : false"
                 >
                   <span class="edit-delete">
@@ -48,8 +55,9 @@
                   class="delete"
                   type="button"
                   v-on:click="
-                deleteItem(item.id); editing = false;
-              "
+                    deleteItem(item.id);
+                    editing = false;
+                  "
                 >
                   <span class="edit-delete">
                     <i class="fas fa-trash-alt"></i>
@@ -58,7 +66,10 @@
               </div>
             </div>
 
-            <div v-if="item.isEditing" class="wishlist-item-container-form-editing">
+            <div
+              v-if="item.isEditing"
+              class="wishlist-item-container-form-editing"
+            >
               <form
                 id="edit-wishlist-item"
                 class="edit-wishlist-item"
@@ -88,16 +99,20 @@
                   rows="6"
                   maxlength="250"
                 />
-                <button type="submit" for="edit-wishlist-item">Save changes</button>
+                <button type="submit" for="edit-wishlist-item">
+                  Save changes
+                </button>
                 <button
                   for="edit-wishlist-item"
                   type="button"
                   v-on:click="
-                cancelEdit(index);
-                item.isEditing = false;
-                editing = false;
-              "
-                >Cancel editing</button>
+                    cancelEdit(index);
+                    item.isEditing = false;
+                    editing = false;
+                  "
+                >
+                  Cancel editing
+                </button>
               </form>
             </div>
           </li>
@@ -105,11 +120,17 @@
         <button
           type="button"
           v-if="!addingItem"
-          v-on:click="addingItem = true;"
+          v-on:click="addingItem = true"
           :disabled="editing"
-        >Add new wishlist item</button>
+        >
+          Add new wishlist item
+        </button>
         <div v-if="addingItem" class="wishlist-item-container-form-editing">
-          <form id="add-wishlist-item-form" v-on:submit="addItem" v-if="addingItem">
+          <form
+            id="add-wishlist-item-form"
+            v-on:submit="addItem"
+            v-if="addingItem"
+          >
             <label for="add-new-item-description">Description:</label>
             <input
               type="text"
@@ -144,9 +165,13 @@
           id="add-item-button"
           v-on:click="addItem"
           v-if="addingItem"
-        >Add this item</button>
+        >
+          Add this item
+        </button>
 
-        <button type="button" v-if="addingItem" v-on:click="cancelAddItem">Cancel changes</button>
+        <button type="button" v-if="addingItem" v-on:click="cancelAddItem">
+          Cancel changes
+        </button>
       </div>
     </div>
   </div>
@@ -160,14 +185,14 @@ import { v4 as uuidv4 } from "uuid";
 export default {
   name: "MyWishlist",
   components: {
-    Loading
+    Loading,
   },
   computed: {
     groupId() {
       return this.$route.query.groupId;
     },
     ...mapState("loggedIn", ["userId"]),
-    ...mapState("groups", ["fetchedUserGroupInfo"])
+    ...mapState("groups", ["fetchedUserGroupInfo"]),
   },
   created() {
     this.fetchUserGroupInfo({ userId: this.userId, groupId: this.groupId });
@@ -186,7 +211,7 @@ export default {
       this.userGroupInfo.wishlist[index][type] = event.target.value;
     },
     updateWishlistItem(id) {
-      this.userGroupInfo.wishlist.forEach(item => {
+      this.userGroupInfo.wishlist.forEach((item) => {
         if (item.id === id) {
           if (!item.description) {
             alert("Item must have a description");
@@ -201,7 +226,7 @@ export default {
               userId: this.userId,
               groupId: this.groupId,
               wishlist: this.userGroupInfo.wishlist,
-              localStorageName: this.localStorageName
+              localStorageName: this.localStorageName,
             });
             localStorage[this.localStorageName] = JSON.stringify(
               this.userGroupInfo.wishlist
@@ -221,7 +246,7 @@ export default {
           url: this.addItemUrl,
           comment: this.addItemComment,
           isEditing: false,
-          id: uuidv4()
+          id: uuidv4(),
         };
         this.userGroupInfo.wishlist.push(addedItem);
 
@@ -233,7 +258,7 @@ export default {
           userId: this.userId,
           groupId: this.groupId,
           wishlist: this.userGroupInfo.wishlist,
-          localStorageName: this.localStorageName
+          localStorageName: this.localStorageName,
         });
       }
     },
@@ -251,7 +276,7 @@ export default {
     deleteItem(id) {
       var result = confirm("Are you sure you want to delete this item?");
       if (result) {
-        const updatedWishlist = this.userGroupInfo.wishlist.filter(item => {
+        const updatedWishlist = this.userGroupInfo.wishlist.filter((item) => {
           return item.id !== id;
         });
 
@@ -260,10 +285,10 @@ export default {
           userId: this.userId,
           groupId: this.groupId,
           wishlist: this.userGroupInfo.wishlist,
-          localStorageName: this.localStorageName
+          localStorageName: this.localStorageName,
         });
       }
-    }
+    },
   },
   data() {
     return {
@@ -272,9 +297,9 @@ export default {
       addingItem: false,
       addItemDescription: "",
       addItemUrl: "",
-      addItemComment: ""
+      addItemComment: "",
     };
-  }
+  },
 };
 </script>
 

@@ -16,6 +16,7 @@ const state = {
   groupInfo: {},
   groupInfoToUpdate: {},
   userGroupInfo: {},
+  fetchedGroupInfo: false,
   fetchedUserGroupInfo: false,
   createGroupSuccess: false,
   createdGroupId: "",
@@ -69,6 +70,7 @@ const mutations = {
     state.groupInfo.inviteId = inviteId;
     const groupInfoToUpdate = JSON.parse(JSON.stringify(groupInfo));
     state.groupInfoToUpdate = groupInfoToUpdate;
+    state.fetchedGroupInfo = true;
   },
 
   setCreatedGroupId(state, { groupId, updatedGroupArray }) {
