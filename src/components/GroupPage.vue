@@ -1,20 +1,22 @@
 <template>
-  <div class="top-of-page">
-    <img src="../assets/gift-bag.svg" id="logo" width="50rem" />
-    <h2>{{ groupInfo.groupName }}</h2>
-    <button
-      class="settings"
-      v-if="userGroupInfo.admin === 1"
-      v-on:click="$router.push(`/groups/edit?groupId=${groupId}`)"
-    >
-      <span>
-        <i class="fas fa-cog"></i>
-      </span>
-    </button>
-    <button
-      id="leave-group-button"
-      v-if="userGroupInfo.admin === 0 && groupInfo.closed === 0"
-      v-on:click="
+  <div>
+    <Loading v-if="loadingLeaveGroup" />
+    <div v-if="!loadingLeaveGroup" class="top-of-page">
+      <img src="../assets/gift-bag.svg" id="logo" width="50rem" />
+      <h2>{{ groupInfo.groupName }}</h2>
+      <button
+        class="settings"
+        v-if="userGroupInfo.admin === 1"
+        v-on:click="$router.push(`/groups/edit?groupId=${groupId}`)"
+      >
+        <span>
+          <i class="fas fa-cog"></i>
+        </span>
+      </button>
+      <button
+        id="leave-group-button"
+        v-if="userGroupInfo.admin === 0 && groupInfo.closed === 0"
+        v-on:click="
         leaveGroup({
           userId,
           groupId,
@@ -22,45 +24,50 @@
           members: groupInfo.members,
         })
       "
-    >Leave group</button>
-    <router-link
-      id="view-my-wishlist"
-      :to="`/my-wishlist?groupId=${groupId}`"
-    >View my wishlist for this group</router-link>
-    <div id="group-info">
-      <h3>Group members:</h3>
-      <ul>
-        <li v-for="member in groupInfo.members" :key="member.pk">{{ member.name }}</li>
-      </ul>
-      <div>
-        <h3>Exchange date:</h3>
-        <p>{{ groupInfo.exchange }}</p>
-      </div>
-      <div>
-        <h3>Budget:</h3>
-        <p>{{ groupInfo.budget }}</p>
-      </div>
-      <div>
-        <h3>You are buying for:</h3>
-        <div v-if="groupInfo.closed === 1">
-          <p>{{ userGroupInfo.buyingForName }}</p>
-          <router-link
-            :to="
+      >Leave group</button>
+      <router-link
+        id="view-my-wishlist"
+        :to="`/my-wishlist?groupId=${groupId}`"
+      >View my wishlist for this group</router-link>
+      <div id="group-info">
+        <h3>Group members:</h3>
+        <ul>
+          <li v-for="member in groupInfo.members" :key="member.pk">{{ member.name }}</li>
+        </ul>
+        <div>
+          <h3>Exchange date:</h3>
+          <p>{{ groupInfo.exchange }}</p>
+        </div>
+        <div>
+          <h3>Budget:</h3>
+          <p>{{ groupInfo.budget }}</p>
+        </div>
+        <div>
+          <h3>You are buying for:</h3>
+          <div v-if="groupInfo.closed === 1">
+            <p>{{ userGroupInfo.buyingForName }}</p>
+            <router-link
+              :to="
               `/wishlist/${userGroupInfo.buyingForUserId}?groupId=${groupId}`
             "
-          >View {{ userGroupInfo.buyingForName }}'s wishlist</router-link>
+            >View {{ userGroupInfo.buyingForName }}'s wishlist</router-link>
+          </div>
+          <p v-if="groupInfo.closed === 0">Names have not been drawn yet!</p>
         </div>
-        <p v-if="groupInfo.closed === 0">Names have not been drawn yet!</p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Loading from "./Loading.vue";
 import { mapActions, mapState } from "vuex";
 
 export default {
   name: "GroupPage",
+  components: {
+    Loading
+  },
   methods: {
     ...mapActions("groups", [
       "fetchGroupInfo",
@@ -74,11 +81,9 @@ export default {
       return this.$route.params.groupId;
     },
     ...mapState("loggedIn", ["userId"]),
-    ...mapState("groups", ["groupInfo", "userGroupInfo"])
+    ...mapState("groups", ["groupInfo", "userGroupInfo", "loadingLeaveGroup"])
   },
   created() {
-    console.log("GroupPage created");
-    console.log(this.groupId, this.userId);
     this.fetchGroupInfo(this.groupId);
     this.fetchUserGroupInfo({ userId: this.userId, groupId: this.groupId });
   }

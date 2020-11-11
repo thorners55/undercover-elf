@@ -48,7 +48,6 @@ export default {
         alert("All fields are required");
         return;
       } else {
-        console.log("create group");
         this.creatingGroup = false;
         this.postGroup(this.newGroup);
       }
@@ -60,7 +59,6 @@ export default {
     ...mapState("groups", ["createdGroupId", "groups", "createGroupSuccess"])
   },
   beforeDestroy() {
-    console.log("before destroy");
     this.resetCreateGroup();
   },
   data() {

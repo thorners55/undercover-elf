@@ -1,179 +1,181 @@
 <template>
-  <div class="top-of-page">
-    <!-- if user is signing in, not making new account -->
-    <div v-if="!signingUp">
-      <div v-if="showSignIn">
-        <div v-if="!hideSignInForgottenPassword">
-          <h2>Log in</h2>
-          <form id="sign-in" v-on:keyup.enter="signIn(signInEmail)" v-on:submit.prevent>
-            <label for="email">Email</label>
-            <input type="email" id="email" v-model="signInEmail" />
-            <label for="password">Password</label>
-            <input type="password" id="password" v-model="signInPassword" />
-          </form>
-          <p v-if="showErrorMessage" class="message">{{ errorMessage }}</p>
-          <button
-            type="button"
-            v-on:click="
+  <div>
+    <Loading v-if="loggingIn" />
+    <div v-if="!loggedIn" class="top-of-page">
+      <!-- if user is signing in, not making new account -->
+      <div v-if="!signingUp && !loggingIn">
+        <div v-if="showSignIn">
+          <div v-if="!hideSignInForgottenPassword">
+            <h2>Log in</h2>
+            <form id="sign-in" v-on:keyup.enter="signIn(signInEmail)" v-on:submit.prevent>
+              <label for="email">Email</label>
+              <input type="email" id="email" v-model="signInEmail" />
+              <label for="password">Password</label>
+              <input type="password" id="password" v-model="signInPassword" />
+            </form>
+            <p v-if="showErrorMessage" class="message">{{ errorMessage }}</p>
+            <button
+              type="button"
+              v-on:click="
                 signIn(signInEmail);
                 signUpEmail = '';
                 signUpPassword = '';
               "
-          >Log in</button>
-          <button
-            v-on:click="
+            >Log in</button>
+            <button
+              v-on:click="
                 showForgotPassword = true;
                 hideSignInForgottenPassword = true;
               "
-          >Forgotten password?</button>
-        </div>
-        <div v-if="showForgotPassword">
-          <form id="forgot-password" v-on:submit.prevent v-on:keyup.enter="forgotPassword">
-            <!-- FIX -->
-            <label for="forgot-password-email">Email:</label>
-            <input type="email" id="forgot-password-email" v-model="forgottenEmail" />
-          </form>
-          <button for="forgot-password" type="button" v-on:click="forgotPassword">Reset password</button>
+            >Forgotten password?</button>
+          </div>
+          <div v-if="showForgotPassword">
+            <form id="forgot-password" v-on:submit.prevent v-on:keyup.enter="forgotPassword">
+              <!-- FIX -->
+              <label for="forgot-password-email">Email:</label>
+              <input type="email" id="forgot-password-email" v-model="forgottenEmail" />
+            </form>
+            <button for="forgot-password" type="button" v-on:click="forgotPassword">Reset password</button>
 
-          <button
-            type="button"
-            v-on:click="
+            <button
+              type="button"
+              v-on:click="
                 hideSignInForgottenPassword = false;
                 showForgotPassword = false;
               "
-          >Back to sign in</button>
-        </div>
-        <div v-if="showForgotPasswordConfirm">
-          <p v-if="showForgottenPasswordError">{{ forgottenPasswordErrorMessage }}</p>
-          <p>Email: {{ forgottenEmail }}</p>
-          <form
-            id="forgot-password-confirm-code"
-            v-on:keyup.enter="changePassword"
-            v-on:submit.prevent
-          >
-            <label for="forgot-password-confirm-code">Code:</label>
-            <input
-              type="text"
+            >Back to sign in</button>
+          </div>
+          <div v-if="showForgotPasswordConfirm">
+            <p v-if="showForgottenPasswordError">{{ forgottenPasswordErrorMessage }}</p>
+            <p>Email: {{ forgottenEmail }}</p>
+            <form
               id="forgot-password-confirm-code"
-              v-model="forgottenPasswordConfirmCode"
-            />
-            <label for="forgot-password-new-password">New password:</label>
-            <input
-              type="password"
-              id="forgot-password-new-password"
-              @input="handlePasswords"
-              v-model="forgottenPasswordNewPassword"
-            />
+              v-on:keyup.enter="changePassword"
+              v-on:submit.prevent
+            >
+              <label for="forgot-password-confirm-code">Code:</label>
+              <input
+                type="text"
+                id="forgot-password-confirm-code"
+                v-model="forgottenPasswordConfirmCode"
+              />
+              <label for="forgot-password-new-password">New password:</label>
+              <input
+                type="password"
+                id="forgot-password-new-password"
+                @input="handlePasswords"
+                v-model="forgottenPasswordNewPassword"
+              />
 
-            <label for="forgot-password-new-password">Re-type new password:</label>
-            <input
-              type="password"
-              id="forgot-password-new-password-retype"
-              @input="handlePasswords"
-              v-model="forgottenPasswordNewPasswordRetype"
-            />
-          </form>
-          <p class="message" v-if="passwordFormatMessage">
-            Password must be a minimum of 8 characters, contain at least one
-            uppercase and one lowercase character, and one special character
-          </p>
-          <p class="message" v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
-          <button
-            type="button"
-            for="forgot-password-confirm-code"
-            v-on:click="changePassword"
-            :disabled="!validPassword"
-          >Change password</button>
+              <label for="forgot-password-new-password">Re-type new password:</label>
+              <input
+                type="password"
+                id="forgot-password-new-password-retype"
+                @input="handlePasswords"
+                v-model="forgottenPasswordNewPasswordRetype"
+              />
+            </form>
+            <p class="message" v-if="passwordFormatMessage">
+              Password must be a minimum of 8 characters, contain at least one
+              uppercase and one lowercase character, and one special character
+            </p>
+            <p class="message" v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
+            <button
+              type="button"
+              for="forgot-password-confirm-code"
+              v-on:click="changePassword"
+              :disabled="!validPassword"
+            >Change password</button>
 
-          <button
-            v-if="showForgotPasswordConfirm"
-            v-on:click="
+            <button
+              v-if="showForgotPasswordConfirm"
+              v-on:click="
                 showForgotPassword = false;
                 hideSignInForgottenPassword = false;
                 showForgotPasswordConfirm = false;
                 forgottenEmail = '';
               "
-          >Back to sign in</button>
+            >Back to sign in</button>
+          </div>
+          <!-- if user has signed up but has not confirmed email -->
         </div>
-        <!-- if user has signed up but has not confirmed email -->
       </div>
-    </div>
 
-    <!-- if not making new account (signing up) -->
-    <div
-      v-if="
+      <!-- if not making new account (signing up) -->
+      <div
+        v-if=" !loggingIn &&
           !signingUp &&
             !userNotConfirmed &&
             !showForgotPassword &&
             !showForgotPasswordConfirm
         "
-    >
-      <p>Don't have an account?</p>
-      <button
-        v-on:click="
+      >
+        <p>Don't have an account?</p>
+        <button
+          v-on:click="
             (signingUp = true), (signInEmail = '');
             signInPassword = '';
           "
-      >Create an account</button>
-    </div>
-
-    <!-- if making new account (signing up) -->
-    <div v-if="signingUp">
-      <div id="signup-grid">
-        <div></div>
-        <form v-on:keyup.enter="createAccount" v-on:submit.prevent>
-          <label for="name">Name</label>
-          <input type="text" id="name" v-model="signUpName" />
-          <label for="email">Email</label>
-          <input type="email" id="email" v-model="signUpEmail" />
-          <label for="password">Password</label>
-          <input type="password" id="password" v-model="signUpPassword" @input="handlePasswords" />
-
-          <label for="passwordRetype">Re-enter password</label>
-          <input
-            type="password"
-            id="passwordRetype"
-            v-model="signUpPasswordRetype"
-            @input="handlePasswords"
-          />
-        </form>
+        >Create an account</button>
       </div>
-      <p class="message" v-if="passwordFormatMessage">
-        Password must be a minimum of 8 characters, contain at least one
-        uppercase and one lowercase character, and one special character
-      </p>
-      <p class="message" v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
-      <button type="button" v-on:click="createAccount" :disabled="!validPassword">Create account</button>
 
-      <button
-        v-on:click="
+      <!-- if making new account (signing up) -->
+      <div v-if="signingUp">
+        <div id="signup-grid">
+          <div></div>
+          <form v-on:keyup.enter="createAccount" v-on:submit.prevent>
+            <label for="name">Name</label>
+            <input type="text" id="name" v-model="signUpName" />
+            <label for="email">Email</label>
+            <input type="email" id="email" v-model="signUpEmail" />
+            <label for="password">Password</label>
+            <input type="password" id="password" v-model="signUpPassword" @input="handlePasswords" />
+
+            <label for="passwordRetype">Re-enter password</label>
+            <input
+              type="password"
+              id="passwordRetype"
+              v-model="signUpPasswordRetype"
+              @input="handlePasswords"
+            />
+          </form>
+        </div>
+        <p class="message" v-if="passwordFormatMessage">
+          Password must be a minimum of 8 characters, contain at least one
+          uppercase and one lowercase character, and one special character
+        </p>
+        <p class="message" v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
+        <button type="button" v-on:click="createAccount" :disabled="!validPassword">Create account</button>
+
+        <button
+          v-on:click="
             signingUp = false;
             signUpEmail = '';
             signUpPassword = '';
             signUpName = '';
             showSignIn = true;
           "
-      >Back to sign in</button>
-    </div>
-    <!-- if have made new account but have not confirmed -->
-    <div v-if="confirmingSignUp">
-      <p>Email: {{ signUpEmail ? signUpEmail : signInEmail }}</p>
-      <p
-        v-if="userNotConfirmed && userNotConfirmedMessage"
-        class="message"
-      >You must confirm your account to sign in</p>
-      <form v-on:keyup.enter="confirmSignUp" v-on:submit.prevent>
-        <label for="code">Verification code:</label>
-        <input type="text" id="password" v-model="confirmSignUpCode" />
-      </form>
+        >Back to sign in</button>
+      </div>
+      <!-- if have made new account but have not confirmed -->
+      <div v-if="confirmingSignUp">
+        <p>Email: {{ signUpEmail ? signUpEmail : signInEmail }}</p>
+        <p
+          v-if="userNotConfirmed && userNotConfirmedMessage"
+          class="message"
+        >You must confirm your account to sign in</p>
+        <form v-on:keyup.enter="confirmSignUp" v-on:submit.prevent>
+          <label for="code">Verification code:</label>
+          <input type="text" id="password" v-model="confirmSignUpCode" />
+        </form>
 
-      <p class="message">Enter the verification code sent to your email</p>
+        <p class="message">Enter the verification code sent to your email</p>
 
-      <button v-on:click="confirmSignUp">Submit verification code</button>
-      <button v-on:click="resendCode">Re-send verification code</button>
-      <button
-        type="button"
-        v-on:click="
+        <button v-on:click="confirmSignUp">Submit verification code</button>
+        <button v-on:click="resendCode">Re-send verification code</button>
+        <button
+          type="button"
+          v-on:click="
             signingUp = false;
             showSignIn = true;
             confirmingSignUp = false;
@@ -185,12 +187,14 @@
             signInEmail = '';
             signInPassword = '';
           "
-      >Back to sign in</button>
+        >Back to sign in</button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import Loading from "./Loading.vue";
 import { Auth } from "aws-amplify";
 var aws = require("aws-sdk");
 import { mapActions, mapState } from "vuex";
@@ -199,6 +203,9 @@ import { mapActions, mapState } from "vuex";
 
 export default {
   name: "SignIn",
+  components: {
+    Loading
+  },
   computed: {
     ...mapState("loggedIn", ["loggedIn"]),
     ...mapState("loggedIn", ["name"])
@@ -206,8 +213,7 @@ export default {
   methods: {
     ...mapActions("loggedIn", ["logIn", "logOut"]),
     async signIn(email) {
-      console.log("beginning of signIn");
-      console.log(email);
+      this.loggingIn = true;
       let password;
       if (this.signInPassword.length > 1) {
         password = this.signInPassword;
@@ -217,10 +223,9 @@ export default {
       try {
         aws.config.update({ region: "eu-west-2" });
         let user = await Auth.signIn(email, password);
-        console.log("after signIn");
-        console.log(user);
         let payload = { userId: user.username, name: user.attributes.name };
         this.logIn(payload);
+        this.loggingIn = false;
         this.signInEmail = "";
         this.signInPassword = "";
         this.signUpName = "";
@@ -229,6 +234,8 @@ export default {
         this.signUpPasswordRetype = "";
         this.showErrorMessage = false;
       } catch (error) {
+        this.loggingIn = false;
+        this.showSignIn = true;
         if (error.message === "User is not confirmed.") {
           this.userNotConfirmed = true;
           this.userNotConfirmedMessage = true;
@@ -249,16 +256,13 @@ export default {
           this.signUpPasswordRetype = "";
         }
         alert("Error signing in: " + error.message);
-        console.log("error signing in", error);
       }
     },
     async forgotPassword() {
-      console.log("forgot password");
       this.showForgotPasswordConfirm = true;
       this.showForgotPassword = false;
       try {
         const isSuccess = await Auth.forgotPassword(this.forgottenEmail);
-        console.log(isSuccess);
       } catch (error) {
         alert("Error: " + error.message);
         this.showForgottenPasswordError = true;
@@ -267,8 +271,6 @@ export default {
       }
     },
     async changePassword() {
-      console.log("change password");
-      console.log(typeof this.forgottenPasswordConfirmCode);
       try {
         await Auth.forgotPasswordSubmit(
           this.forgottenEmail,
@@ -311,7 +313,6 @@ export default {
         /*this.signUpEmail = "";
         this.signUpPassword = "";
         this.signUpName = "";*/
-        console.log(user, "sign up");
       } catch (error) {
         alert("Error signing up: " + error.message);
         console.log("error signing up:", error);
@@ -325,17 +326,13 @@ export default {
       } else {
         email = this.signUpEmail;
       }
-      console.log("confirmSignUp");
-      console.log(this.signUpEmail, this.signInEmail);
       try {
         const userConfirm = await Auth.confirmSignUp(
           email,
           this.confirmSignUpCode
         );
-        console.log(userConfirm);
         alert("Successfully registered! You will be automatically logged in");
         //this.signUpEmail = "";
-        console.log(email, this.signUpPassword);
         this.signIn(this.signUpEmail);
         this.signingUp = false;
         this.showSignIn = true;
@@ -353,7 +350,6 @@ export default {
       }
     },
     async resendCode() {
-      console.log(this.signUpEmail);
       try {
         Auth.resendSignUp(this.signUpEmail);
         alert("Verification code has been sent to registered email");
@@ -393,6 +389,7 @@ export default {
   },
   data() {
     return {
+      loggingIn: false,
       showSignIn: true,
       signingUp: false,
       confirmingSignUp: false,

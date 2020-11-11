@@ -1,93 +1,103 @@
 <template>
   <div>
-    <router-link :to="`/groups/${groupInfo.pk}/profile`">Back to {{groupInfo.groupName}} page</router-link>
-    <div class="top-of-page">
-      <h2>Edit group settings for {{groupInfo.groupName}}</h2>
-      <p>
-        <b>IMPORTANT: Press "Submit" at the bottom of the page after making changes!</b>
-      </p>
-
-      <div class="info">
-        <h3>Invitation ID:</h3>
-        <p>{{groupInfo.inviteId}}</p>
-        <button v-if="groupInfo.closed === 0" v-on:click="drawNames({ groupId })">Draw names</button>
-      </div>
-
-      <div class="info">
-        <h3>Group name:</h3>
-        <input
-          type="text"
-          v-model="groupInfoToUpdate.groupName"
-          v-on:keyup.enter="
-          updateGroup({
-            groupId,
-            groupInfoToUpdate,
-          })
-        "
-        />
-      </div>
-      <h3>Group members:</h3>
-      <ul>
-        <li v-for="member in groupInfo.members" :key="member.pk">
-          <p v-if="member.pk === userId">{{ member.name }} (you)</p>
-          <p v-if="member.pk !== userId">
-            {{member.name}}
-            <button
-              v-if="member.pk !== userId"
-              v-on:click="removeUser(member.pk, groupInfo.pk)"
-            >Remove user from group</button>
+    <Loading v-if="loadingDrawNames" />
+    <div v-if="!loadingDrawNames">
+      <router-link :to="`/groups/${groupInfo.pk}/profile`">Back to {{groupInfo.groupName}} page</router-link>
+      <div class="top-of-page">
+        <h2>Edit group settings for {{groupInfo.groupName}}</h2>
+        <Loading v-if="loadingEditGroup" />
+        <div v-if="!loadingEditGroup">
+          <p>
+            <b>IMPORTANT: Press "Submit" at the bottom of the page after making changes!</b>
           </p>
-        </li>
-      </ul>
 
-      <div class="info">
-        <h3>Exchange date:</h3>
-        <input
-          type="date"
-          v-model="groupInfoToUpdate.exchange"
-          v-on:keyup.enter="
+          <div class="info">
+            <h3>Invitation ID:</h3>
+            <p>{{groupInfo.inviteId}}</p>
+            <button v-if="groupInfo.closed === 0" v-on:click="drawNames({ groupId })">Draw names</button>
+          </div>
+
+          <div class="info">
+            <h3>Group name:</h3>
+            <input
+              type="text"
+              v-model="groupInfoToUpdate.groupName"
+              v-on:keyup.enter="
           updateGroup({
             groupId,
             groupInfoToUpdate,
           })
         "
-        />
-      </div>
+            />
+          </div>
+          <h3>Group members:</h3>
+          <ul>
+            <li v-for="member in groupInfo.members" :key="member.pk">
+              <p v-if="member.pk === userId">{{ member.name }} (you)</p>
+              <p v-if="member.pk !== userId">
+                {{member.name}}
+                <button
+                  v-if="member.pk !== userId"
+                  v-on:click="removeUser(member.pk, groupInfo.pk)"
+                >Remove user from group</button>
+              </p>
+            </li>
+          </ul>
 
-      <div class="info">
-        <h3>Budget:</h3>
-        <input
-          type="text"
-          v-model="groupInfoToUpdate.budget"
-          v-on:keyup.enter="
+          <div class="info">
+            <h3>Exchange date:</h3>
+            <input
+              type="date"
+              v-model="groupInfoToUpdate.exchange"
+              v-on:keyup.enter="
+          updateGroup({
+            groupId,
+            groupInfoToUpdate,
+          })
+        "
+            />
+          </div>
+
+          <div class="info">
+            <h3>Budget:</h3>
+            <input
+              type="text"
+              v-model="groupInfoToUpdate.budget"
+              v-on:keyup.enter="
           updateGroup({
             groupId,
             groupInfoToUpdate,
           })"
-          placeholder="e.g. £15"
-          size="5"
-        />
-      </div>
-      <div class="edit-group-buttons">
-        <button type="button" v-on:click="resetInfo">Reset fields</button>
-        <button
-          v-on:click="
+              placeholder="e.g. £15"
+              size="5"
+            />
+          </div>
+          <div class="edit-group-buttons">
+            <button type="button" v-on:click="resetInfo">Reset fields</button>
+            <button
+              v-on:click="
         updateGroup({
           groupId,
           groupInfoToUpdate,
         })
       "
-        >Submit</button>
+            >Submit</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Loading from "./Loading.vue";
 import { mapState, mapActions } from "vuex";
 
 export default {
   name: "AdminEdesitGroup",
+  components: {
+    Loading
+  },
   methods: {
     ...mapActions("groups", [
       "updateGroup",
@@ -96,18 +106,21 @@ export default {
       "drawNames"
     ]),
     resetInfo() {
-      console.log(this.originalState);
       this.groupInfoToUpdate.groupName = this.groupInfo.groupName;
       this.groupInfoToUpdate.exchange = this.groupInfo.exchange;
       this.groupInfoToUpdate.budget = this.groupInfo.budget;
-      console.log(this.groupInfoToUpdate);
     }
   },
   computed: {
     groupId() {
       return this.$route.query.groupId;
     },
-    ...mapState("groups", ["groupInfo", "groupInfoToUpdate"])
+    ...mapState("groups", [
+      "groupInfo",
+      "groupInfoToUpdate",
+      "loadingDrawNames",
+      "loadingEditGroup"
+    ])
   },
   created() {
     this.fetchGroupInfo(this.groupId);

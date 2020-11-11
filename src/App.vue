@@ -45,12 +45,8 @@ export default {
     BuyingForWishlist,
     MyWishlist
   },
-  computed: mapState("loggedIn", ["loggedIn"]),
-  mounted() {
-    console.log(this.loggedIn);
-  }
+  computed: mapState("loggedIn", ["loggedIn"])
 };
-// hat buckle colour f8ca4f
 </script>
 
 <style>

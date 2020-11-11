@@ -1,6 +1,7 @@
 const namespaced = true;
 
 const state = {
+  loggingIn: false,
   loggedIn: false,
   userId: "",
   name: "",

@@ -5,34 +5,35 @@ const state = {
   userId: "",
   name: "",
   groups: [],
+  userGroupsLoading: true,
+  loadingUserProfile: true,
 };
 
 const getters = {
   groupAdmin() {
-    const adminGroups = state.groups.filter((group) => {
+    const groups = JSON.parse(localStorage.undercoverElfGroups);
+    const adminGroups = groups.filter((group) => {
       return group.admin === 1;
     });
-    console.log(adminGroups);
     return adminGroups;
   },
 };
 
 const mutations = {
   setProfile(state, profile) {
-    console.log("set profile", profile);
     state.groups = profile.groups;
     state.name = profile.name;
     state.userId = profile.pk;
     localStorage.setItem("undercoverElfGroups", JSON.stringify(profile.groups));
+    state.userGroupsLoading = false;
+    state.loadingUserProfile = false;
   },
 };
 
 const actions = {
   fetchUserProfile({ commit }, userId) {
-    console.log("fetch user profile");
     API.get("undercoverElfApi", `/users/${userId}/profile`, {})
       .then(({ body }) => {
-        console.log(body);
         commit("setProfile", body);
       })
       .catch((err) => {

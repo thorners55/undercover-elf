@@ -19,6 +19,11 @@ const state = {
   fetchedUserGroupInfo: false,
   createGroupSuccess: false,
   createdGroupId: "",
+  loadingDrawNames: false,
+  loadingJoinGroup: false,
+  loadingFindGroup: false,
+  loadingLeaveGroup: false,
+  loadingEditGroup: false,
 };
 
 const getters = {};
@@ -31,8 +36,6 @@ const mutations = {
     });
     userGroupInfo.wishlist = addIsEditing;
     state.userGroupInfo = userGroupInfo;
-
-    console.log(state.userGroupInfo);
 
     const localStorageName = `undercoverElfMyWishlist${userGroupInfo.sk}`;
     localStorage.setItem(localStorageName, JSON.stringify(userGroupInfo));
@@ -51,7 +54,6 @@ const mutations = {
       state.groupNotFound = true;
       state.findingGroup = true;
     } else {
-      console.log("find group info");
       state.groupNotFound = false;
       state.foundGroupName = response.body.groupName;
       state.foundGroupMembers = response.body.members;
@@ -78,14 +80,16 @@ const mutations = {
   resetCreatedGroupId(state) {
     state.createGroupSuccess = false;
     state.createdGroupId = "";
-    console.log(state.createdGroupSuccess, state.createdGroupId);
+  },
+
+  setLoading(state, { of, to }) {
+    state[`loading${of}`] = to;
   },
 };
 
 const actions = {
   // searches to find a group using the ID the user has input
   findGroup({ commit }, groupId) {
-    console.log(groupId);
     let alreadyMember = false;
     const groups = JSON.parse(localStorage.undercoverElfGroups);
     for (let i = 0; i < groups.length; i++) {
@@ -100,12 +104,13 @@ const actions = {
       );
       commit("reset");
     } else {
+      commit("setLoading", { of: "FindGroup", to: true });
       API.get("undercoverElfApi", `/groups?id=${groupId}`, {})
         .then((response) => {
-          console.log(response);
           commit("setFoundGroupInfo", response);
         })
         .catch((err) => {
+          commit("setLoading", { of: "FindGroup", to: false });
           console.log(err);
           return;
         });
@@ -118,9 +123,7 @@ const actions = {
   },
 
   // join a group that user has previously searched for
-  joinGroup({ commit, rootState }, { name, userId, groupId, foundGroupName }) {
-    console.log(name, userId, groupId);
-    console.log(state.foundGroupMembers);
+  joinGroup({ commit }, { name, userId, groupId, foundGroupName }) {
     let alreadyMember = false;
     const groups = JSON.parse(localStorage.undercoverElfGroups);
     for (let i = 0; i < groups.length; i++) {
@@ -135,25 +138,25 @@ const actions = {
       );
       commit("reset");
     } else {
+      commit("setLoading", { of: "JoinGroup", to: true });
       const newMembers = state.foundGroupMembers.map((member) => {
         return member;
       });
       newMembers.push({
-        pk: `user_${userId}`, //HERE!
+        pk: `user_${userId}`,
         name,
       });
 
-      const updatedGroupArray = rootState.profile.groups.map((group) => {
-        return group;
-      });
-      updatedGroupArray.push({
+      const updatedGroupArray = JSON.parse(localStorage.undercoverElfGroups);
+
+      const newGroup = {
         groupId: `group_${groupId}`,
         groupName: foundGroupName,
         admin: 0,
-      });
+      };
 
-      console.log(state.foundGroupMembers);
-      console.log(newMembers);
+      updatedGroupArray.push(newGroup);
+
       API.post(
         "undercoverElfApi",
         `/users/${userId}/groups?groupId=${groupId}`,
@@ -171,40 +174,39 @@ const actions = {
         }
       )
         .then((response) => {
-          console.log(response);
           alert(`Successfully joined group!`);
           localStorage.undercoverElfGroups = updatedGroupArray;
+          commit("setLoading", { of: "JoinGroup", to: false });
           router.push({ path: "/" });
-          rootState.profile.groups = updatedGroupArray;
+          localStorage.undercoverElfGroups = updatedGroupArray;
         })
         .catch((err) => {
+          commit("setLoading", { of: "JoinGroup", to: false });
           console.log(err, "postUserInGroup error");
         });
     }
   },
 
   fetchGroupInfo({ commit }, groupId) {
-    console.log("fetchGroupInfo");
-    console.log(groupId);
+    commit("setLoading", { of: "EditGroup", to: true });
     const split = groupId.split("_");
     const id = split[1];
     API.get("undercoverElfApi", `/groups?id=${id}`, {})
       .then(({ body }) => {
-        console.log(body);
         commit("setGroupInfo", body);
+        commit("setLoading", { of: "EditGroup", to: false });
       })
       .catch((err) => {
         console.log(err);
+        commit("setLoading", { of: "EditGroup", to: false });
       });
   },
 
   fetchUserGroupInfo({ commit }, { userId, groupId }) {
-    console.log("fetchUserGroupInfo", userId, groupId);
     const split = groupId.split("_");
     const id = split[1];
     API.get("undercoverElfApi", `/users/${userId}/groups?groupId=${id}`, {})
       .then(({ body }) => {
-        console.log(body);
         commit("setUserGroupInfo", body);
       })
       .catch((err) => {
@@ -216,7 +218,7 @@ const actions = {
     commit("setUserGroupInfo", groupId);
   },*/
 
-  postGroup({ commit, rootState }, newGroupInfo) {
+  postGroup({ commit }, newGroupInfo) {
     const tryDate = date.transform(
       newGroupInfo.exchange,
       "YYYY-MM-DD",
@@ -226,15 +228,15 @@ const actions = {
     const groupId = uuidv4();
     newGroupInfo.exchange = tryDate;
     newGroupInfo.pk = groupId;
-    newGroupInfo.admin = rootState.loggedIn.name;
+    newGroupInfo.admin = localStorage.undercoverElfName;
     newGroupInfo.members = [
       {
-        pk: `user_${rootState.loggedIn.userId}`,
-        name: rootState.loggedIn.name,
+        pk: `user_${localStorage.undercoverElfUserId}`,
+        name: localStorage.undercoverElfName,
       },
     ];
-    console.log(state.groups);
-    const updatedGroupArray = rootState.profile.groups.map((group) => {
+
+    const updatedGroupArray = localStorage.undercoverElfGroups.map((group) => {
       return group;
     });
     updatedGroupArray.push({
@@ -242,7 +244,7 @@ const actions = {
       groupName: newGroupInfo.groupName,
       admin: 1,
     });
-    console.log(updatedGroupArray);
+
     API.post("undercoverElfApi", "/groups", {
       body: {
         newGroupInfo,
@@ -251,7 +253,7 @@ const actions = {
     })
       .then((response) => {
         console.log(response);
-        rootState.profile.groups = updatedGroupArray;
+        localStorage.undercoverElfGroups = updatedGroupArray;
         commit("setCreatedGroupId", { groupId, updatedGroupArray });
       })
       .catch((err) => {
@@ -260,15 +262,13 @@ const actions = {
   },
 
   resetCreateGroup({ commit }) {
-    console.log("reset create group");
     commit("resetCreatedGroupId");
   },
 
-  updateGroup({ rootState }, { groupId, groupInfoToUpdate }) {
+  updateGroup({ commit }, { groupId, groupInfoToUpdate }) {
     var result = confirm("Are you sure you want to change the group settings?");
     if (result) {
-      console.log(groupId, groupInfoToUpdate);
-      console.log(state.groupInfo.groupName);
+      commit("setLoading", { of: "EditGroup", to: true });
 
       const split = groupId.split("_");
       const id = split[1];
@@ -283,7 +283,6 @@ const actions = {
       const updatedExchange = groupInfoToUpdate.exchange;
 
       let updateNameOrExchange = false;
-      console.log(originalName, updatedName);
 
       // pass true or false balue saying if it is only the budget being updated
       // if name or exchange is nt being updated AND name is not being updated AND exchange date is not being updated, alert that nothing is updated
@@ -293,7 +292,6 @@ const actions = {
         updatedExchange !== originalExchange
       ) {
         updateNameOrExchange = true;
-        console.log("false");
       }
 
       if (
@@ -301,6 +299,7 @@ const actions = {
         originalBudget === updatedBudget &&
         originalExchange === updatedExchange
       ) {
+        commit("setLoading", { of: "EditGroup", to: false });
         alert("Nothing to update!");
       } else {
         let localStateGroups = JSON.parse(localStorage.undercoverElfGroups);
@@ -311,7 +310,6 @@ const actions = {
             break;
           } else continue;
         }
-        console.log(localStateGroups);
 
         API.patch("undercoverElfApi", `/groups?id=${id}`, {
           body: {
@@ -322,27 +320,28 @@ const actions = {
           },
         })
           .then(() => {
-            rootState.profile.groups = localStateGroups;
-            console.log(rootState.profile.groups);
+            localStorage.undercoverElfGroups = localStateGroups;
             localStorage.undercoverElfGroups = JSON.stringify(localStateGroups);
             router.push({ path: `/groups/${groupId}/profile` });
             alert("Group information successfully changed!");
+            commit("setLoading", { of: "EditGroup", to: false });
           })
           .catch((err) => {
             console.log(err);
+            commit("setLoading", { of: "EditGroup", to: false });
           });
       }
     } else return;
   },
 
-  leaveGroup(context, { userId, groupId, groupName, members }) {
-    console.log("leaveGroup", userId, groupId, members);
+  leaveGroup({ commit }, { userId, groupId, groupName, members }) {
     const result = confirm(`Are you sure you what to leave ${groupName}?`);
 
     const split = groupId.split("_");
     const id = split[1];
     if (result) {
       // filter through local storage array to remove that group, then use this new array to update the user group profile
+      commit("setLoading", { of: "LeaveGroup", to: true });
 
       const localStateGroups = JSON.parse(localStorage.undercoverElfGroups);
       const removedGroupFromUserProfile = localStateGroups.filter((group) => {
@@ -353,7 +352,6 @@ const actions = {
       const memberRemoved = members.filter((member) => {
         return member.pk !== `user_${userId}`;
       });
-      console.log(removedGroupFromUserProfile);
 
       API.del("undercoverElfApi", `/users/${userId}/groups?groupId=${id}`, {
         body: {
@@ -363,10 +361,12 @@ const actions = {
       })
         .then((response) => {
           console.log(response);
+          commit("setLoading", { of: "LeaveGroup", to: false });
           alert(`You successfully left ${groupName}`);
           router.push({ path: "/" });
         })
         .catch((err) => {
+          commit("setLoading", { of: "LeaveGroup", to: false });
           console.log(err);
         });
     }
@@ -377,32 +377,30 @@ const actions = {
     // make a request to API to delete the user group entry, to user's profile to remove group from groups array, and to group meta to remove member from members array
   },*/
 
-  drawNames({ dispatch }, { groupId }) {
-    console.log("drawNames", groupId);
+  drawNames({ commit, dispatch }, { groupId }) {
     var result = confirm(
       "Are you sure you want to draw names? The group will be closed and no new members will be able to join."
     );
 
     if (result) {
+      commit("setLoading", { of: "DrawNames", to: true });
       const split = groupId.split("_");
       const id = split[1];
 
       API.get("undercoverElfApi", `/draw-groups?id=${id}`, {})
         .then(({ body }) => {
-          console.log(body, typeof body);
           let response = body;
           let copyResponse = body.map((x) => x);
           dispatch("assignNames", { response, copyResponse, id });
         })
         .catch((err) => {
+          commit("setLoading", { of: "DrawNames", to: false });
           console.log(err);
         });
     } else return;
   },
 
   async pickNames(context, { response, copyResponse }) {
-    console.log("pickNames");
-
     function randomNum(length) {
       return Math.floor(Math.random() * (length - 0) + 0);
     }
@@ -421,11 +419,7 @@ const actions = {
       // if person picks their own name and it is NOT the last iteration, try again
       // if person picks their own name and it IS the last iteration, pick a random person in the array who has already been assigned a person to buy for, take this assigned person and give it to the person who had picked their own name. Then, the random person who was picked is now buying for the person who picked their own name
       if (response[i].pk === buyFor.pk) {
-        console.log("inside if");
-
         if (i === response.length - 1) {
-          console.log("inside nested if");
-
           // swap two assignments
           const random = randomNum(response.length - 1);
 
@@ -433,13 +427,10 @@ const actions = {
           let currentIterationName = response[i].name;
 
           if (randomBF === currentIterationName) {
-            console.log("inside second nested if");
             i = i - 1;
             count++;
             continue;
           } else {
-            console.log(response[random].buyingForName);
-            console.log(random, response[random]);
             // Last person to pick someone buying for whoever random person had
             response[i].buyingForName = response[random].buyingForName;
             response[i].buyingForUserId = response[random].buyingForUserId;
@@ -462,13 +453,9 @@ const actions = {
     return;
   },
 
-  async assignNames({ dispatch }, { response, copyResponse, id }) {
-    console.log("assignNames");
-    console.log(response, copyResponse, id);
-
+  async assignNames({ commit, dispatch }, { response, copyResponse, id }) {
     try {
       await dispatch("pickNames", { response, copyResponse });
-      console.log("patch");
       const assignNamesResponse = await API.patch(
         "undercoverElfApi",
         `/draw-names?id=${id}`,
@@ -476,20 +463,19 @@ const actions = {
           body: response,
         }
       );
-      console.log(assignNamesResponse);
       alert(
         "Names have been drawn successfully! You will now be redirected to the group page where you can view the person you are buying for's wishlist"
       );
+      commit("setLoading", { of: "DrawNames", to: false });
       router.push({ path: `/groups/group_${id}/profile` });
     } catch (err) {
+      commit("setLoading", { of: "DrawNames", to: false });
       console.log(err);
       alert("There has been an error drawing names. Please try again.");
     }
   },
 
   updateWishlist(context, { userId, groupId, wishlist, localStorageName }) {
-    console.log("update wishlist", userId, groupId, wishlist);
-
     API.patch(
       "undercoverElfApi",
       `/users/user_${userId}/groups?groupId=${groupId}`,
@@ -498,8 +484,6 @@ const actions = {
       }
     )
       .then((response) => {
-        console.log(response);
-        alert("Wishlist has been successfully updated!");
         localStorage[localStorageName] = JSON.stringify(wishlist);
       })
       .catch((err) => {

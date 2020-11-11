@@ -15,7 +15,6 @@ new Vue({
   router,
   store,
   beforeCreate() {
-    console.log("main.js before create");
     this.$store.commit("loggedIn/isLoggedIn");
   },
   modules: {

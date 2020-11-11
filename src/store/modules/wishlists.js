@@ -6,6 +6,7 @@ const state = {
   name: "",
   groupName: "",
   wishlist: [],
+  loadingWishlist: false,
 };
 
 const getters = {};
@@ -16,11 +17,15 @@ const mutations = {
     state.wishlist = wishlist;
     state.groupName = groupName;
   },
+
+  setLoading(state, trueOrFalse) {
+    state.loadingWishlist = trueOrFalse;
+  },
 };
 
 const actions = {
   fetchWishlist({ commit }, { userId, groupId }) {
-    console.log(userId, groupId);
+    commit("setLoading", true);
     // fetch wishlist from API, user groups
     API.get(
       "undercoverElfApi",
@@ -28,10 +33,11 @@ const actions = {
     )
       .then(({ body }) => {
         commit("setWishlist", body);
-        console.log(body);
+        commit("setLoading", false);
       })
       .catch((err) => {
         console.log(err);
+        commit("setLoading", false);
       });
   },
 };
