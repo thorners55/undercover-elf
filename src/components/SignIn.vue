@@ -112,9 +112,7 @@
               <li>A special character</li>
               <li>A number</li>
             </ul>
-            <p class="message" v-if="passwordsDoNotMatchMessage">
-              Passwords do not match
-            </p>
+            <p class="message" v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
             <button
               type="button"
               for="forgot-password-confirm-code"
@@ -196,17 +194,8 @@
           <li>A special character</li>
           <li>A number</li>
         </ul>
-        <p class="message" v-if="passwordsDoNotMatchMessage">
-          Passwords do not match
-        </p>
-        <button
-          type="button"
-          v-on:click="createAccount"
-          :disabled="!validPassword"
-        >
-          Create account
-        </button>
-
+        <p class="message" v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
+        <button type="button" v-on:click="createAccount" :disabled="!validPassword">Create account</button>
         <button
           v-on:click="
             signingUp = false;
@@ -516,6 +505,7 @@ form {
   margin-right: auto;
   width: 40%;
 }
+
 label {
   text-align: left;
 }
@@ -525,6 +515,7 @@ label {
   font-weight: bold;
   margin-bottom: 2ch;
 }
+
 .password-instructions > li {
   margin: 0.5ch;
 }

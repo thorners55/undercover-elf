@@ -177,7 +177,7 @@ const actions = {
       )
         .then((response) => {
           alert(`Successfully joined group!`);
-          localStorage.undercoverElfGroups = updatedGroupArray;
+          localStorage.undercoverElfGroups = JSON.stringify(updatedGroupArray);
           commit("setLoading", { of: "JoinGroup", to: false });
           router.push({ path: "/" });
           localStorage.undercoverElfGroups = updatedGroupArray;
@@ -212,6 +212,7 @@ const actions = {
         commit("setUserGroupInfo", body);
       })
       .catch((err) => {
+        commit("");
         console.log(err);
       });
   },
@@ -363,7 +364,6 @@ const actions = {
         },
       })
         .then((response) => {
-          console.log(response);
           commit("setLoading", { of: "LeaveGroup", to: false });
           alert(`You successfully left ${groupName}`);
           router.push({ path: "/" });

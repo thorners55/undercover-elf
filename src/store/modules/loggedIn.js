@@ -27,10 +27,8 @@ const mutations = {
     state.loggedIn = false;
     state.userId = "";
     state.name = "";
-    localStorage.removeItem("undercoverElfLoggedIn");
     localStorage.removeItem("undercoverElfName");
-    localStorage.removeItem("undercoverElfUserId");
-    localStorage.removeItem("undercoverElfGroups");
+    localStorage.undercoverElfGroups = "[]";
   },
 };
 
@@ -43,6 +41,7 @@ const actions = {
   },
 
   logOut({ commit }) {
+    localStorage.undercoverElfLoggedIn = false;
     commit("setLoggedOut");
   },
 };

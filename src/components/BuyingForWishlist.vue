@@ -1,6 +1,6 @@
 <template>
   <div>
-    <router-link :to="`/groups/${groupId}/profile`"
+    <router-link class="back-to" :to="`/groups/${groupId}/profile`"
       >Back to {{ groupName }}</router-link
     >
     <Loading v-if="loadingWishlist" />
