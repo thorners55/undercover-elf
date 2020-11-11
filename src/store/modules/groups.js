@@ -238,7 +238,9 @@ const actions = {
       },
     ];
 
-    const updatedGroupArray = localStorage.undercoverElfGroups.map((group) => {
+    const localGroups = JSON.parse(localStorage.undercoverElfGroups);
+
+    const updatedGroupArray = localGroups.map((group) => {
       return group;
     });
     updatedGroupArray.push({
@@ -255,7 +257,7 @@ const actions = {
     })
       .then((response) => {
         console.log(response);
-        localStorage.undercoverElfGroups = updatedGroupArray;
+        localStorage.undercoverElfGroups = JSON.stringify(updatedGroupArray);
         commit("setCreatedGroupId", { groupId, updatedGroupArray });
       })
       .catch((err) => {
@@ -322,7 +324,6 @@ const actions = {
           },
         })
           .then(() => {
-            localStorage.undercoverElfGroups = localStateGroups;
             localStorage.undercoverElfGroups = JSON.stringify(localStateGroups);
             router.push({ path: `/groups/${groupId}/profile` });
             alert("Group information successfully changed!");
