@@ -31,13 +31,9 @@
 
         <h3>Invitation link:</h3>
         <p>
-          <router-link
-            :to="`https://master.dngg2cj4n9n4p.amplifyapp.com/groups/join?id=${splitId}`"
-          >
-            {{
-            `https://master.dngg2cj4n9n4p.amplifyapp.com/groups/join?id=${splitId}`
-            }}
-          </router-link>
+          {{
+          `https://master.dngg2cj4n9n4p.amplifyapp.com/#/groups/join?id=${splitId}`
+          }}
         </p>
       </div>
       <button
