@@ -2,18 +2,19 @@
   <div>
     <Loading v-if="loadingDrawNames" />
     <div v-if="!loadingDrawNames">
-      <router-link class="back-to" :to="`/groups/${groupInfo.pk}/profile`"
-        >Back to {{ groupInfo.groupName }} page</router-link
-      >
+      <router-link
+        class="back-to"
+        :to="`/groups/${groupInfo.pk}/profile`"
+      >Back to {{ groupInfo.groupName }} page</router-link>
       <div class="top-of-page">
         <h2>Edit group settings for {{ groupInfo.groupName }}</h2>
         <Loading v-if="loadingEditGroup" />
         <div v-if="!loadingEditGroup">
           <p class="message">
-            <b
-              >IMPORTANT: Press "Submit" at the bottom of the page after making
-              changes!</b
-            >
+            <b>
+              IMPORTANT: Press "Submit" at the bottom of the page after making
+              changes!
+            </b>
           </p>
         </div>
 
@@ -39,9 +40,7 @@
               <button
                 v-if="member.pk !== userId"
                 v-on:click="removeUser(member.pk, groupInfo.pk)"
-              >
-                Remove user from group
-              </button>
+              >Remove user from group</button>
             </p>
           </li>
         </ul>
@@ -84,9 +83,7 @@
                 groupInfoToUpdate,
               })
             "
-          >
-            Submit
-          </button>
+          >Submit</button>
         </div>
       </div>
     </div>
@@ -100,20 +97,20 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "AdminEdesitGroup",
   components: {
-    Loading,
+    Loading
   },
   methods: {
     ...mapActions("groups", [
       "updateGroup",
       "fetchGroupInfo",
       "removeUser",
-      "drawNames",
+      "drawNames"
     ]),
     resetInfo() {
       this.groupInfoToUpdate.groupName = this.groupInfo.groupName;
       this.groupInfoToUpdate.exchange = this.groupInfo.exchange;
       this.groupInfoToUpdate.budget = this.groupInfo.budget;
-    },
+    }
   },
   computed: {
     groupId() {
@@ -123,21 +120,18 @@ export default {
       "groupInfo",
       "groupInfoToUpdate",
       "loadingDrawNames",
-      "loadingEditGroup",
-    ]),
+      "loadingEditGroup"
+    ])
   },
   created() {
     this.fetchGroupInfo(this.groupId);
-    const split = this.groupId.split("_");
-    this.splitId = split[1];
   },
   data() {
     return {
       userId: `user_${localStorage.undercoverElfUserId}`,
-      originalState: {},
-      splitId: "",
+      originalState: {}
     };
-  },
+  }
 };
 </script>
 
