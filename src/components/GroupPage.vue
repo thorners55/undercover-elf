@@ -110,7 +110,6 @@ export default {
     this.fetchUserGroupInfo({ userId: this.userId, groupId: this.groupId });
     const split = this.groupId.split("_");
     this.splitId = split[1];
-    console.log(this.splitId);
   },
   data() {
     return {
