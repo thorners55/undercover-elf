@@ -1,0 +1,24 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-undercoverelf-dev-123607-authRole",
+      "UnauthRoleArn": "arn:aws:iam::291543087223:role/amplify-undercoverelf-dev-123607-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::291543087223:role/amplify-undercoverelf-dev-123607-authRole",
+      "Region": "eu-west-2",
+      "DeploymentBucketName": "amplify-undercoverelf-dev-123607-deployment",
+      "UnauthRoleName": "amplify-undercoverelf-dev-123607-unauthRole",
+      "StackName": "amplify-undercoverelf-dev-123607",
+      "StackId": "arn:aws:cloudformation:eu-west-2:291543087223:stack/amplify-undercoverelf-dev-123607/21224600-07c8-11eb-99de-062bb267c00e",
+      "AmplifyAppId": "dngg2cj4n9n4p"
+    },
+    "categories": {
+      "auth": {
+        "undercoverelff40a1338": {}
+      },
+      "function": {
+        "undercoverElfGroups": {},
+        "undercoverElfUserGroups": {}
+      }
+    }
+  }
+}

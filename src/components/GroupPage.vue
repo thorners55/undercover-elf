@@ -32,6 +32,27 @@
       >
         Leave group
       </button>
+      <div
+        id="invite-info"
+        v-if="userGroupInfo.admin === 1 && groupInfo.closed === 0"
+      >
+        <h3>Invitation ID:</h3>
+        <p>{{ groupInfo.inviteId }}</p>
+
+        <h3>Invitation link:</h3>
+        <p>
+          {{
+            `https://master.dngg2cj4n9n4p.amplifyapp.com/#/groups/join?id=${splitId}`
+          }}
+        </p>
+      </div>
+      <button
+        id="draw-names-button"
+        v-if="groupInfo.closed === 0 && userGroupInfo.admin === 1"
+        v-on:click="drawNames({ groupId })"
+      >
+        Draw names
+      </button>
       <router-link id="view-my-wishlist" :to="`/my-wishlist?groupId=${groupId}`"
         >View my wishlist for this group</router-link
       >
@@ -83,6 +104,7 @@ export default {
       "leaveGroup",
       "getGroupInfo",
       "fetchUserGroupInfo",
+      "drawNames",
     ]),
   },
   computed: {
@@ -101,6 +123,13 @@ export default {
   created() {
     this.fetchGroupInfo(this.groupId);
     this.fetchUserGroupInfo({ userId: this.userId, groupId: this.groupId });
+    const split = this.groupId.split("_");
+    this.splitId = split[1];
+  },
+  data() {
+    return {
+      splitId: "",
+    };
   },
 };
 </script>
@@ -183,6 +212,22 @@ p {
 
 #leave-group-button {
   margin-top: 0;
+}
+
+#invite-info {
+  margin-top: 3ch;
+}
+#invite-info > p {
+  width: 100%;
+  word-wrap: break-word;
+}
+
+#draw-names-button {
+  display: block;
+  margin: 2ch auto;
+  padding: 1.5ch;
+  font-size: 1.4rem;
+  background-color: #c067db;
 }
 
 @media (max-width: 900px) {

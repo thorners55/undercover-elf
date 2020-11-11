@@ -1,0 +1,280 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-undercoverelf-dev-123607-authRole",
+      "UnauthRoleArn": "arn:aws:iam::291543087223:role/amplify-undercoverelf-dev-123607-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::291543087223:role/amplify-undercoverelf-dev-123607-authRole",
+      "Region": "eu-west-2",
+      "DeploymentBucketName": "amplify-undercoverelf-dev-123607-deployment",
+      "UnauthRoleName": "amplify-undercoverelf-dev-123607-unauthRole",
+      "StackName": "amplify-undercoverelf-dev-123607",
+      "StackId": "arn:aws:cloudformation:eu-west-2:291543087223:stack/amplify-undercoverelf-dev-123607/21224600-07c8-11eb-99de-062bb267c00e",
+      "AmplifyAppId": "dngg2cj4n9n4p"
+    }
+  },
+  "auth": {
+    "undercoverelff40a1338": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "output": {
+        "AppClientSecret": "s2tk3k4puidvmi2esvlspidtb89e0t30vpjf9k3ucbltrfbkuao",
+        "UserPoolId": "eu-west-2_jG9OVcQHb",
+        "AppClientIDWeb": "6g5f49bno87gs1u1a7v5d8fhrj",
+        "AppClientID": "6ju2tcivedvglrq7l62il9v0vr",
+        "IdentityPoolId": "eu-west-2:b57a3a52-92cd-4d25-ac7d-4fd010e315e5",
+        "IdentityPoolName": "undercoverelff40a1338_identitypool_f40a1338__dev",
+        "UserPoolName": "undercoverelff40a1338_userpool_f40a1338"
+      },
+      "lastPushTimeStamp": "2020-11-11T17:51:54.183Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-undercoverelf-dev-123607-deployment/amplify-cfn-templates/auth/undercoverelff40a1338-cloudformation-template.yml",
+        "logicalId": "authundercoverelff40a1338"
+      }
+    }
+  },
+  "storage": {
+    "undercoverElfTable": {
+      "service": "DynamoDB",
+      "providerPlugin": "awscloudformation",
+      "output": {
+        "PartitionKeyName": "pk",
+        "SortKeyName": "sk",
+        "SortKeyType": "S",
+        "Region": "eu-west-2",
+        "Arn": "arn:aws:dynamodb:eu-west-2:291543087223:table/undercoverElfTable-dev",
+        "StreamArn": "arn:aws:dynamodb:eu-west-2:291543087223:table/undercoverElfTable-dev/stream/2020-10-16T14:33:10.960",
+        "PartitionKeyType": "S",
+        "Name": "undercoverElfTable-dev"
+      },
+      "lastPushTimeStamp": "2020-11-11T17:51:54.192Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-undercoverelf-dev-123607-deployment/amplify-cfn-templates/storage/undercoverElfTable-cloudformation-template.json",
+        "logicalId": "storageundercoverElfTable"
+      }
+    }
+  },
+  "function": {
+    "undercoverElfGroups": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "storage",
+          "resourceName": "undercoverElfTable",
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "attributeEnvMap": {
+            "Name": "TABLE_NAME",
+            "Arn": "TABLE_ARN"
+          }
+        }
+      ],
+      "output": {
+        "Region": "eu-west-2",
+        "Arn": "arn:aws:lambda:eu-west-2:291543087223:function:undercoverElfGroups-dev",
+        "Name": "undercoverElfGroups-dev",
+        "LambdaExecutionRole": "undercoverelfLambdaRole253d46ca-dev"
+      },
+      "lastPushTimeStamp": "2020-11-11T17:51:54.198Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-undercoverelf-dev-123607-deployment/amplify-cfn-templates/function/undercoverElfGroups-cloudformation-template.json",
+        "logicalId": "functionundercoverElfGroups"
+      },
+      "lastBuildTimeStamp": "2020-11-11T06:28:36.945Z",
+      "lastPackageTimeStamp": "2020-11-11T06:28:41.294Z",
+      "distZipFilename": "undercoverElfGroups-4c674e6b516644712f74-build.zip",
+      "lastPushDirHash": "n8Uyij4+C1S8G4eNAnmT6O+fwaU="
+    },
+    "undercoverElfUserGroups": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "storage",
+          "resourceName": "undercoverElfTable",
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "attributeEnvMap": {
+            "Name": "TABLE_NAME",
+            "Arn": "TABLE_ARN"
+          }
+        }
+      ],
+      "output": {
+        "Region": "eu-west-2",
+        "Arn": "arn:aws:lambda:eu-west-2:291543087223:function:undercoverElfUserGroups-dev",
+        "Name": "undercoverElfUserGroups-dev",
+        "LambdaExecutionRole": "undercoverelfLambdaRole2bcfad12-dev"
+      },
+      "lastPushTimeStamp": "2020-11-11T17:51:54.203Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-undercoverelf-dev-123607-deployment/amplify-cfn-templates/function/undercoverElfUserGroups-cloudformation-template.json",
+        "logicalId": "functionundercoverElfUserGroups"
+      },
+      "lastBuildTimeStamp": "2020-11-11T06:28:36.948Z",
+      "lastPackageTimeStamp": "2020-11-11T06:28:41.591Z",
+      "distZipFilename": "undercoverElfUserGroups-394e3545446f502f2b78-build.zip",
+      "lastPushDirHash": "mgDXwU8F3L/Dfc2cCN/g6gJY9x0="
+    },
+    "undercoverElfUserProfile": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "storage",
+          "resourceName": "undercoverElfTable",
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "attributeEnvMap": {
+            "Name": "TABLE_NAME",
+            "Arn": "TABLE_ARN"
+          }
+        }
+      ],
+      "output": {
+        "Region": "eu-west-2",
+        "Arn": "arn:aws:lambda:eu-west-2:291543087223:function:undercoverElfUserProfile-dev",
+        "Name": "undercoverElfUserProfile-dev",
+        "LambdaExecutionRole": "undercoverelfLambdaRoleb229d107-dev"
+      },
+      "lastPushTimeStamp": "2020-11-11T17:51:54.207Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-undercoverelf-dev-123607-deployment/amplify-cfn-templates/function/undercoverElfUserProfile-cloudformation-template.json",
+        "logicalId": "functionundercoverElfUserProfile"
+      }
+    },
+    "undercoverElfDrawGroups": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "storage",
+          "resourceName": "undercoverElfTable",
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "attributeEnvMap": {
+            "Name": "TABLE_NAME",
+            "Arn": "TABLE_ARN"
+          }
+        }
+      ],
+      "output": {
+        "Region": "eu-west-2",
+        "Arn": "arn:aws:lambda:eu-west-2:291543087223:function:undercoverElfDrawGroups-dev",
+        "Name": "undercoverElfDrawGroups-dev",
+        "LambdaExecutionRole": "undercoverelfLambdaRolebb66ecb6-dev"
+      },
+      "lastPushTimeStamp": "2020-11-11T17:51:54.223Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-undercoverelf-dev-123607-deployment/amplify-cfn-templates/function/undercoverElfDrawGroups-cloudformation-template.json",
+        "logicalId": "functionundercoverElfDrawGroups"
+      },
+      "lastBuildTimeStamp": "2020-11-11T17:50:33.723Z",
+      "lastPackageTimeStamp": "2020-11-11T17:50:38.411Z",
+      "distZipFilename": "undercoverElfDrawGroups-616939387a4d35544d30-build.zip",
+      "lastPushDirHash": "OH+x/hO7dJfpA1CMWC+nLAeMtPY="
+    },
+    "undercoverElfDrawNames": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "storage",
+          "resourceName": "undercoverElfTable",
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "attributeEnvMap": {
+            "Name": "TABLE_NAME",
+            "Arn": "TABLE_ARN"
+          }
+        }
+      ],
+      "output": {
+        "Region": "eu-west-2",
+        "Arn": "arn:aws:lambda:eu-west-2:291543087223:function:undercoverElfDrawNames-dev",
+        "Name": "undercoverElfDrawNames-dev",
+        "LambdaExecutionRole": "undercoverelfLambdaRolef277c8ee-dev"
+      },
+      "lastPushTimeStamp": "2020-11-11T17:51:54.214Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-undercoverelf-dev-123607-deployment/amplify-cfn-templates/function/undercoverElfDrawNames-cloudformation-template.json",
+        "logicalId": "functionundercoverElfDrawNames"
+      }
+    }
+  },
+  "api": {
+    "undercoverElfApi": {
+      "service": "API Gateway",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "undercoverElfUserGroups",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        },
+        {
+          "category": "function",
+          "resourceName": "undercoverElfGroups",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        },
+        {
+          "category": "function",
+          "resourceName": "undercoverElfUserProfile",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        },
+        {
+          "category": "function",
+          "resourceName": "undercoverElfDrawGroups",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        },
+        {
+          "category": "function",
+          "resourceName": "undercoverElfDrawNames",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        }
+      ],
+      "output": {
+        "ApiName": "undercoverElfApi",
+        "RootUrl": "https://1od5sr2v9k.execute-api.eu-west-2.amazonaws.com/dev",
+        "ApiId": "1od5sr2v9k"
+      },
+      "lastPushTimeStamp": "2020-11-11T17:51:54.218Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-undercoverelf-dev-123607-deployment/amplify-cfn-templates/api/undercoverElfApi-cloudformation-template.json",
+        "logicalId": "apiundercoverElfApi"
+      }
+    }
+  }
+}

@@ -2,20 +2,19 @@
   <div>
     <Loading v-if="loadingDrawNames" />
     <div v-if="!loadingDrawNames">
-      <router-link :to="`/groups/${groupInfo.pk}/profile`">Back to {{groupInfo.groupName}} page</router-link>
+      <router-link :to="`/groups/${groupInfo.pk}/profile`"
+        >Back to {{ groupInfo.groupName }} page</router-link
+      >
       <div class="top-of-page">
-        <h2>Edit group settings for {{groupInfo.groupName}}</h2>
+        <h2>Edit group settings for {{ groupInfo.groupName }}</h2>
         <Loading v-if="loadingEditGroup" />
         <div v-if="!loadingEditGroup">
           <p>
-            <b>IMPORTANT: Press "Submit" at the bottom of the page after making changes!</b>
+            <b
+              >IMPORTANT: Press "Submit" at the bottom of the page after making
+              changes!</b
+            >
           </p>
-
-          <div class="info">
-            <h3>Invitation ID:</h3>
-            <p>{{groupInfo.inviteId}}</p>
-            <button v-if="groupInfo.closed === 0" v-on:click="drawNames({ groupId })">Draw names</button>
-          </div>
 
           <div class="info">
             <h3>Group name:</h3>
@@ -23,11 +22,11 @@
               type="text"
               v-model="groupInfoToUpdate.groupName"
               v-on:keyup.enter="
-          updateGroup({
-            groupId,
-            groupInfoToUpdate,
-          })
-        "
+                updateGroup({
+                  groupId,
+                  groupInfoToUpdate,
+                })
+              "
             />
           </div>
           <h3>Group members:</h3>
@@ -35,11 +34,13 @@
             <li v-for="member in groupInfo.members" :key="member.pk">
               <p v-if="member.pk === userId">{{ member.name }} (you)</p>
               <p v-if="member.pk !== userId">
-                {{member.name}}
+                {{ member.name }}
                 <button
                   v-if="member.pk !== userId"
                   v-on:click="removeUser(member.pk, groupInfo.pk)"
-                >Remove user from group</button>
+                >
+                  Remove user from group
+                </button>
               </p>
             </li>
           </ul>
@@ -50,11 +51,11 @@
               type="date"
               v-model="groupInfoToUpdate.exchange"
               v-on:keyup.enter="
-          updateGroup({
-            groupId,
-            groupInfoToUpdate,
-          })
-        "
+                updateGroup({
+                  groupId,
+                  groupInfoToUpdate,
+                })
+              "
             />
           </div>
 
@@ -64,10 +65,11 @@
               type="text"
               v-model="groupInfoToUpdate.budget"
               v-on:keyup.enter="
-          updateGroup({
-            groupId,
-            groupInfoToUpdate,
-          })"
+                updateGroup({
+                  groupId,
+                  groupInfoToUpdate,
+                })
+              "
               placeholder="e.g. £15"
               size="5"
             />
@@ -76,12 +78,14 @@
             <button type="button" v-on:click="resetInfo">Reset fields</button>
             <button
               v-on:click="
-        updateGroup({
-          groupId,
-          groupInfoToUpdate,
-        })
-      "
-            >Submit</button>
+                updateGroup({
+                  groupId,
+                  groupInfoToUpdate,
+                })
+              "
+            >
+              Submit
+            </button>
           </div>
         </div>
       </div>
@@ -96,20 +100,15 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "AdminEdesitGroup",
   components: {
-    Loading
+    Loading,
   },
   methods: {
-    ...mapActions("groups", [
-      "updateGroup",
-      "fetchGroupInfo",
-      "removeUser",
-      "drawNames"
-    ]),
+    ...mapActions("groups", ["updateGroup", "fetchGroupInfo", "removeUser"]),
     resetInfo() {
       this.groupInfoToUpdate.groupName = this.groupInfo.groupName;
       this.groupInfoToUpdate.exchange = this.groupInfo.exchange;
       this.groupInfoToUpdate.budget = this.groupInfo.budget;
-    }
+    },
   },
   computed: {
     groupId() {
@@ -119,8 +118,8 @@ export default {
       "groupInfo",
       "groupInfoToUpdate",
       "loadingDrawNames",
-      "loadingEditGroup"
-    ])
+      "loadingEditGroup",
+    ]),
   },
   created() {
     this.fetchGroupInfo(this.groupId);
@@ -128,9 +127,9 @@ export default {
   data() {
     return {
       userId: `user_${localStorage.undercoverElfUserId}`,
-      originalState: {}
+      originalState: {},
     };
-  }
+  },
 };
 </script>
 
