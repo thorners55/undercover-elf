@@ -32,6 +32,9 @@ const mutations = {
 
 const actions = {
   fetchUserProfile({ commit }, userId) {
+    if (!userId) {
+      userId = localStorage.undercoverElfUserId;
+    }
     API.get("undercoverElfApi", `/users/${userId}/profile`, {})
       .then(({ body }) => {
         commit("setProfile", body);
