@@ -92,10 +92,13 @@ export default {
   },
   methods: {
     ...mapActions("groups", ["joinGroup", "findGroup", "resetState"]),
+    ...mapActions("profile", ["fetchUserProfile"]),
   },
   created() {
-    if (this.$route.query.id) {
+    if (this.$route.query.id && this.userId) {
+      this.fetchUserProfile(this.userId);
       this.findGroup(this.$route.query.id);
+      this.groupId = this.$route.query.id;
     }
   },
   beforeDestroy() {

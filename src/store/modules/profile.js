@@ -37,7 +37,6 @@ const actions = {
     }
     API.get("undercoverElfApi", `/users/${userId}/profile`, {})
       .then(({ body }) => {
-        console.log(body);
         commit("setProfile", body);
       })
       .catch((err) => {

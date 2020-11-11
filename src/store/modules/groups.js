@@ -158,8 +158,12 @@ const actions = {
       };
 
       updatedGroupArray.push(newGroup);
+      console.log(updatedGroupArray);
+      console.log(userId, groupId);
+      // is passing the userId here but didnt have user_ prefix so didnt seem to be working
+      // groupId isn't being passed
 
-      API.post(
+      /*API.post(
         "undercoverElfApi",
         `/users/${userId}/groups?groupId=${groupId}`,
         {
@@ -177,7 +181,7 @@ const actions = {
       )
         .then((response) => {
           alert(`Successfully joined group!`);
-          localStorage.undercoverElfGroups = updatedGroupArray;
+          localStorage.undercoverElfGroups = JSON.stringify(updatedGroupArray);
           commit("setLoading", { of: "JoinGroup", to: false });
           router.push({ path: "/" });
           localStorage.undercoverElfGroups = updatedGroupArray;
@@ -185,7 +189,7 @@ const actions = {
         .catch((err) => {
           commit("setLoading", { of: "JoinGroup", to: false });
           console.log(err, "postUserInGroup error");
-        });
+        });*/
     }
   },
 
@@ -212,6 +216,7 @@ const actions = {
         commit("setUserGroupInfo", body);
       })
       .catch((err) => {
+        commit("");
         console.log(err);
       });
   },
@@ -238,7 +243,9 @@ const actions = {
       },
     ];
 
-    const updatedGroupArray = localStorage.undercoverElfGroups.map((group) => {
+    const localGroups = JSON.parse(localStorage.undercoverElfGroups);
+
+    const updatedGroupArray = localGroups.map((group) => {
       return group;
     });
     updatedGroupArray.push({
@@ -362,7 +369,6 @@ const actions = {
         },
       })
         .then((response) => {
-          console.log(response);
           commit("setLoading", { of: "LeaveGroup", to: false });
           alert(`You successfully left ${groupName}`);
           router.push({ path: "/" });

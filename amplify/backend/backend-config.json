@@ -1,11 +1,5 @@
 {
   "auth": {
-    "undercoverelfa780afe6": {
-      "service": "Cognito",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [],
-      "customAuth": false
-    },
     "undercoverelff40a1338": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
