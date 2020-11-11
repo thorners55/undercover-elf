@@ -89,7 +89,8 @@ export default {
       "fetchGroupInfo",
       "leaveGroup",
       "getGroupInfo",
-      "fetchUserGroupInfo"
+      "fetchUserGroupInfo",
+      "drawNames"
     ])
   },
   computed: {

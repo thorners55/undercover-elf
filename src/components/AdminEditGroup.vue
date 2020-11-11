@@ -100,12 +100,7 @@ export default {
     Loading
   },
   methods: {
-    ...mapActions("groups", [
-      "updateGroup",
-      "fetchGroupInfo",
-      "removeUser",
-      "drawNames"
-    ]),
+    ...mapActions("groups", ["updateGroup", "fetchGroupInfo", "removeUser"]),
     resetInfo() {
       this.groupInfoToUpdate.groupName = this.groupInfo.groupName;
       this.groupInfoToUpdate.exchange = this.groupInfo.exchange;
