@@ -142,6 +142,11 @@ input {
   color: #a81111;
 }
 
+a.back-to {
+  margin-top: 1ch;
+  display: block;
+}
+
 @media (max-width: 900px) {
   form {
     display: block;

@@ -17,14 +17,16 @@ export default {
   },
   methods: {
     async signOut() {
+      console.log(this.$route.path);
       var result = confirm("Are you sure you want to log out?");
       if (result) {
+        if (this.$route.path !== "/") {
+          console.log("hi");
+          this.$router.push({ path: "/" });
+        }
         try {
           await Auth.signOut();
           this.logOut();
-          if (this.$route.path !== "/") {
-            this.$router.push({ path: "/" });
-          }
         } catch (error) {
           // nothing here because console logging or alerting an error shows "_this.logOut is not a function", something to do with the binding, I think
           return;

@@ -158,12 +158,8 @@ const actions = {
       };
 
       updatedGroupArray.push(newGroup);
-      console.log(updatedGroupArray);
-      console.log(userId, groupId);
-      // is passing the userId here but didnt have user_ prefix so didnt seem to be working
-      // groupId isn't being passed
 
-      /*API.post(
+      API.post(
         "undercoverElfApi",
         `/users/${userId}/groups?groupId=${groupId}`,
         {
@@ -189,7 +185,7 @@ const actions = {
         .catch((err) => {
           commit("setLoading", { of: "JoinGroup", to: false });
           console.log(err, "postUserInGroup error");
-        });*/
+        });
     }
   },
 
@@ -261,7 +257,6 @@ const actions = {
       },
     })
       .then((response) => {
-        console.log(response);
         localStorage.undercoverElfGroups = updatedGroupArray;
         commit("setCreatedGroupId", { groupId, updatedGroupArray });
       })
