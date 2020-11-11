@@ -32,6 +32,24 @@
       >
         Leave group
       </button>
+      <div id="invite-info">
+        <h3>Invitation ID:</h3>
+        <p>{{ groupInfo.inviteId }}</p>
+
+        <h3>Invitation link:</h3>
+        <p>
+          {{
+            `https://prod.dngg2cj4n9n4p.amplifyapp.com/groups/join?id=${splitId}`
+          }}
+        </p>
+      </div>
+      <button
+        id="draw-names-button"
+        v-if="groupInfo.closed === 0 && userGroupInfo.admin === 1"
+        v-on:click="drawNames({ groupId })"
+      >
+        Draw names
+      </button>
       <router-link id="view-my-wishlist" :to="`/my-wishlist?groupId=${groupId}`"
         >View my wishlist for this group</router-link
       >
@@ -123,6 +141,14 @@ img {
   margin-bottom: 2ch;
 }
 
+#draw-names-button {
+  display: block;
+  margin: 2ch auto;
+  padding: 1.5ch;
+  font-size: 1.4rem;
+  background-color: #c067db;
+}
+
 ul {
   margin: 1ch;
 }
@@ -156,6 +182,15 @@ p {
 .editing {
   background-color: pink;
   border: 2px solid red;
+}
+
+#invite-info {
+  margin-top: 3ch;
+}
+
+#invite-info > p {
+  width: 100%;
+  word-wrap: break-word;
 }
 
 #group-info {

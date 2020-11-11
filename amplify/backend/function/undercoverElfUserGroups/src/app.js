@@ -143,6 +143,9 @@ app.get("/users/:id/groups", function(request, response) {
 });
 
 app.post("/users/:id/groups", async function(request, response) {
+  console.log(request.body, "<--- REQUEST BODY");
+  console.log(request.params, "<--- REQ PARAMS");
+  console.log(request.query, "<--- REQ QUERY");
   const userId = request.params.id;
   const groupId = request.query.groupId;
   request.body.userInfo.pk = `user_${userId}`;
