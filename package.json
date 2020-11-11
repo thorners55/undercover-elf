@@ -10,16 +10,24 @@
   "dependencies": {
     "@aws-amplify/ui-vue": "^0.2.22",
     "aws-amplify": "^3.3.3",
+    "aws-sdk": "^2.773.0",
+    "axios": "^0.21.0",
     "core-js": "^3.6.5",
-    "vue": "^2.6.11"
+    "date-and-time": "^0.14.1",
+    "es6-promise": "^4.2.8",
+    "vue": "^2.6.11",
+    "vue-router": "^3.4.8",
+    "vuex": "^3.5.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
+    "aws-sdk-mock": "^5.1.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
+    "supertest": "^5.0.0",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {
@@ -34,7 +42,9 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "no-unused-vars": "off"
+    }
   },
   "browserslist": [
     "> 1%",

@@ -1,76 +1,155 @@
 <template>
   <div id="app">
-    <h1>Undercover Elf</h1>
-    <amplify-authenticator v-if="authState !== 'signedin'">
-      <amplify-sign-up
-        header-text="Create Account"
-        slot="sign-up"
-        username-alias="email"
-        :form-fields.prop="formFieldsSignUp"
-      ></amplify-sign-up>
-      <amplify-sign-in slot="sign-in" username-alias="email" :form-fields.prop="formFieldsSignIn"></amplify-sign-in>
-      <div v-if="authState === 'signedin'">
-        <amplify-sign-out></amplify-sign-out>
-        <div>Hello, "curlybracketsx2 user.username"</div>
-      </div>
-    </amplify-authenticator>
+    <Header />
 
-    <Home v-bind:name="name" />
+    <div id="main-signin-nav">
+      <SignIn v-if="!loggedIn" />
+      <main v-if="loggedIn">
+        <router-view>
+          <AllGroups />
+          <Profile />
+          <CreateGroup />
+          <JoinGroup />
+          <GroupPage />
+          <AdminEditGroup />
+          <MyWishlist />
+          <BuyingForWishlist />
+        </router-view>
+      </main>
+    </div>
   </div>
 </template>
 
 <script>
-import Home from "./components/Home.vue";
+import { mapState } from "vuex";
+import Header from "./components/Header.vue";
+import SignIn from "./components/SignIn.vue";
+import Profile from "./components/Profile.vue";
+import AllGroups from "./components/AllGroups.vue";
+import CreateGroup from "./components/CreateGroup.vue";
+import AdminEditGroup from "./components/AdminEditGroup.vue";
+import JoinGroup from "./components/JoinGroup.vue";
+import MyWishlist from "./components/MyWishlist.vue";
+import BuyingForWishlist from "./components/BuyingForWishlist.vue";
 
 export default {
   name: "App",
   components: {
-    Home
+    Header,
+    SignIn,
+    Profile,
+    AllGroups,
+    CreateGroup,
+    JoinGroup,
+    AdminEditGroup,
+    BuyingForWishlist,
+    MyWishlist
   },
-  data() {
-    return {
-      authState: "",
-      formFieldsSignUp: [
-        {
-          type: "name",
-          label: "Full name *",
-          placeholder: "e.g. Kris Kringle",
-          required: true
-        },
-        {
-          type: "email",
-          label: "Email *",
-          placeholder: "kris@northpole.com",
-          required: true
-        },
-        { type: "password", label: "Password *", required: true }
-      ],
-      formFieldsSignIn: [
-        {
-          type: "email",
-          label: "Email",
-          placeholder: "kris@northpole.com",
-          required: true
-        },
-        { type: "password", label: "Password", required: true }
-      ],
-      name: "Stephanie"
-    };
-  }
+  computed: mapState("loggedIn", ["loggedIn"])
 };
 </script>
 
 <style>
 html {
-  background-color: rgb(128, 228, 181);
+  background-color: #80e4b5;
 }
 
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Bubbleboddy Regular";
+  font-size: 62.5%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 3rem;
+}
+
+a,
+a:visited {
+  color: #2c3e50;
+}
+
+a:hover {
+  color: #fefefa;
+}
+
+@font-face {
+  font-family: "Bubbleboddy Regular";
+  src: url("./assets/Bubbleboddy-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Bubbleboddy Light";
+  src: url("./assets/bubbleboddy/Bobbleboddy_light.ttf") format("truetype");
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap");
+
+h1 {
+  font-family: "Bubbleboddy Regular";
+  font-size: 3rem;
+  margin: 0.5rem;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.top-of-page {
+  margin-top: 5ch;
+}
+
+#main-signin-nav {
+  font-size: 1.2rem;
+  font-family: "Quicksand", sans-serif;
+}
+
+button {
+  background-color: #f8ca4f;
+  color: #2c3e50;
+  padding: 1ch;
+  font-size: 1rem;
+  font-family: "Quicksand", sans-serif;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: #fefefa;
+}
+
+input {
+  align-self: center;
+  height: 3ch;
+  font-size: 1rem;
+}
+
+.message {
+  margin-left: 30%;
+  margin-right: 30%;
+  font-weight: bold;
+  color: #a81111;
+}
+
+@media (max-width: 900px) {
+  form {
+    display: block;
+    margin: 0;
+    margin: auto;
+    width: auto;
+  }
+
+  label {
+    text-align: center;
+    display: block;
+  }
+
+  a.router-link-active.back-to-home {
+    display: block;
+    margin: 2ch;
+  }
 }
 </style>
