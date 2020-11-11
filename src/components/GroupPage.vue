@@ -32,7 +32,7 @@
         <h3>Invitation link:</h3>
         <p>
           {{
-          `https://master.dngg2cj4n9n4p.amplifyapp.com/groups/join?id=${splitId}`
+          `https://master.dngg2cj4n9n4p.amplifyapp.com/#/groups/join?id=${splitId}`
           }}
         </p>
       </div>
