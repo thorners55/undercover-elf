@@ -2,57 +2,20 @@
   <div>
     <Loading v-if="loadingDrawNames" />
     <div v-if="!loadingDrawNames">
-      <router-link
-        class="back-to"
-        :to="`/groups/${groupInfo.pk}/profile`"
-      >Back to {{ groupInfo.groupName }} page</router-link>
+      <router-link :to="`/groups/${groupInfo.pk}/profile`"
+        >Back to {{ groupInfo.groupName }} page</router-link
+      >
       <div class="top-of-page">
         <h2>Edit group settings for {{ groupInfo.groupName }}</h2>
         <Loading v-if="loadingEditGroup" />
         <div v-if="!loadingEditGroup">
+          <p>
+            <b
+              >IMPORTANT: Press "Submit" at the bottom of the page after making
+              changes!</b
+            >
           </p>
-        </div>
 
-        <div class="info">
-          <h3>Group name:</h3>
-          <input
-            type="text"
-            v-model="groupInfoToUpdate.groupName"
-            v-on:keyup.enter="
-              updateGroup({
-                groupId,
-                groupInfoToUpdate,
-              })
-            "
-          />
-        </div>
-        <h3>Group members:</h3>
-        <ul>
-          <li v-for="member in groupInfo.members" :key="member.pk">
-            <p v-if="member.pk === userId">{{ member.name }} (you)</p>
-            <p v-if="member.pk !== userId">
-              {{ member.name }}
-              <button
-                v-if="member.pk !== userId"
-                v-on:click="removeUser(member.pk, groupInfo.pk)"
-              >Remove user from group</button>
-            </p>
-          </li>
-        </ul>
-
-        <div class="info">
-          <h3>Exchange date:</h3>
-          <input
-            type="date"
-            v-model="groupInfoToUpdate.exchange"
-            v-on:keyup.enter="
-              updateGroup({
-                groupId,
-                groupInfoToUpdate,
-              })
-            "
-          />
-        </div>
           <div class="info">
             <h3>Group name:</h3>
             <input
@@ -186,12 +149,6 @@ li {
 
 button {
   margin: 1ch 0;
-}
-
-#draw-names-button {
-  padding: 2ch;
-  font-size: 1.5rem;
-  background-color: #c067db;
 }
 
 p {
