@@ -16,7 +16,8 @@
         "undercoverelff40a1338": {}
       },
       "function": {
-        "undercoverElfGroups": {}
+        "undercoverElfGroups": {},
+        "undercoverElfUserGroups": {}
       }
     }
   }
