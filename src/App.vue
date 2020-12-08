@@ -144,6 +144,11 @@ input {
   font-size: 1rem;
 }
 
+input[type="checkbox"] {
+  transform: scale(1.5);
+  margin-right: 1ch;
+}
+
 .message {
   margin-left: 30%;
   margin-right: 30%;

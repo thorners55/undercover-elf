@@ -15,7 +15,19 @@
               <label for="email">Email</label>
               <input type="email" id="email" v-model="signInEmail" />
               <label for="password">Password</label>
-              <input type="password" id="password" v-model="signInPassword" />
+              <input
+                :type="showSignInPassword ? 'text' : 'password'"
+                id="password"
+                v-model="signInPassword"
+              />
+
+              <input
+                type="checkbox"
+                v-on:click="toggleShowPassword('signIn')"
+                id="show-sign-in-password-checkbox"
+                :checked="showSignInPassword ? true : false"
+              />
+              <label class="show-password-label">Show password</label>
             </form>
             <p v-if="showErrorMessage" class="message">{{ errorMessage }}</p>
             <button
@@ -87,7 +99,7 @@
               />
               <label for="forgot-password-new-password">New password:</label>
               <input
-                type="password"
+                :type="showForgotPasswordPassword ? 'text' : 'password'"
                 id="forgot-password-new-password"
                 @input="handlePasswords"
                 v-model="forgottenPasswordNewPassword"
@@ -97,11 +109,22 @@
                 >Re-type new password:</label
               >
               <input
-                type="password"
+                :type="showForgotPasswordPassword ? 'text' : 'password'"
                 id="forgot-password-new-password-retype"
                 @input="handlePasswords"
                 v-model="forgottenPasswordNewPasswordRetype"
               />
+              <input
+                type="checkbox"
+                v-on:click="toggleShowPassword('forgotPassword')"
+                id="show-forgot-password-checkbox"
+                :checked="showForgotPasswordPassword ? true : false"
+              />
+              <label
+                for="show-forgot-password-checkbox"
+                class="show-password-label"
+                >Show password</label
+              >
             </form>
             <p class="instructions" v-if="passwordFormatMessage">
               Password must be a minimum of 8 characters and contain:
@@ -172,7 +195,7 @@
             <input type="email" id="email" v-model="signUpEmail" />
             <label for="password">Password</label>
             <input
-              type="password"
+              :type="showSignUpPassword ? 'text' : 'password'"
               id="password"
               v-model="signUpPassword"
               @input="handlePasswords"
@@ -180,11 +203,22 @@
 
             <label for="passwordRetype">Re-enter password</label>
             <input
-              type="password"
+              :type="showSignUpPassword ? 'text' : 'password'"
               id="passwordRetype"
               v-model="signUpPasswordRetype"
               @input="handlePasswords"
             />
+            <input
+              type="checkbox"
+              v-on:click="toggleShowPassword('signUp')"
+              id="show-sign-up-password-checkbox"
+              :checked="showSignUpPassword ? true : false"
+            />
+            <label
+              for="show-sign-up-password-checkbox"
+              class="show-password-label"
+              >Show password</label
+            >
           </form>
         </div>
         <p class="instructions" v-if="passwordFormatMessage">
@@ -319,6 +353,15 @@ export default {
           this.signUpPassword = "";
           this.signUpPasswordRetype = "";
         }
+      }
+    },
+    toggleShowPassword(signInUpOrForgotPassword) {
+      if (signInUpOrForgotPassword === "signIn") {
+        this.showSignInPassword = !this.showSignInPassword;
+      } else if (signInUpOrForgotPassword === "signUp") {
+        this.showSignUpPassword = !this.showSignUpPassword;
+      } else {
+        this.showForgotPasswordPassword = !this.showForgotPasswordPassword;
       }
     },
     async forgotPassword() {
@@ -466,6 +509,9 @@ export default {
       confirmingSignUp: false,
       signInEmail: "",
       signInPassword: "",
+      showSignInPassword: false,
+      showSignUpPassword: false,
+      showForgotPasswordPassword: false,
       signUpName: "",
       signUpEmail: "",
       signUpPassword: "",
@@ -516,6 +562,10 @@ button {
   width: 30%;
 }
 
+input[type="checkbox"] {
+  margin-left: auto;
+}
+
 form {
   display: grid;
   grid-template-columns: 40% auto;
@@ -554,6 +604,20 @@ label {
   label {
     text-align: center;
     display: block;
+  }
+
+  input {
+    display: block;
+    margin: auto;
+  }
+
+  input[type="checkbox"] {
+    display: inline-block;
+    margin: 1ch;
+  }
+
+  .show-password-label {
+    display: inline-block;
   }
 }
 </style>
