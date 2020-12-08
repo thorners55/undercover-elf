@@ -45,16 +45,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-// convert url string param to expected Type
-const convertUrlType = (param, type) => {
-  switch (type) {
-    case "N":
-      return Number.parseInt(param);
-    default:
-      return param;
-  }
-};
-
 app.get("/users/:id/groups", function(request, response) {
   // if there is a request query, it is fetching the user wishlist
   if (request.query.wishlist) {
@@ -143,9 +133,6 @@ app.get("/users/:id/groups", function(request, response) {
 });
 
 app.post("/users/:id/groups", async function(request, response) {
-  console.log(request.body, "<--- REQUEST BODY");
-  console.log(request.params, "<--- REQ PARAMS");
-  console.log(request.query, "<--- REQ QUERY");
   const userId = request.params.id;
   const groupId = request.query.groupId;
   request.body.userInfo.pk = `user_${userId}`;

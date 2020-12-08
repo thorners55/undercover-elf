@@ -46,16 +46,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-// convert url string param to expected Type
-const convertUrlType = (param, type) => {
-  switch (type) {
-    case "N":
-      return Number.parseInt(param);
-    default:
-      return param;
-  }
-};
-
 app.patch("/draw-names", async function(request, response) {
   if (request.query.id.length < 36 || !request.query.id) {
     response.json({
@@ -111,7 +101,6 @@ app.patch("/draw-names", async function(request, response) {
       }
       continue;
     } catch (err) {
-      console.log(err);
       response.json({
         statusCode: 500,
         error: err.message + " - names not drawn! Please try again!",

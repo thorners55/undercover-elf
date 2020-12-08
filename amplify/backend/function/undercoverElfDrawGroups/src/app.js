@@ -46,16 +46,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-// convert url string param to expected Type
-const convertUrlType = (param, type) => {
-  switch (type) {
-    case "N":
-      return Number.parseInt(param);
-    default:
-      return param;
-  }
-};
-
 app.get("/draw-groups", function(request, response) {
   if (request.query.id.length < 36 || !request.query.id) {
     response.json({ statusCode: 400, error: "Invalid group ID" });

@@ -35,18 +35,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-// convert url string param to expected Type
-const convertUrlType = (param, type) => {
-  switch (type) {
-    case "N":
-      return Number.parseInt(param);
-    default:
-      return param;
-  }
-};
-
-// ME //
-
 app.get("/users/:id/profile", function(request, response) {
   if (!request.params.id || request.params.id.length < 36) {
     response.json({ statusCode: 400, error: "Invalid user ID" });
@@ -71,7 +59,6 @@ app.get("/users/:id/profile", function(request, response) {
     }
 
     if (error) {
-      console.log(error), "<--- ERROR";
       response.json({
         statusCode: 500,
         error: error.message,

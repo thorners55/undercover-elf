@@ -26,16 +26,6 @@ var app = express();
 app.use(bodyParser.json());
 app.use(awsServerlessExpressMiddleware.eventContext());
 
-// Enable CORS for all methods
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
-
 // convert url string param to expected Type
 const convertUrlType = (param, type) => {
   switch (type) {
@@ -224,7 +214,6 @@ app.patch("/groups", async function(request, response) {
         memberIds.map((id) => {
           paramsUpdateUserGroup.Key.pk = id;
           paramsUpdateUserGroup.Key.sk = `group_${groupId}`;
-          console.log(paramsUpdateUserGroup, "<--- params user group");
           const updatedUserGroup = dynamodb
             .update(paramsUpdateUserGroup)
             .promise();
@@ -242,7 +231,6 @@ app.patch("/groups", async function(request, response) {
       response.json({ statusCode: 200, body: updatedGroup });
     }
   } catch (err) {
-    console.log(err);
     if (err.message === "The conditional request failed") {
       response.json({
         statusCode: 404,
