@@ -23,16 +23,16 @@
             groupName: groupInfo.groupName,
             members: groupInfo.members,
           })
-        "
-      >Leave group</button>
+        ">Leave group</button>
       <div id="invite-info" v-if="userGroupInfo.admin === 1 && groupInfo.closed === 0">
+
         <h3>Invitation ID:</h3>
         <p>{{ groupInfo.inviteId }}</p>
 
         <h3>Invitation link:</h3>
         <p>
           {{
-          `https://master.dngg2cj4n9n4p.amplifyapp.com/#/groups/join?id=${splitId}`
+            `https://master.dngg2cj4n9n4p.amplifyapp.com/#/groups/join?id=${splitId}`
           }}
         </p>
       </div>
@@ -45,6 +45,7 @@
         id="view-my-wishlist"
         :to="`/my-wishlist?groupId=${groupId}`"
       >View my wishlist for this group</router-link>
+
       <div id="group-info">
         <h3>Group members:</h3>
         <ul>
@@ -215,6 +216,22 @@ p {
 
 #leave-group-button {
   margin-top: 0;
+}
+
+#invite-info {
+  margin-top: 3ch;
+}
+#invite-info > p {
+  width: 100%;
+  word-wrap: break-word;
+}
+
+#draw-names-button {
+  display: block;
+  margin: 2ch auto;
+  padding: 1.5ch;
+  font-size: 1.4rem;
+  background-color: #c067db;
 }
 
 @media (max-width: 900px) {

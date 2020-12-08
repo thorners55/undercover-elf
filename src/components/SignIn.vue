@@ -109,8 +109,9 @@
 
       <!-- if not making new account (signing up) -->
       <div
-        v-if=" !loggingIn &&
-          !signingUp &&
+        v-if="
+          !loggingIn &&
+            !signingUp &&
             !userNotConfirmed &&
             !showForgotPassword &&
             !showForgotPasswordConfirm
@@ -158,7 +159,6 @@
         </ul>
         <p class="message" v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
         <button type="button" v-on:click="createAccount" :disabled="!validPassword">Create account</button>
-
         <button
           v-on:click="
             signingUp = false;

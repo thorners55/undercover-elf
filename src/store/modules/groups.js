@@ -257,7 +257,8 @@ const actions = {
       },
     })
       .then((response) => {
-        localStorage.undercoverElfGroups = updatedGroupArray;
+        console.log(response);
+        localStorage.undercoverElfGroups = JSON.stringify(updatedGroupArray);
         commit("setCreatedGroupId", { groupId, updatedGroupArray });
       })
       .catch((err) => {
@@ -324,7 +325,6 @@ const actions = {
           },
         })
           .then(() => {
-            localStorage.undercoverElfGroups = localStateGroups;
             localStorage.undercoverElfGroups = JSON.stringify(localStateGroups);
             router.push({ path: `/groups/${groupId}/profile` });
             alert("Group information successfully changed!");
@@ -470,7 +470,6 @@ const actions = {
         "Names have been drawn successfully! You will now be redirected to the group page where you can view the person you are buying for's wishlist"
       );
       commit("setLoading", { of: "DrawNames", to: false });
-      router.push({ path: `/groups/group_${id}/profile` });
     } catch (err) {
       commit("setLoading", { of: "DrawNames", to: false });
       console.log(err);

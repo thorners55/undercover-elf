@@ -15,7 +15,7 @@ AWS.config.update({ region: process.env.TABLE_REGION });
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
-let indexName = "sk-pk-index";
+let indexName = "sk-pk-index-prod";
 let tableName = "undercoverElfTable";
 if (process.env.ENV && process.env.ENV !== "NONE") {
   tableName = tableName + "-" + process.env.ENV;
@@ -45,16 +45,6 @@ app.use(function(req, res, next) {
   );
   next();
 });
-
-// convert url string param to expected Type
-const convertUrlType = (param, type) => {
-  switch (type) {
-    case "N":
-      return Number.parseInt(param);
-    default:
-      return param;
-  }
-};
 
 app.get("/draw-groups", function(request, response) {
   if (request.query.id.length < 36 || !request.query.id) {

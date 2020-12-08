@@ -76,8 +76,8 @@
         "Layers": [],
         "Timeout": "25",
         "Code": {
-          "S3Bucket": "amplify-undercoverelf-dev-123607-deployment",
-          "S3Key": "amplify-builds/undercoverElfDrawNames-38785241594346596873-build.zip"
+          "S3Bucket": "amplify-undercoverelf-prod-11611-deployment",
+          "S3Key": "amplify-builds/undercoverElfDrawNames-65745a76644b474e7270-build.zip"
         }
       }
     },
