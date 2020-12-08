@@ -27,7 +27,11 @@
                 id="show-sign-in-password-checkbox"
                 :checked="showSignInPassword ? true : false"
               />
-              <label class="show-password-label">Show password</label>
+              <label
+                for="show-sign-in-password-checkbox"
+                class="show-password-label"
+                >Show password</label
+              >
             </form>
             <p v-if="showErrorMessage" class="message">{{ errorMessage }}</p>
             <button
@@ -245,8 +249,10 @@
             signingUp = false;
             signUpEmail = '';
             signUpPassword = '';
+            signUpPasswordRetype = '';
             signUpName = '';
             showSignIn = true;
+            showSignUpPassword = false;
           "
         >
           Back to sign in
