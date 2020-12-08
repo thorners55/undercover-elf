@@ -129,6 +129,15 @@ button:hover {
   background-color: #fefefa;
 }
 
+button:disabled {
+  background-color: rgb(206, 203, 203);
+  color: grey;
+}
+
+button:disabled:hover {
+  cursor: default;
+}
+
 input {
   align-self: center;
   height: 3ch;

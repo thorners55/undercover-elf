@@ -19,8 +19,9 @@
       <button type="button" v-on:click="$router.push('/groups/create')">
         Create new group
       </button>
-      <p v-if="groups.length < 1">You have no groups yet!</p>
+
       <h2>You are a member of:</h2>
+      <p v-if="groups.length < 1">You have no groups yet!</p>
       <ul>
         <li v-for="group in groups" :key="group.sk">
           <router-link :to="`/groups/${group.groupId}/profile`">{{
