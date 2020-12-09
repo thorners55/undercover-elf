@@ -1,6 +1,7 @@
 import { API } from "aws-amplify";
 import router from "../../router";
 import { v4 as uuidv4 } from "uuid";
+import { splitId } from "../../components/utils/splitIdFunc.js";
 import date from "date-and-time";
 
 const namespaced = true;
@@ -64,8 +65,7 @@ const mutations = {
   },
 
   setGroupInfo(state, groupInfo) {
-    const splitGroupId = groupInfo.pk.split("_");
-    const inviteId = splitGroupId[1];
+    const inviteId = splitId(groupInfo.pk);
     state.groupInfo = groupInfo;
     state.groupInfo.inviteId = inviteId;
     const groupInfoToUpdate = JSON.parse(JSON.stringify(groupInfo));
@@ -191,8 +191,8 @@ const actions = {
 
   fetchGroupInfo({ commit }, groupId) {
     commit("setLoading", { of: "EditGroup", to: true });
-    const split = groupId.split("_");
-    const id = split[1];
+    const id = splitId(groupId);
+
     API.get("undercoverElfApi", `/groups?id=${id}`, {})
       .then(({ body }) => {
         commit("setGroupInfo", body);
@@ -205,8 +205,8 @@ const actions = {
   },
 
   fetchUserGroupInfo({ commit }, { userId, groupId }) {
-    const split = groupId.split("_");
-    const id = split[1];
+    const id = splitId(groupId);
+
     API.get("undercoverElfApi", `/users/${userId}/groups?groupId=${id}`, {})
       .then(({ body }) => {
         commit("setUserGroupInfo", body);
@@ -275,8 +275,7 @@ const actions = {
     if (result) {
       commit("setLoading", { of: "EditGroup", to: true });
 
-      const split = groupId.split("_");
-      const id = split[1];
+      const id = splitId(groupId);
 
       const userId = `user_${localStorage.undercoverElfUserId}`;
 
@@ -341,8 +340,7 @@ const actions = {
   leaveGroup({ commit }, { userId, groupId, groupName, members }) {
     const result = confirm(`Are you sure you what to leave ${groupName}?`);
 
-    const split = groupId.split("_");
-    const id = split[1];
+    const id = splitId(groupId);
     if (result) {
       // filter through local storage array to remove that group, then use this new array to update the user group profile
       commit("setLoading", { of: "LeaveGroup", to: true });
@@ -387,8 +385,7 @@ const actions = {
 
     if (result) {
       commit("setLoading", { of: "DrawNames", to: true });
-      const split = groupId.split("_");
-      const id = split[1];
+      const id = splitId(groupId);
 
       API.get("undercoverElfApi", `/draw-groups?id=${id}`, {})
         .then(({ body }) => {

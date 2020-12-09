@@ -192,6 +192,7 @@
       <div v-if="signingUp">
         <div id="signup-grid">
           <div></div>
+          <h2>Create an account</h2>
           <form v-on:keyup.enter="createAccount" v-on:submit.prevent>
             <label for="name">Name</label>
             <input type="text" id="name" v-model="signUpName" />
