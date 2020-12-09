@@ -246,7 +246,6 @@ const actions = {
       },
     })
       .then((response) => {
-        console.log(response);
         localStorage.undercoverElfGroups = JSON.stringify(updatedGroupArray);
         commit("setCreatedGroupId", { groupId, updatedGroupArray });
       })

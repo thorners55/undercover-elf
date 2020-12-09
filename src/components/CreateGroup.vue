@@ -4,7 +4,11 @@
     <h2>Create group</h2>
     <div v-if="!createGroupSuccess">
       <!-- can't put button inside form for styling reasons--->
-      <form id="create-group-form" v-on:submit="createGroup">
+      <form
+        id="create-group-form"
+        v-on:submit="createGroup"
+        v-on:keyup.enter="createGroup"
+      >
         <label for="group-name">Group name</label>
         <input
           type="text"
