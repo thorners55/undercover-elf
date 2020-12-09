@@ -4,4 +4,15 @@ const splitId = (groupId) => {
   return id;
 };
 
-export { splitId };
+const isAlreadyMember = (groupId) => {
+  let alreadyMember = false;
+  const groups = JSON.parse(localStorage.undercoverElfGroups);
+  for (let i = 0; i < groups.length; i++) {
+    if (groups[i].groupId === `group_${groupId}`) {
+      alreadyMember = true;
+      return alreadyMember;
+    } else continue;
+  }
+};
+
+export { splitId, isAlreadyMember };

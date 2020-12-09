@@ -1,7 +1,10 @@
 import { API } from "aws-amplify";
 import router from "../../router";
 import { v4 as uuidv4 } from "uuid";
-import { splitId } from "../../components/utils/splitIdFunc.js";
+import {
+  splitId,
+  isAlreadyMember,
+} from "../../components/utils/splitIdFunc.js";
 import date from "date-and-time";
 
 const namespaced = true;
@@ -92,14 +95,7 @@ const mutations = {
 const actions = {
   // searches to find a group using the ID the user has input
   findGroup({ commit }, groupId) {
-    let alreadyMember = false;
-    const groups = JSON.parse(localStorage.undercoverElfGroups);
-    for (let i = 0; i < groups.length; i++) {
-      if (groups[i].groupId === `group_${groupId}`) {
-        alreadyMember = true;
-        break;
-      } else continue;
-    }
+    const alreadyMember = isAlreadyMember(groupId);
     if (alreadyMember) {
       alert(
         "You are already a member of this group! Please search for another group."
@@ -126,14 +122,7 @@ const actions = {
 
   // join a group that user has previously searched for
   joinGroup({ commit }, { name, userId, groupId, foundGroupName }) {
-    let alreadyMember = false;
-    const groups = JSON.parse(localStorage.undercoverElfGroups);
-    for (let i = 0; i < groups.length; i++) {
-      if (groups[i].groupId === `group_${groupId}`) {
-        alreadyMember = true;
-        break;
-      } else continue;
-    }
+    const alreadyMember = isAlreadyMember(groupId);
     if (alreadyMember) {
       alert(
         "You are already a member of this group! Please search for another group."
