@@ -129,10 +129,24 @@ button:hover {
   background-color: #fefefa;
 }
 
+button:disabled {
+  background-color: rgb(206, 203, 203);
+  color: grey;
+}
+
+button:disabled:hover {
+  cursor: default;
+}
+
 input {
   align-self: center;
   height: 3ch;
   font-size: 1rem;
+}
+
+input[type="checkbox"] {
+  transform: scale(1.5);
+  margin-right: 1ch;
 }
 
 .message {

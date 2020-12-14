@@ -4,15 +4,41 @@
     <h2>Create group</h2>
     <div v-if="!createGroupSuccess">
       <!-- can't put button inside form for styling reasons--->
-      <form id="create-group-form" v-on:submit="createGroup">
+      <form
+        id="create-group-form"
+        v-on:submit="createGroup"
+        v-on:keyup.enter="createGroup"
+      >
         <label for="group-name">Group name</label>
-        <input type="text" id="group-name" v-model="newGroup.groupName" required />
+        <input
+          type="text"
+          id="group-name"
+          v-model="newGroup.groupName"
+          required
+        />
         <label for="exchange">Gift exchange</label>
         <input type="date" id="exchange" v-model="newGroup.exchange" required />
         <label for="budget">Budget</label>
-        <input type="text" id="budget" v-model="newGroup.budget" placeholder="e.g. £15" required />
+        <input
+          type="text"
+          id="budget"
+          v-model="newGroup.budget"
+          placeholder="e.g. £15"
+          required
+        />
       </form>
-      <button type="submit" for="create-group-form" v-on:click="createGroup">Create group</button>
+      <button
+        type="submit"
+        for="create-group-form"
+        v-on:click="createGroup"
+        :disabled="
+          !newGroup.groupName || !newGroup.exchange || !newGroup.budget
+            ? true
+            : false
+        "
+      >
+        Create group
+      </button>
     </div>
     <div v-if="createGroupSuccess">
       <p>Group successfully created!</p>
@@ -23,11 +49,15 @@
         </p>
         <p>
           To invite people to this group, send them the group ID that has been
-          generated for you, as shown above. They can join this group by searching
-          for this ID by clicking the 'Join Group' button on the homepage. The group invitation ID can be also found in the group settings.
+          generated for you, as shown above. They can join this group by
+          searching for this ID by clicking the 'Join Group' button on the
+          homepage. The group invitation ID can be also found in the group
+          settings.
         </p>
       </div>
-      <router-link :to="`/groups/group_${createdGroupId}/profile`">View group page</router-link>
+      <router-link :to="`/groups/group_${createdGroupId}/profile`"
+        >View group page</router-link
+      >
     </div>
   </div>
 </template>
@@ -38,6 +68,7 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "CreateGroup",
   methods: {
+    ...mapActions("groups", ["postGroup", "resetCreateGroup"]),
     createGroup() {
       // have to check this as required doesn't work because the styling then does not work
       if (
@@ -52,11 +83,10 @@ export default {
         this.postGroup(this.newGroup);
       }
     },
-    ...mapActions("groups", ["postGroup", "resetCreateGroup"])
   },
   computed: {
     ...mapState("profile", ["name", "userId"]),
-    ...mapState("groups", ["createdGroupId", "groups", "createGroupSuccess"])
+    ...mapState("groups", ["createdGroupId", "groups", "createGroupSuccess"]),
   },
   beforeDestroy() {
     this.resetCreateGroup();
@@ -67,10 +97,10 @@ export default {
         groupName: "",
         exchange: "",
         members: "",
-        budget: ""
-      }
+        budget: "",
+      },
     };
-  }
+  },
 };
 </script>
 

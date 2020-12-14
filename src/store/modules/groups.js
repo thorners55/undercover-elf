@@ -1,6 +1,10 @@
 import { API } from "aws-amplify";
 import router from "../../router";
 import { v4 as uuidv4 } from "uuid";
+import {
+  splitId,
+  isAlreadyMember,
+} from "../../components/utils/splitIdFunc.js";
 import date from "date-and-time";
 
 const namespaced = true;
@@ -64,8 +68,7 @@ const mutations = {
   },
 
   setGroupInfo(state, groupInfo) {
-    const splitGroupId = groupInfo.pk.split("_");
-    const inviteId = splitGroupId[1];
+    const inviteId = splitId(groupInfo.pk);
     state.groupInfo = groupInfo;
     state.groupInfo.inviteId = inviteId;
     const groupInfoToUpdate = JSON.parse(JSON.stringify(groupInfo));
@@ -92,14 +95,7 @@ const mutations = {
 const actions = {
   // searches to find a group using the ID the user has input
   findGroup({ commit }, groupId) {
-    let alreadyMember = false;
-    const groups = JSON.parse(localStorage.undercoverElfGroups);
-    for (let i = 0; i < groups.length; i++) {
-      if (groups[i].groupId === `group_${groupId}`) {
-        alreadyMember = true;
-        break;
-      } else continue;
-    }
+    const alreadyMember = isAlreadyMember(groupId);
     if (alreadyMember) {
       alert(
         "You are already a member of this group! Please search for another group."
@@ -126,14 +122,7 @@ const actions = {
 
   // join a group that user has previously searched for
   joinGroup({ commit }, { name, userId, groupId, foundGroupName }) {
-    let alreadyMember = false;
-    const groups = JSON.parse(localStorage.undercoverElfGroups);
-    for (let i = 0; i < groups.length; i++) {
-      if (groups[i].groupId === `group_${groupId}`) {
-        alreadyMember = true;
-        break;
-      } else continue;
-    }
+    const alreadyMember = isAlreadyMember(groupId);
     if (alreadyMember) {
       alert(
         "You are already a member of this group! Please search for another group."
@@ -191,8 +180,8 @@ const actions = {
 
   fetchGroupInfo({ commit }, groupId) {
     commit("setLoading", { of: "EditGroup", to: true });
-    const split = groupId.split("_");
-    const id = split[1];
+    const id = splitId(groupId);
+
     API.get("undercoverElfApi", `/groups?id=${id}`, {})
       .then(({ body }) => {
         commit("setGroupInfo", body);
@@ -205,8 +194,8 @@ const actions = {
   },
 
   fetchUserGroupInfo({ commit }, { userId, groupId }) {
-    const split = groupId.split("_");
-    const id = split[1];
+    const id = splitId(groupId);
+
     API.get("undercoverElfApi", `/users/${userId}/groups?groupId=${id}`, {})
       .then(({ body }) => {
         commit("setUserGroupInfo", body);
@@ -257,7 +246,6 @@ const actions = {
       },
     })
       .then((response) => {
-        console.log(response);
         localStorage.undercoverElfGroups = JSON.stringify(updatedGroupArray);
         commit("setCreatedGroupId", { groupId, updatedGroupArray });
       })
@@ -275,8 +263,7 @@ const actions = {
     if (result) {
       commit("setLoading", { of: "EditGroup", to: true });
 
-      const split = groupId.split("_");
-      const id = split[1];
+      const id = splitId(groupId);
 
       const userId = `user_${localStorage.undercoverElfUserId}`;
 
@@ -341,8 +328,7 @@ const actions = {
   leaveGroup({ commit }, { userId, groupId, groupName, members }) {
     const result = confirm(`Are you sure you what to leave ${groupName}?`);
 
-    const split = groupId.split("_");
-    const id = split[1];
+    const id = splitId(groupId);
     if (result) {
       // filter through local storage array to remove that group, then use this new array to update the user group profile
       commit("setLoading", { of: "LeaveGroup", to: true });
@@ -387,8 +373,7 @@ const actions = {
 
     if (result) {
       commit("setLoading", { of: "DrawNames", to: true });
-      const split = groupId.split("_");
-      const id = split[1];
+      const id = splitId(groupId);
 
       API.get("undercoverElfApi", `/draw-groups?id=${id}`, {})
         .then(({ body }) => {

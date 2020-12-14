@@ -13,15 +13,13 @@ export default {
   name: "LogOut",
   computed: {
     ...mapState("loggedIn", ["loggedIn", "name"]),
-    ...mapActions("loggedIn", ["logIn", "logOut"]),
+    ...mapActions("loggedIn", ["logIn", "logOut"])
   },
   methods: {
     async signOut() {
-      console.log(this.$route.path);
       var result = confirm("Are you sure you want to log out?");
       if (result) {
         if (this.$route.path !== "/") {
-          console.log("hi");
           this.$router.push({ path: "/" });
         }
         try {
@@ -32,8 +30,8 @@ export default {
           return;
         }
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

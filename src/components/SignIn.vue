@@ -15,7 +15,23 @@
               <label for="email">Email</label>
               <input type="email" id="email" v-model="signInEmail" />
               <label for="password">Password</label>
-              <input type="password" id="password" v-model="signInPassword" />
+              <input
+                :type="showSignInPassword ? 'text' : 'password'"
+                id="password"
+                v-model="signInPassword"
+              />
+
+              <input
+                type="checkbox"
+                v-on:click="toggleShowPassword('signIn')"
+                id="show-sign-in-password-checkbox"
+                :checked="showSignInPassword ? true : false"
+              />
+              <label
+                for="show-sign-in-password-checkbox"
+                class="show-password-label"
+                >Show password</label
+              >
             </form>
             <p v-if="showErrorMessage" class="message">{{ errorMessage }}</p>
             <button
@@ -87,7 +103,7 @@
               />
               <label for="forgot-password-new-password">New password:</label>
               <input
-                type="password"
+                :type="showForgotPasswordPassword ? 'text' : 'password'"
                 id="forgot-password-new-password"
                 @input="handlePasswords"
                 v-model="forgottenPasswordNewPassword"
@@ -97,22 +113,35 @@
                 >Re-type new password:</label
               >
               <input
-                type="password"
+                :type="showForgotPasswordPassword ? 'text' : 'password'"
                 id="forgot-password-new-password-retype"
                 @input="handlePasswords"
                 v-model="forgottenPasswordNewPasswordRetype"
               />
+              <input
+                type="checkbox"
+                v-on:click="toggleShowPassword('forgotPassword')"
+                id="show-forgot-password-checkbox"
+                :checked="showForgotPasswordPassword ? true : false"
+              />
+              <label
+                for="show-forgot-password-checkbox"
+                class="show-password-label"
+                >Show password</label
+              >
             </form>
-            <p class="password-instructions" v-if="passwordFormatMessage">
+            <p class="instructions" v-if="passwordFormatMessage">
               Password must be a minimum of 8 characters and contain:
             </p>
-            <ul class="password-instructions" v-if="passwordFormatMessage">
+            <ul class="instructions" v-if="passwordFormatMessage">
               <li>At least one uppercase character</li>
               <li>At least one lowercase character</li>
               <li>A special character</li>
               <li>A number</li>
             </ul>
-            <p class="message" v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
+            <p class="message" v-if="passwordsDoNotMatchMessage">
+              Passwords do not match
+            </p>
             <button
               type="button"
               for="forgot-password-confirm-code"
@@ -163,6 +192,7 @@
       <div v-if="signingUp">
         <div id="signup-grid">
           <div></div>
+          <h2>Create an account</h2>
           <form v-on:keyup.enter="createAccount" v-on:submit.prevent>
             <label for="name">Name</label>
             <input type="text" id="name" v-model="signUpName" />
@@ -170,7 +200,7 @@
             <input type="email" id="email" v-model="signUpEmail" />
             <label for="password">Password</label>
             <input
-              type="password"
+              :type="showSignUpPassword ? 'text' : 'password'"
               id="password"
               v-model="signUpPassword"
               @input="handlePasswords"
@@ -178,31 +208,52 @@
 
             <label for="passwordRetype">Re-enter password</label>
             <input
-              type="password"
+              :type="showSignUpPassword ? 'text' : 'password'"
               id="passwordRetype"
               v-model="signUpPasswordRetype"
               @input="handlePasswords"
             />
+            <input
+              type="checkbox"
+              v-on:click="toggleShowPassword('signUp')"
+              id="show-sign-up-password-checkbox"
+              :checked="showSignUpPassword ? true : false"
+            />
+            <label
+              for="show-sign-up-password-checkbox"
+              class="show-password-label"
+              >Show password</label
+            >
           </form>
         </div>
-        <p class="password-instructions" v-if="passwordFormatMessage">
+        <p class="instructions" v-if="passwordFormatMessage">
           Password must be a minimum of 8 characters and contain:
         </p>
-        <ul class="password-instructions" v-if="passwordFormatMessage">
+        <ul class="instructions" v-if="passwordFormatMessage">
           <li>At least one uppercase character</li>
           <li>At least one lowercase character</li>
           <li>A special character</li>
           <li>A number</li>
         </ul>
-        <p class="message" v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
-        <button type="button" v-on:click="createAccount" :disabled="!validPassword">Create account</button>
+        <p class="message" v-if="passwordsDoNotMatchMessage">
+          Passwords do not match
+        </p>
+        <button
+          type="button"
+          v-on:click="createAccount"
+          :disabled="!validPassword"
+        >
+          Create account
+        </button>
         <button
           v-on:click="
             signingUp = false;
             signUpEmail = '';
             signUpPassword = '';
+            signUpPasswordRetype = '';
             signUpName = '';
             showSignIn = true;
+            showSignUpPassword = false;
           "
         >
           Back to sign in
@@ -219,7 +270,10 @@
           <input type="text" id="password" v-model="confirmSignUpCode" />
         </form>
 
-        <p class="message">Enter the verification code sent to your email</p>
+        <p class="instructions">
+          Please enter the verification code sent to your email. If you do not
+          receive an email, check your junk folder.
+        </p>
 
         <button v-on:click="confirmSignUp">Submit verification code</button>
         <button v-on:click="resendCode">Re-send verification code</button>
@@ -250,8 +304,6 @@ import Loading from "./Loading.vue";
 import { Auth } from "aws-amplify";
 var aws = require("aws-sdk");
 import { mapActions, mapState } from "vuex";
-
-//  <button v-on:click="confirmSignUp">Confirm sign up</button>
 
 export default {
   name: "SignIn",
@@ -297,6 +349,7 @@ export default {
           this.showErrorMessage = true;
           this.errorMessage = error.message;
         } else {
+          alert("Error signing in: " + error.message);
           this.signingUp = false;
           this.showSignIn = true;
           this.confirmingSignUp = false;
@@ -307,15 +360,25 @@ export default {
           this.signUpPassword = "";
           this.signUpPasswordRetype = "";
         }
-        alert("Error signing in: " + error.message);
+      }
+    },
+    toggleShowPassword(signInUpOrForgotPassword) {
+      if (signInUpOrForgotPassword === "signIn") {
+        this.showSignInPassword = !this.showSignInPassword;
+      } else if (signInUpOrForgotPassword === "signUp") {
+        this.showSignUpPassword = !this.showSignUpPassword;
+      } else {
+        this.showForgotPasswordPassword = !this.showForgotPasswordPassword;
       }
     },
     async forgotPassword() {
-      this.showForgotPasswordConfirm = true;
-      this.showForgotPassword = false;
       try {
         const isSuccess = await Auth.forgotPassword(this.forgottenEmail);
+        this.showForgotPasswordConfirm = true;
+        this.showForgotPassword = false;
       } catch (error) {
+        this.showForgotPassword = true;
+        this.showForgotPasswordConfirm = false;
         alert("Error: " + error.message);
         this.showForgottenPasswordError = true;
         this.forgottenPasswordErrorMessage = "Error: " + error.message;
@@ -372,6 +435,7 @@ export default {
     },
 
     async confirmSignUp() {
+      this.loggingIn = true;
       let email;
       if (this.signInEmail) {
         email = this.signInEmail;
@@ -379,13 +443,15 @@ export default {
         email = this.signUpEmail;
       }
       try {
+        this.loggingIn = true;
+        this.confirmingSignUp = false;
         const userConfirm = await Auth.confirmSignUp(
           email,
           this.confirmSignUpCode
         );
-        alert("Successfully registered! You will be automatically logged in");
+
         //this.signUpEmail = "";
-        this.signIn(this.signUpEmail);
+        this.signIn(email);
         this.signingUp = false;
         this.showSignIn = true;
         this.confirmingSignUp = false;
@@ -394,10 +460,13 @@ export default {
         this.confirmSignUpCode = "";
         this.signUpPassword = "";
         this.signUpEmail = "";
+        alert(
+          "Successfully registered! Click OK to be be automatically logged in"
+        );
       } catch (error) {
+        this.confirmingSignUp = true;
         alert("Error confirming sign up: " + error.message);
         this.confirmSignUpCode = "";
-
         console.log("error confirming sign up", error);
       }
     },
@@ -447,6 +516,9 @@ export default {
       confirmingSignUp: false,
       signInEmail: "",
       signInPassword: "",
+      showSignInPassword: false,
+      showSignUpPassword: false,
+      showForgotPasswordPassword: false,
       signUpName: "",
       signUpEmail: "",
       signUpPassword: "",
@@ -497,6 +569,10 @@ button {
   width: 30%;
 }
 
+input[type="checkbox"] {
+  margin-left: auto;
+}
+
 form {
   display: grid;
   grid-template-columns: 40% auto;
@@ -510,13 +586,13 @@ label {
   text-align: left;
 }
 
-.password-instructions {
+.instructions {
   color: #2c3e50;
   font-weight: bold;
   margin-bottom: 2ch;
 }
 
-.password-instructions > li {
+.instructions > li {
   margin: 0.5ch;
 }
 
@@ -535,6 +611,20 @@ label {
   label {
     text-align: center;
     display: block;
+  }
+
+  input {
+    display: block;
+    margin: auto;
+  }
+
+  input[type="checkbox"] {
+    display: inline-block;
+    margin: 1ch;
+  }
+
+  .show-password-label {
+    display: inline-block;
   }
 }
 </style>

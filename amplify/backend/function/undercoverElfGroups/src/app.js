@@ -36,16 +36,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-// convert url string param to expected Type
-const convertUrlType = (param, type) => {
-  switch (type) {
-    case "N":
-      return Number.parseInt(param);
-    default:
-      return param;
-  }
-};
-
 // ME //
 app.get("/groups", function(request, response) {
   const groupId = `group_${request.query.id}`;
@@ -224,7 +214,6 @@ app.patch("/groups", async function(request, response) {
         memberIds.map((id) => {
           paramsUpdateUserGroup.Key.pk = id;
           paramsUpdateUserGroup.Key.sk = `group_${groupId}`;
-          console.log(paramsUpdateUserGroup, "<--- params user group");
           const updatedUserGroup = dynamodb
             .update(paramsUpdateUserGroup)
             .promise();
@@ -242,7 +231,6 @@ app.patch("/groups", async function(request, response) {
       response.json({ statusCode: 200, body: updatedGroup });
     }
   } catch (err) {
-    console.log(err);
     if (err.message === "The conditional request failed") {
       response.json({
         statusCode: 404,

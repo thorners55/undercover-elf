@@ -24,24 +24,12 @@
         >
           <div class="wishlist-item">
             <ul>
-              <li>
-                <p>
-                  <b>Description:</b>
-                </p>
-                <p>{{ item.description }}</p>
-              </li>
+              <li class="description">{{ item.description }}</li>
               <li v-show="item.url">
-                <p>
-                  <b>Link to item:</b>
-                </p>
-
                 <a :href="item.url">{{ item.url }}</a>
               </li>
               <li v-show="item.comment">
-                <p>
-                  <b>Comment:</b>
-                </p>
-                <p>{{ item.comment }}</p>
+                {{ item.comment }}
               </li>
             </ul>
           </div>
@@ -94,12 +82,21 @@ ul {
   margin: 0;
 }
 
+.description {
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
 .wishlist-item-container {
   border: 2px solid #2c3e50;
   border-radius: 1rem;
   margin: 2ch auto;
   justify-content: center;
   width: 70%;
+}
+
+.wishlist-item {
+  padding: 1ch;
 }
 
 @media (max-width: 900px) {

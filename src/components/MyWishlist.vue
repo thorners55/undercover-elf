@@ -29,11 +29,13 @@
               >
                 <!--   v-bind:class="{ editing: item.isEditing }" -->
 
-                <div>
-                  <p class="description">{{ item.description }}</p>
-                  <a class="item-link" :href="`${item.url}`">{{ item.url }}</a>
-                  <p>{{ item.comment }}</p>
-                </div>
+                <ul>
+                  <li class="description">{{ item.description }}</li>
+                  <li class="item-link" :href="`${item.url}`">
+                    <a :href="item.url">{{ item.url }}</a>
+                  </li>
+                  <li>{{ item.comment }}</li>
+                </ul>
               </div>
 
               <!-- if this item isnt being edited, all other edit item buttons are disabled -->
@@ -313,14 +315,14 @@ ul {
   margin: auto;
 }
 
+li,
+li.item-link {
+  margin-bottom: 2ch;
+}
+
 button {
   display: block;
   margin: 1rem auto;
-}
-
-button:disabled {
-  background-color: rgb(206, 203, 203);
-  color: grey;
 }
 
 input {
@@ -349,6 +351,10 @@ p {
   width: 60%;
   margin: 2rem auto;
   word-wrap: break-word;
+}
+
+.wishlist-item {
+  padding: 1ch;
 }
 
 .wishlist-item > div > p {
