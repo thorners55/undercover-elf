@@ -1,12 +1,7 @@
 <template>
   <div>
-    <Loading
-      v-if="loadingLeaveGroup || !fetchedGroupInfo || !fetchedUserGroupInfo"
-    />
-    <div
-      class="top-of-page"
-      v-show="!loadingLeaveGroup && fetchedUserGroupInfo"
-    >
+    <Loading v-if="loadingLeaveGroup || !fetchedGroupInfo || !fetchedUserGroupInfo" />
+    <div class="top-of-page" v-show="!loadingLeaveGroup && fetchedUserGroupInfo">
       <img src="../assets/gift-bag.svg" id="logo" width="50rem" />
       <h2>{{ groupInfo.groupName }}</h2>
       <button
@@ -29,20 +24,15 @@
             members: groupInfo.members,
           })
         "
-      >
-        Leave group
-      </button>
-      <div
-        id="invite-info"
-        v-if="userGroupInfo.admin === 1 && groupInfo.closed === 0"
-      >
+      >Leave group</button>
+      <div id="invite-info" v-if="userGroupInfo.admin === 1 && groupInfo.closed === 0">
         <h3>Invitation ID:</h3>
         <p>{{ groupInfo.inviteId }}</p>
 
         <h3>Invitation link:</h3>
         <p>
           {{
-            `https://master.dngg2cj4n9n4p.amplifyapp.com/#/groups/join?id=${splitId}`
+          `https://master.dngg2cj4n9n4p.amplifyapp.com/#/groups/join?id=${splitId}`
           }}
         </p>
       </div>
@@ -50,19 +40,16 @@
         id="draw-names-button"
         v-if="groupInfo.closed === 0 && userGroupInfo.admin === 1"
         v-on:click="drawNames({ groupId })"
-      >
-        Draw names
-      </button>
-      <router-link id="view-my-wishlist" :to="`/my-wishlist?groupId=${groupId}`"
-        >View my wishlist for this group</router-link
-      >
+      >Draw names</button>
+      <router-link
+        id="view-my-wishlist"
+        :to="`/my-wishlist?groupId=${groupId}`"
+      >View my wishlist for this group</router-link>
 
       <div id="group-info">
         <h3>Group members:</h3>
         <ul>
-          <li v-for="member in groupInfo.members" :key="member.pk">
-            {{ member.name }}
-          </li>
+          <li v-for="member in groupInfo.members" :key="member.pk">{{ member.name }}</li>
         </ul>
         <div>
           <h3>Exchange date:</h3>
@@ -73,6 +60,10 @@
           <p>{{ groupInfo.budget }}</p>
         </div>
         <div>
+          <h3>Group admin:</h3>
+          <p>{{ groupInfo.admin }}</p>
+        </div>
+        <div>
           <h3>You are buying for:</h3>
           <div v-if="groupInfo.closed === 1">
             <p>{{ userGroupInfo.buyingForName }}</p>
@@ -80,8 +71,7 @@
               :to="
                 `/wishlist/${userGroupInfo.buyingForUserId}?groupId=${groupId}`
               "
-              >View {{ userGroupInfo.buyingForName }}'s wishlist</router-link
-            >
+            >View {{ userGroupInfo.buyingForName }}'s wishlist</router-link>
           </div>
           <p v-if="groupInfo.closed === 0">Names have not been drawn yet!</p>
         </div>
@@ -98,7 +88,7 @@ import { splitId } from "./utils/splitIdFunc.js";
 export default {
   name: "GroupPage",
   components: {
-    Loading,
+    Loading
   },
   methods: {
     ...mapActions("groups", [
@@ -106,8 +96,8 @@ export default {
       "leaveGroup",
       "getGroupInfo",
       "fetchUserGroupInfo",
-      "drawNames",
-    ]),
+      "drawNames"
+    ])
   },
   computed: {
     groupId() {
@@ -119,8 +109,8 @@ export default {
       "userGroupInfo",
       "loadingLeaveGroup",
       "fetchedGroupInfo",
-      "fetchedUserGroupInfo",
-    ]),
+      "fetchedUserGroupInfo"
+    ])
   },
   created() {
     this.fetchGroupInfo(this.groupId);
@@ -129,9 +119,9 @@ export default {
   },
   data() {
     return {
-      splitId: "",
+      splitId: ""
     };
-  },
+  }
 };
 </script>
 
