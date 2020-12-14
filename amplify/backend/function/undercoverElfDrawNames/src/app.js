@@ -15,7 +15,6 @@ AWS.config.update({ region: process.env.TABLE_REGION });
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
-let indexName = "sk-pk-index";
 let tableName = "undercoverElfTable";
 if (process.env.ENV && process.env.ENV !== "NONE") {
   tableName = tableName + "-" + process.env.ENV;
@@ -65,7 +64,7 @@ app.patch("/draw-names", async function(request, response) {
       sk: groupId,
     },
     UpdateExpression: "set buyingForName = :bf, buyingForUserId = :bfuid",
-    ReturnValues: "UPDATED_NEW",
+    ReturnValues: "ALL_NEW",
   };
 
   let closeGroupParams = {

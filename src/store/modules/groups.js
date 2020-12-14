@@ -87,6 +87,20 @@ const mutations = {
     state.createdGroupId = "";
   },
 
+  setNamesDrawn(state, assignNamesResponse) {
+    for (let i = 0; i < assignNamesResponse.length; i++) {
+      if (
+        assignNamesResponse[i].pk === `user_${localStorage.undercoverElfUserId}`
+      ) {
+        state.groupInfo.closed = 1;
+        state.groupInfo.buyingForName = assignNamesResponse[i].buyingForName;
+        state.groupInfo.buyingForUserId =
+          assignNamesResponse[i].buyingForUserId;
+        break;
+      } else continue;
+    }
+  },
+
   setLoading(state, { of, to }) {
     state[`loading${of}`] = to;
   },
@@ -451,10 +465,11 @@ const actions = {
           body: response,
         }
       );
-      alert(
-        "Names have been drawn successfully! You will now be redirected to the group page where you can view the person you are buying for's wishlist"
-      );
       commit("setLoading", { of: "DrawNames", to: false });
+      commit("setNamesDrawn", assignNamesResponse.body);
+      alert(
+        "Names have been drawn successfully! Close this box to return to the group page."
+      );
     } catch (err) {
       commit("setLoading", { of: "DrawNames", to: false });
       console.log(err);

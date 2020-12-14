@@ -1,7 +1,17 @@
 <template>
   <div>
-    <Loading v-if="loadingLeaveGroup || !fetchedGroupInfo || !fetchedUserGroupInfo" />
-    <div class="top-of-page" v-show="!loadingLeaveGroup && fetchedUserGroupInfo">
+    <Loading
+      v-if="
+        loadingLeaveGroup ||
+          !fetchedGroupInfo ||
+          !fetchedUserGroupInfo ||
+          loadingDrawNames
+      "
+    />
+    <div
+      class="top-of-page"
+      v-show="!loadingLeaveGroup && fetchedUserGroupInfo && !loadingDrawNames"
+    >
       <img src="../assets/gift-bag.svg" id="logo" width="50rem" />
       <h2>{{ groupInfo.groupName }}</h2>
       <button
@@ -13,6 +23,16 @@
           <i class="fas fa-cog"></i>
         </span>
       </button>
+      <button
+        id="draw-names-button"
+        v-if="groupInfo.closed === 0 && userGroupInfo.admin === 1"
+        v-on:click="drawNames({ groupId })"
+      >Draw names</button>
+      <router-link
+        v-if="userGroupInfo.admin === 1"
+        id="view-my-wishlist"
+        :to="`/my-wishlist?groupId=${groupId}`"
+      >View my wishlist for this group</router-link>
       <button
         id="leave-group-button"
         v-if="userGroupInfo.admin === 0 && groupInfo.closed === 0"
@@ -36,12 +56,9 @@
           }}
         </p>
       </div>
-      <button
-        id="draw-names-button"
-        v-if="groupInfo.closed === 0 && userGroupInfo.admin === 1"
-        v-on:click="drawNames({ groupId })"
-      >Draw names</button>
+
       <router-link
+        v-if="userGroupInfo.admin === 0"
         id="view-my-wishlist"
         :to="`/my-wishlist?groupId=${groupId}`"
       >View my wishlist for this group</router-link>
@@ -107,6 +124,7 @@ export default {
     ...mapState("groups", [
       "groupInfo",
       "userGroupInfo",
+      "loadingDrawNames",
       "loadingLeaveGroup",
       "fetchedGroupInfo",
       "fetchedUserGroupInfo"
