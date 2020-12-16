@@ -15,7 +15,6 @@
       <button
         type="submit"
         for="create-group-form"
-        v-on:click="createGroup"
         :disabled="
           !newGroup.groupName || !newGroup.exchange || !newGroup.budget
             ? true

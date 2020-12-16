@@ -6,7 +6,7 @@
     <div v-if="!loadingJoinGroup">
       <div v-show="findingGroup">
         <!-- hides the input when begin search -->
-        <form id="find-group" v-on:submit.prevent>
+        <form id="find-group" v-on:submit="findGroup(groupId)" v-on:submit.prevent>
           <label for="groupId">Invitation ID:</label>
           <input type="text" id="groupId" v-model="groupId" v-on:keyup.enter="findGroup(groupId)" />
         </form>

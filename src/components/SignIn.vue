@@ -7,7 +7,16 @@
         <div v-if="showSignIn">
           <div v-if="!hideSignInForgottenPassword">
             <h2>Log in</h2>
-            <form id="sign-in" v-on:keyup.enter="signIn(signInEmail)" v-on:submit.prevent>
+            <form
+              id="sign-in"
+              v-on:submit="
+                signIn(signInEmail);
+                signUpEmail = '';
+                signUpPassword = '';
+              "
+              v-on:keyup.enter="signIn(signInEmail)"
+              v-on:submit.prevent
+            >
               <label for="email">Email</label>
               <input type="email" id="email" v-model="signInEmail" />
               <label for="password">Password</label>
@@ -26,14 +35,7 @@
               <label for="show-sign-in-password-checkbox" class="show-password-label">Show password</label>
             </form>
             <p v-if="showErrorMessage" class="message">{{ errorMessage }}</p>
-            <button
-              type="button"
-              v-on:click="
-                signIn(signInEmail);
-                signUpEmail = '';
-                signUpPassword = '';
-              "
-            >Log in</button>
+            <button type="button">Log in</button>
             <button
               v-on:click="
                 showForgotPassword = true;
@@ -150,7 +152,12 @@
         <div id="signup-grid">
           <div></div>
           <h2>Create an account</h2>
-          <form id="create-account" v-on:keyup.enter="createAccount" v-on:submit.prevent>
+          <form
+            id="create-account"
+            v-on:submit="createAccount"
+            v-on:keyup.enter="createAccount"
+            v-on:submit.prevent
+          >
             <label for="name">Name</label>
             <input type="text" id="name" v-model="signUpName" />
             <label for="email">Email</label>
@@ -190,12 +197,7 @@
           <li>A number</li>
         </ul>
         <p class="message" v-if="passwordsDoNotMatchMessage">Passwords do not match</p>
-        <button
-          type="button"
-          for="create-account"
-          v-on:click="createAccount"
-          :disabled="!validPassword"
-        >Create account</button>
+        <button type="button" for="create-account" :disabled="!validPassword">Create account</button>
         <button
           v-on:click="
             signingUp = false;
@@ -215,21 +217,23 @@
           v-if="userNotConfirmed && userNotConfirmedMessage"
           class="message"
         >You must confirm your account to sign in</p>
-        <form id="confirm-sign-up" v-on:keyup.enter="confirmSignUp" v-on:submit.prevent>
+        <form
+          id="confirm-sign-up"
+          v-on:submit="confirmSignUp"
+          v-on:keyup.enter="confirmSignUp"
+          v-on:submit.prevent
+        >
           <label for="code">Verification code:</label>
           <input type="text" id="password" v-model="confirmSignUpCode" />
         </form>
-
         <p class="instructions">
           Please enter the verification code sent to your email. If you do not
           receive an email, check your junk folder.
         </p>
 
-        <button v-on:click="confirmSignUp">Submit verification code</button>
+        <button for="confirm-sign-up" type="submit">Submit verification code</button>
         <button v-on:click="resendCode">Re-send verification code</button>
         <button
-          for="confirm-sign-up"
-          type="button"
           v-on:click="
             signingUp = false;
             showSignIn = true;

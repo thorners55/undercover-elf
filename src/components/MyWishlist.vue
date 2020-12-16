@@ -70,6 +70,7 @@
                 id="edit-wishlist-item"
                 class="edit-wishlist-item"
                 v-on:submit="updateWishlistItem(item.id)"
+                v-on:keyup.enter="updateWishlistItem(item.id)"
                 v-on:submit.prevent
               >
                 <label for="update-item-description">Description:</label>
@@ -150,17 +151,10 @@
               rows="6"
               maxlength="250"
             />
+            <button for="add-wishlist-item-form" type="submit" v-if="addingItem">Add this item</button>
+            <button type="button" v-if="addingItem" v-on:click="cancelAddItem">Cancel adding item</button>
           </form>
         </div>
-        <button
-          for="add-wishlist-item-form"
-          type="submit"
-          id="add-item-button"
-          v-on:click="addItem"
-          v-if="addingItem"
-        >Add this item</button>
-
-        <button type="button" v-if="addingItem" v-on:click="cancelAddItem">Cancel changes</button>
       </div>
     </div>
   </div>
@@ -422,11 +416,6 @@ button:hover {
 .description {
   font-weight: bold;
   font-size: 1.3rem;
-}
-
-#add-item-button {
-  margin-top: -1rem;
-  margin-bottom: 4rem;
 }
 
 @media (max-width: 900px) {
