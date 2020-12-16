@@ -35,7 +35,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-// ME //
 app.get("/groups", function(request, response) {
   const groupId = `group_${request.query.id}`;
 
@@ -136,8 +135,6 @@ app.patch("/groups", async function(request, response) {
     localStateGroups,
     userId,
   } = request.body;
-
-  // IF CHANGING NAME, NEED TO CHANGE THE GROUPS ARRAY IN USER PROFILE
 
   if (groupId.length < 1) {
     response.json({

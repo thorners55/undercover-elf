@@ -290,8 +290,8 @@ const actions = {
 
       let updateNameOrExchange = false;
 
-      // pass true or false balue saying if it is only the budget being updated
-      // if name or exchange is nt being updated AND name is not being updated AND exchange date is not being updated, alert that nothing is updated
+      // pass true or false value saying if it is only the budget being updated
+      // if name or exchange is not being updated AND name is not being updated AND exchange date is not being updated, alert that nothing is updated
 
       if (
         originalName !== updatedName ||
