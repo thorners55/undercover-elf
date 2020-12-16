@@ -34,7 +34,9 @@ const state = {
 const getters = {};
 
 const mutations = {
-  setUserGroupInfo(state, userGroupInfo) {
+  setUserGroupInfo(state, { body, rootState }) {
+    const userGroupInfo = body;
+    rootState.wishlists.myWishlist = body.wishlist;
     const addIsEditing = userGroupInfo.wishlist.map((item) => {
       item.isEditing = false;
       return item;
@@ -207,22 +209,18 @@ const actions = {
       });
   },
 
-  fetchUserGroupInfo({ commit }, { userId, groupId }) {
+  fetchUserGroupInfo({ commit, rootState }, { userId, groupId }) {
     const id = splitId(groupId);
 
     API.get("undercoverElfApi", `/users/${userId}/groups?groupId=${id}`, {})
       .then(({ body }) => {
-        commit("setUserGroupInfo", body);
+        commit("setUserGroupInfo", { body, rootState });
       })
       .catch((err) => {
         commit("");
         console.log(err);
       });
   },
-
-  /*updateStateUserGroupInfo({ commit }, groupId) {
-    commit("setUserGroupInfo", groupId);
-  },*/
 
   postGroup({ commit }, newGroupInfo) {
     const tryDate = date.transform(
@@ -475,22 +473,6 @@ const actions = {
       console.log(err);
       alert("There has been an error drawing names. Please try again.");
     }
-  },
-
-  updateWishlist(context, { userId, groupId, wishlist, localStorageName }) {
-    API.patch(
-      "undercoverElfApi",
-      `/users/user_${userId}/groups?groupId=${groupId}`,
-      {
-        body: wishlist,
-      }
-    )
-      .then((response) => {
-        localStorage[localStorageName] = JSON.stringify(wishlist);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   },
 };
 

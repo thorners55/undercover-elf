@@ -77,7 +77,7 @@
         "Timeout": "25",
         "Code": {
           "S3Bucket": "amplify-undercoverelf-dev-123607-deployment",
-          "S3Key": "amplify-builds/undercoverElfUserGroups-35656c6b2f6364555832-build.zip"
+          "S3Key": "amplify-builds/undercoverElfUserGroups-39474b4e6d4e51647458-build.zip"
         }
       }
     },

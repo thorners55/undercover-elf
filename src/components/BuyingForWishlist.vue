@@ -1,36 +1,28 @@
 <template>
   <div>
-    <router-link class="back-to" :to="`/groups/${groupId}/profile`"
-      >Back to {{ groupName }}</router-link
-    >
+    <router-link class="back-to" :to="`/groups/${groupId}/profile`">Back to {{ groupName }}</router-link>
     <Loading v-if="loadingWishlist" />
     <div v-if="!loadingWishlist" class="top-of-page">
       <img src="../assets/sock.svg" id="logo" width="50rem" />
       <h2>{{ name }}'s Wishlist</h2>
       <p>
-        <b
-          >REMEMBER: You are the only person who can see {{ name }}'s
-          wishlist!</b
-        >
+        <b>
+          REMEMBER: You are the only person who can see {{ name }}'s
+          wishlist!
+        </b>
       </p>
-      <p v-if="wishlist.length < 1">
-        {{ name }} has not added anything to their wishlist yet!
-      </p>
+      <p
+        v-if="buyingForWishlist.length < 1"
+      >{{ name }} has not added anything to their wishlist yet!</p>
       <ul>
-        <li
-          v-for="item in wishlist"
-          :key="item.id"
-          class="wishlist-item-container"
-        >
+        <li v-for="item in buyingForWishlist" :key="item.id" class="wishlist-item-container">
           <div class="wishlist-item">
             <ul>
               <li class="description">{{ item.description }}</li>
               <li v-show="item.url">
                 <a :href="item.url">{{ item.url }}</a>
               </li>
-              <li v-show="item.comment">
-                {{ item.comment }}
-              </li>
+              <li v-show="item.comment">{{ item.comment }}</li>
             </ul>
           </div>
         </li>
@@ -46,10 +38,10 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "BuyingForWishlist",
   components: {
-    Loading,
+    Loading
   },
   methods: {
-    ...mapActions("wishlists", ["fetchWishlist"]),
+    ...mapActions("wishlists", ["fetchWishlist"])
   },
   computed: {
     userId() {
@@ -61,13 +53,13 @@ export default {
     ...mapState("wishlists", [
       "name",
       "groupName",
-      "wishlist",
-      "loadingWishlist",
-    ]),
+      "buyingForWishlist",
+      "loadingWishlist"
+    ])
   },
   created() {
     this.fetchWishlist({ userId: this.userId, groupId: this.groupId });
-  },
+  }
 };
 </script>
 
