@@ -35,11 +35,6 @@ const getters = {};
 
 const mutations = {
   setUserGroupInfo(state, userGroupInfo) {
-    const addIsEditing = userGroupInfo.wishlist.map((item) => {
-      item.isEditing = false;
-      return item;
-    });
-    userGroupInfo.wishlist = addIsEditing;
     state.userGroupInfo = userGroupInfo;
 
     const localStorageName = `undercoverElfMyWishlist${userGroupInfo.sk}`;
@@ -207,22 +202,19 @@ const actions = {
       });
   },
 
-  fetchUserGroupInfo({ commit }, { userId, groupId }) {
+  fetchUserGroupInfo({ commit, rootState }, { userId, groupId }) {
     const id = splitId(groupId);
 
     API.get("undercoverElfApi", `/users/${userId}/groups?groupId=${id}`, {})
       .then(({ body }) => {
         commit("setUserGroupInfo", body);
+        rootState.wishlists.myWishlist = body.wishlist;
       })
       .catch((err) => {
         commit("");
         console.log(err);
       });
   },
-
-  /*updateStateUserGroupInfo({ commit }, groupId) {
-    commit("setUserGroupInfo", groupId);
-  },*/
 
   postGroup({ commit }, newGroupInfo) {
     const tryDate = date.transform(
@@ -290,8 +282,8 @@ const actions = {
 
       let updateNameOrExchange = false;
 
-      // pass true or false balue saying if it is only the budget being updated
-      // if name or exchange is nt being updated AND name is not being updated AND exchange date is not being updated, alert that nothing is updated
+      // pass true or false value saying if it is only the budget being updated
+      // if name or exchange is not being updated AND name is not being updated AND exchange date is not being updated, alert that nothing is updated
 
       if (
         originalName !== updatedName ||
@@ -475,22 +467,6 @@ const actions = {
       console.log(err);
       alert("There has been an error drawing names. Please try again.");
     }
-  },
-
-  updateWishlist(context, { userId, groupId, wishlist, localStorageName }) {
-    API.patch(
-      "undercoverElfApi",
-      `/users/user_${userId}/groups?groupId=${groupId}`,
-      {
-        body: wishlist,
-      }
-    )
-      .then((response) => {
-        localStorage[localStorageName] = JSON.stringify(wishlist);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   },
 };
 

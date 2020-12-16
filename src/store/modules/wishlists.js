@@ -5,17 +5,22 @@ const namespaced = true;
 const state = {
   name: "",
   groupName: "",
-  wishlist: [],
+  buyingForWishlist: [],
   loadingWishlist: false,
+  myWishlist: [],
 };
 
 const getters = {};
 
 const mutations = {
-  setWishlist(state, { name, wishlist, groupName }) {
+  setBuyingForWishlist(state, { name, wishlist, groupName }) {
     state.name = name;
-    state.wishlist = wishlist;
+    state.buyingForWishlist = wishlist;
     state.groupName = groupName;
+  },
+
+  setMyWishlist(state, updatedWishlist) {
+    state.myWishlist = updatedWishlist;
   },
 
   setLoading(state, trueOrFalse) {
@@ -32,12 +37,29 @@ const actions = {
       `/users/${userId}/groups?groupId=${groupId}&wishlist=true`
     )
       .then(({ body }) => {
-        commit("setWishlist", body);
+        commit("setBuyingForWishlist", body);
         commit("setLoading", false);
       })
       .catch((err) => {
         console.log(err);
         commit("setLoading", false);
+      });
+  },
+
+  updateWishlist({ commit }, { userId, groupId, wishlist, localStorageName }) {
+    API.patch(
+      "undercoverElfApi",
+      `/users/user_${userId}/groups?groupId=${groupId}`,
+      {
+        body: wishlist,
+      }
+    )
+      .then(() => {
+        commit("setMyWishlist", wishlist);
+        localStorage[localStorageName] = JSON.stringify(wishlist);
+      })
+      .catch((err) => {
+        console.log(err);
       });
   },
 };

@@ -3,9 +3,8 @@
     <Loading
       v-if="
         loadingLeaveGroup ||
-          !fetchedGroupInfo ||
-          !fetchedUserGroupInfo ||
-          loadingDrawNames
+          loadingDrawNames || !fetchedGroupInfo &&
+          !fetchedUserGroupInfo 
       "
     />
     <div

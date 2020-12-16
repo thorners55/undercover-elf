@@ -1,23 +1,20 @@
 <template>
   <div>
-    <router-link class="back-to" :to="`/groups/${groupId}/profile`"
-      >Back to {{ userGroupInfo.groupName }}</router-link
-    >
+    <router-link
+      class="back-to"
+      :to="`/groups/${groupId}/profile`"
+    >Back to {{ userGroupInfo.groupName }}</router-link>
     <div class="top-of-page">
       <img src="../assets/gift.svg" id="logo" width="50rem" />
       <h2>Wishlist</h2>
       <Loading v-if="!fetchedUserGroupInfo" />
       <div v-if="fetchedUserGroupInfo">
-        <p v-if="userGroupInfo.wishlist && userGroupInfo.wishlist.length < 1">
+        <p v-if="myWishlist && myWishlist.length < 1">
           You have no items on your wishlist! Press 'Add new item' to get
           started!
         </p>
         <ul>
-          <li
-            v-for="(item, index) in userGroupInfo.wishlist"
-            :key="item.id"
-            :item="item"
-          >
+          <li v-for="(item, index) in myWishlist" :key="item.id" :item="item">
             <div class="wishlist-item-container" v-if="!item.isEditing">
               <div
                 :class="
@@ -68,14 +65,13 @@
               </div>
             </div>
 
-            <div
-              v-if="item.isEditing"
-              class="wishlist-item-container-form-editing"
-            >
+            <div v-if="item.isEditing" class="wishlist-item-container-form-editing">
               <form
                 id="edit-wishlist-item"
                 class="edit-wishlist-item"
                 v-on:submit="updateWishlistItem(item.id)"
+                v-on:keyup.enter="updateWishlistItem(item.id)"
+                v-on:submit.prevent
               >
                 <label for="update-item-description">Description:</label>
                 <input
@@ -101,9 +97,7 @@
                   rows="6"
                   maxlength="250"
                 />
-                <button type="submit" for="edit-wishlist-item">
-                  Save changes
-                </button>
+                <button type="submit" for="edit-wishlist-item">Save changes</button>
                 <button
                   for="edit-wishlist-item"
                   type="button"
@@ -112,9 +106,7 @@
                     item.isEditing = false;
                     editing = false;
                   "
-                >
-                  Cancel editing
-                </button>
+                >Cancel editing</button>
               </form>
             </div>
           </li>
@@ -124,14 +116,14 @@
           v-if="!addingItem"
           v-on:click="addingItem = true"
           :disabled="editing"
-        >
-          Add new wishlist item
-        </button>
+        >Add new wishlist item</button>
         <div v-if="addingItem" class="wishlist-item-container-form-editing">
           <form
             id="add-wishlist-item-form"
             v-on:submit="addItem"
             v-if="addingItem"
+            v-on:keyup.enter="addItem"
+            v-on:submit.prevent
           >
             <label for="add-new-item-description">Description:</label>
             <input
@@ -155,25 +147,14 @@
               type="text"
               id="add-new-item-comment"
               v-model="addItemComment"
-              placeholder="Any above ankle length socks"
+              placeholder="e.g. Any above ankle length socks"
               rows="6"
               maxlength="250"
             />
+            <button for="add-wishlist-item-form" type="submit" v-if="addingItem">Add this item</button>
+            <button type="button" v-if="addingItem" v-on:click="cancelAddItem">Cancel adding item</button>
           </form>
         </div>
-        <button
-          for="add-wishlist-item-form"
-          type="submit"
-          id="add-item-button"
-          v-on:click="addItem"
-          v-if="addingItem"
-        >
-          Add this item
-        </button>
-
-        <button type="button" v-if="addingItem" v-on:click="cancelAddItem">
-          Cancel changes
-        </button>
       </div>
     </div>
   </div>
@@ -187,7 +168,7 @@ import { v4 as uuidv4 } from "uuid";
 export default {
   name: "MyWishlist",
   components: {
-    Loading,
+    Loading
   },
   computed: {
     groupId() {
@@ -195,6 +176,7 @@ export default {
     },
     ...mapState("loggedIn", ["userId"]),
     ...mapState("groups", ["fetchedUserGroupInfo"]),
+    ...mapState("wishlists", ["myWishlist"])
   },
   created() {
     this.fetchUserGroupInfo({ userId: this.userId, groupId: this.groupId });
@@ -205,15 +187,16 @@ export default {
     localStorage.removeItem(this.localStorageName);
   },
   methods: {
-    ...mapActions("groups", ["fetchUserGroupInfo", "updateWishlist"]),
+    ...mapActions("groups", ["fetchUserGroupInfo"]),
+    ...mapActions("wishlists", ["updateWishlist"]),
     updateDescription(event) {
       this.copiedUserGroupInfo.description = event.target.value;
     },
     updateItem(event, index, type) {
-      this.userGroupInfo.wishlist[index][type] = event.target.value;
+      this.myWishlist[index][type] = event.target.value;
     },
     updateWishlistItem(id) {
-      this.userGroupInfo.wishlist.forEach((item) => {
+      this.myWishlist.forEach(item => {
         if (item.id === id) {
           if (!item.description) {
             alert("Item must have a description");
@@ -227,11 +210,11 @@ export default {
             this.updateWishlist({
               userId: this.userId,
               groupId: this.groupId,
-              wishlist: this.userGroupInfo.wishlist,
-              localStorageName: this.localStorageName,
+              wishlist: this.myWishlist,
+              localStorageName: this.localStorageName
             });
             localStorage[this.localStorageName] = JSON.stringify(
-              this.userGroupInfo.wishlist
+              this.myWishlist
             );
           }
         }
@@ -248,9 +231,9 @@ export default {
           url: this.addItemUrl,
           comment: this.addItemComment,
           isEditing: false,
-          id: uuidv4(),
+          id: uuidv4()
         };
-        this.userGroupInfo.wishlist.push(addedItem);
+        this.myWishlist.push(addedItem);
 
         this.addItemDescription = "";
         this.addItemUrl = "";
@@ -259,15 +242,15 @@ export default {
         this.updateWishlist({
           userId: this.userId,
           groupId: this.groupId,
-          wishlist: this.userGroupInfo.wishlist,
-          localStorageName: this.localStorageName,
+          wishlist: this.myWishlist,
+          localStorageName: this.localStorageName
         });
       }
     },
     cancelEdit(index) {
       let originalWishlist = JSON.parse(localStorage[this.localStorageName]);
       let originalItem = originalWishlist.wishlist[index];
-      this.userGroupInfo.wishlist[index] = originalItem;
+      this.myWishlist[index] = originalItem;
     },
     cancelAddItem() {
       this.addItemDescription = "";
@@ -278,19 +261,20 @@ export default {
     deleteItem(id) {
       var result = confirm("Are you sure you want to delete this item?");
       if (result) {
-        const updatedWishlist = this.userGroupInfo.wishlist.filter((item) => {
+        console.log("before updating wishlist");
+        const updatedWishlist = this.myWishlist.filter(item => {
           return item.id !== id;
         });
-
-        this.userGroupInfo.wishlist = updatedWishlist;
+        console.log("after creating update wishlist");
         this.updateWishlist({
           userId: this.userId,
           groupId: this.groupId,
-          wishlist: this.userGroupInfo.wishlist,
-          localStorageName: this.localStorageName,
+          wishlist: updatedWishlist,
+          localStorageName: this.localStorageName
         });
+        console.log("after updating database");
       }
-    },
+    }
   },
   data() {
     return {
@@ -299,9 +283,9 @@ export default {
       addingItem: false,
       addItemDescription: "",
       addItemUrl: "",
-      addItemComment: "",
+      addItemComment: ""
     };
-  },
+  }
 };
 </script>
 
@@ -323,6 +307,11 @@ li.item-link {
 button {
   display: block;
   margin: 1rem auto;
+}
+
+button:disabled {
+  background-color: rgb(206, 203, 203);
+  color: grey;
 }
 
 input {
@@ -427,11 +416,6 @@ button:hover {
 .description {
   font-weight: bold;
   font-size: 1.3rem;
-}
-
-#add-item-button {
-  margin-top: -1rem;
-  margin-bottom: 4rem;
 }
 
 @media (max-width: 900px) {
