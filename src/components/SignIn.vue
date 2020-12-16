@@ -509,6 +509,11 @@ button {
   align-items: center;
 }
 
+button:disabled {
+  background-color: rgb(206, 203, 203);
+  color: grey;
+}
+
 #sign-in {
   display: grid;
   grid-template-columns: 10ch auto;

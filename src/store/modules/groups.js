@@ -34,14 +34,7 @@ const state = {
 const getters = {};
 
 const mutations = {
-  setUserGroupInfo(state, { body, rootState }) {
-    const userGroupInfo = body;
-    rootState.wishlists.myWishlist = body.wishlist;
-    const addIsEditing = userGroupInfo.wishlist.map((item) => {
-      item.isEditing = false;
-      return item;
-    });
-    userGroupInfo.wishlist = addIsEditing;
+  setUserGroupInfo(state, userGroupInfo) {
     state.userGroupInfo = userGroupInfo;
 
     const localStorageName = `undercoverElfMyWishlist${userGroupInfo.sk}`;
@@ -214,7 +207,8 @@ const actions = {
 
     API.get("undercoverElfApi", `/users/${userId}/groups?groupId=${id}`, {})
       .then(({ body }) => {
-        commit("setUserGroupInfo", { body, rootState });
+        commit("setUserGroupInfo", body);
+        rootState.wishlists.myWishlist = body.wishlist;
       })
       .catch((err) => {
         commit("");

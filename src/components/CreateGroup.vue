@@ -4,28 +4,13 @@
     <h2>Create group</h2>
     <div v-if="!createGroupSuccess">
       <!-- can't put button inside form for styling reasons--->
-      <form
-        id="create-group-form"
-        v-on:submit="createGroup"
-        v-on:keyup.enter="createGroup"
-      >
+      <form id="create-group-form" v-on:submit="createGroup" v-on:keyup.enter="createGroup">
         <label for="group-name">Group name</label>
-        <input
-          type="text"
-          id="group-name"
-          v-model="newGroup.groupName"
-          required
-        />
+        <input type="text" id="group-name" v-model="newGroup.groupName" required />
         <label for="exchange">Gift exchange</label>
         <input type="date" id="exchange" v-model="newGroup.exchange" required />
         <label for="budget">Budget</label>
-        <input
-          type="text"
-          id="budget"
-          v-model="newGroup.budget"
-          placeholder="e.g. £15"
-          required
-        />
+        <input type="text" id="budget" v-model="newGroup.budget" placeholder="e.g. £15" required />
       </form>
       <button
         type="submit"
@@ -36,9 +21,7 @@
             ? true
             : false
         "
-      >
-        Create group
-      </button>
+      >Create group</button>
     </div>
     <div v-if="createGroupSuccess">
       <p>Group successfully created!</p>
@@ -55,9 +38,7 @@
           settings.
         </p>
       </div>
-      <router-link :to="`/groups/group_${createdGroupId}/profile`"
-        >View group page</router-link
-      >
+      <router-link :to="`/groups/group_${createdGroupId}/profile`">View group page</router-link>
     </div>
   </div>
 </template>
@@ -82,11 +63,11 @@ export default {
         this.creatingGroup = false;
         this.postGroup(this.newGroup);
       }
-    },
+    }
   },
   computed: {
     ...mapState("profile", ["name", "userId"]),
-    ...mapState("groups", ["createdGroupId", "groups", "createGroupSuccess"]),
+    ...mapState("groups", ["createdGroupId", "groups", "createGroupSuccess"])
   },
   beforeDestroy() {
     this.resetCreateGroup();
@@ -97,10 +78,10 @@ export default {
         groupName: "",
         exchange: "",
         members: "",
-        budget: "",
-      },
+        budget: ""
+      }
     };
-  },
+  }
 };
 </script>
 
@@ -129,6 +110,11 @@ label {
 button {
   margin: 1rem;
   margin-bottom: 6ch;
+}
+
+button:disabled {
+  background-color: rgb(206, 203, 203);
+  color: grey;
 }
 
 @media (max-width: 900px) {

@@ -315,6 +315,11 @@ button {
   margin: 1rem auto;
 }
 
+button:disabled {
+  background-color: rgb(206, 203, 203);
+  color: grey;
+}
+
 input {
   margin: 1ch;
   width: auto;
