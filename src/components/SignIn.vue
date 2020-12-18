@@ -2,9 +2,9 @@
   <div>
     <Loading v-if="signIn.loggingIn" />
     <div v-if="!loggedIn" class="top-of-page">
-      <!-- if user is signing in, not making new account -->
+      <!-- START if user is signing in, not making new account -->
       <div v-if="!signIn.signingUp && !signIn.loggingIn">
-        <div v-if="signIn.signIn.showSignIn">
+        <div v-if="signIn.showSignIn">
           <div v-if="!forgotPassword.hideSignInForgottenPassword">
             <h2>Log in</h2>
             <form
@@ -43,9 +43,9 @@
               "
             >Forgotten password?</button>
           </div>
+          <!-- if user has forgotten password START -->
           <div v-if="forgotPassword.showForgotPassword">
             <form id="forgot-password" v-on:submit.prevent v-on:keyup.enter="forgotPasswordFunc">
-              <!-- FIX -->
               <label for="forgot-password-email">Email:</label>
               <input
                 type="email"
@@ -67,7 +67,7 @@
               "
             >Back to sign in</button>
           </div>
-          <div v-if="forgotPassword.forgotPassword.showForgotPasswordConfirm">
+          <div v-if="forgotPassword.showForgotPasswordConfirm">
             <p
               v-if="forgotPassword.showForgottenPasswordError"
             >{{ forgotPassword.forgottenPasswordErrorMessage }}</p>
@@ -128,7 +128,7 @@
             >Change password</button>
 
             <button
-              v-if="forgotPassword.forgotPassword.showForgotPasswordConfirm"
+              v-if="forgotPassword.showForgotPasswordConfirm"
               v-on:click="
                 forgotPassword.showForgotPassword = false;
                 forgotPassword.hideSignInForgottenPassword = false;
@@ -137,11 +137,12 @@
               "
             >Back to sign in</button>
           </div>
-          <!-- if user has signed up but has not confirmed email -->
+          <!-- if user has forgotten password END -->
         </div>
       </div>
+      <!-- END if user is signing in, not making new account -->
 
-      <!-- if not making new account (signing up) -->
+      <!-- START if not making new account (signing up) -->
       <div
         v-if="
           !signIn.loggingIn &&
@@ -159,8 +160,9 @@
           "
         >Create an account</button>
       </div>
+      <!-- END if not making new account (signing up) -->
 
-      <!-- if making new account (signing up) -->
+      <!-- START if making new account (signing up) -->
       <div v-if="signIn.signingUp">
         <div id="signup-grid">
           <div></div>
@@ -227,11 +229,13 @@
           "
         >Back to sign in</button>
       </div>
-      <!-- if have made new account but have not confirmed -->
+      <!-- END if making new account (signing up) -->
+
+      <!-- START if have made new account but have not confirmed -->
       <div v-if="signIn.confirmingSignUp">
         <p>Email: {{ signUp.signUpEmail ? signUp.signUpEmail : signIn.signInEmail }}</p>
         <p
-          v-if="uncomfirmedUser.userNotConfirmed && uncomfirmedUser.userNotConfirmedMessage"
+          v-if="unconfirmedUser.userNotConfirmed && unconfirmedUser.userNotConfirmedMessage"
           class="message"
         >You must confirm your account to sign in</p>
         <form
@@ -255,8 +259,8 @@
             signIn.signingUp = false;
             signIn.showSignIn = true;
             signIn.confirmingSignUp = false;
-            uncomfirmedUser.userNotConfirmed = false;
-            uncomfirmedUser.userNotConfirmedMessage = false;
+            unconfirmedUser.userNotConfirmed = false;
+            unconfirmedUser.userNotConfirmedMessage = false;
             signUp.signUpName = '';
             signUp.signUpEmail = '';
             signUp.signUpName = '';
@@ -265,6 +269,7 @@
           "
         >Back to sign in</button>
       </div>
+      <!-- END if have made new account but have not confirmed -->
     </div>
   </div>
 </template>
@@ -286,6 +291,7 @@ export default {
   },
   methods: {
     ...mapActions("loggedIn", ["logIn", "logOut"]),
+    // methods reset data (input fields and what is shown) according to what makes sense with the user experience - sometimes will reset data and sometimes won't, e.g. if logging in and is an incorrect password, will reset the password field but not the sign in email
     async signInFunc(email) {
       this.signIn.loggingIn = true;
       let password;
@@ -299,20 +305,12 @@ export default {
         let user = await Auth.signIn(email, password);
         let payload = { userId: user.username, name: user.attributes.name };
         this.logIn(payload);
-        /* this.signIn.loggingIn = false;
-        this.signIn.signInEmail = "";
-        this.signIn.signInPassword = "";
-        this.signUp.signUpName = "";
-        this.signUp.signUpEmail = "";
-        this.signUp.signUpPassword = "";
-        this.signUp.signUpPasswordRetype = "";
-        this.errors.showErrorMessage = false;*/
       } catch (error) {
         this.signIn.loggingIn = false;
         this.signIn.showSignIn = true;
         if (error.message === "User is not confirmed.") {
-          this.uncomfirmedUser.userNotConfirmed = true;
-          this.uncomfirmedUser.userNotConfirmedMessage = true;
+          this.unconfirmedUser.userNotConfirmed = true;
+          this.unconfirmedUser.userNotConfirmedMessage = true;
           this.signIn.showSignIn = false;
           this.signIn.confirmingSignUp = true;
         } else if (error.code === "NotAuthorizedException") {
@@ -323,8 +321,8 @@ export default {
           this.signIn.signingUp = false;
           this.signIn.showSignIn = true;
           this.signIn.confirmingSignUp = false;
-          this.uncomfirmedUser.userNotConfirmed = false;
-          this.uncomfirmedUser.userNotConfirmedMessage = false;
+          this.unconfirmedUser.userNotConfirmed = false;
+          this.unconfirmedUser.userNotConfirmedMessage = false;
           this.signUp.signUpName = "";
           this.signIn.signInPassword = "";
           this.signUp.signUpPassword = "";
@@ -388,7 +386,6 @@ export default {
     },
     async createAccount() {
       this.signIn.showSignIn = false;
-
       try {
         const { user } = await Auth.signUp({
           username: this.signUp.signUpEmail,
@@ -399,16 +396,12 @@ export default {
         });
         this.signIn.signingUp = false;
         this.signIn.confirmingSignUp = true;
-        this.uncomfirmedUser.userNotConfirmed = true;
-        /*this.signUp.signUpEmail = "";
-        this.signUp.signUpPassword = "";
-        this.signUp.signUpName = "";*/
+        this.unconfirmedUser.userNotConfirmed = true;
       } catch (error) {
         alert("Error signing up: " + error.message);
         console.log("error signing up:", error);
       }
     },
-
     async confirmSignUp() {
       this.signIn.loggingIn = true;
       let email;
@@ -424,14 +417,12 @@ export default {
           email,
           this.signUp.confirmSignUpCode
         );
-
-        //this.signUp.signUpEmail = "";
         this.signInFunc(email);
         this.signIn.signingUp = false;
         this.signIn.showSignIn = true;
         this.signIn.confirmingSignUp = false;
-        this.uncomfirmedUser.userNotConfirmed = false;
-        this.uncomfirmedUser.userNotConfirmedMessage = false;
+        this.unconfirmedUser.userNotConfirmed = false;
+        this.unconfirmedUser.userNotConfirmedMessage = false;
         this.signUp.confirmSignUpCode = "";
         this.signUp.signUpPassword = "";
         this.signUp.signUpEmail = "";
@@ -454,7 +445,6 @@ export default {
         console.log("error re-sending verification code", error);
       }
     },
-
     async handlePasswords() {
       // if doesnt match regex, show a message saying doesnt match and keep button disabled
       const regex = /^(?=.*?[A-Z])(?=(.*[a-z]){1,})(?=(.*[\d]){1,})(?=(.*[\W]){1,})(?!.*\s).{8,}$/;
@@ -489,12 +479,12 @@ export default {
         loggingIn: false,
         showSignIn: true,
         signingUp: false,
-        confirmingSignUp: false,
         signInEmail: "",
         signInPassword: "",
         showSignInPassword: false
       },
       signUp: {
+        confirmingSignUp: false,
         showSignUpPassword: false,
         signUpName: "",
         signUpEmail: "",
@@ -507,7 +497,7 @@ export default {
         passwordFormatMessage: false,
         passwordsDoNotMatchMessage: false
       },
-      uncomfirmedUser: {
+      unconfirmedUser: {
         userNotConfirmed: false,
         userNotConfirmedMessage: false
       },
