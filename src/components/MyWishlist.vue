@@ -13,6 +13,9 @@
           You have no items on your wishlist! Press 'Add new item' to get
           started!
         </p>
+        <p>
+          <b>Each item must have a description and either a link to the item or a comment</b>
+        </p>
         <ul>
           <li v-for="(item, index) in myWishlist" :key="item.id" :item="item">
             <div class="wishlist-item-container" v-if="!item.isEditing">
@@ -24,8 +27,7 @@
                 "
                 v-if="!item.isEditing"
               >
-                <!--   v-bind:class="{ editing: item.isEditing }" -->
-
+                <!-- START wishlist item details -->
                 <ul>
                   <li class="description">{{ item.description }}</li>
                   <li class="item-link" :href="`${item.url}`">
@@ -33,10 +35,10 @@
                   </li>
                   <li>{{ item.comment }}</li>
                 </ul>
+                <!-- END wishlist item details -->
               </div>
 
               <!-- if this item isnt being edited, all other edit item buttons are disabled -->
-
               <div class="wishlist-item-buttons">
                 <button
                   class="edit"
@@ -65,11 +67,11 @@
               </div>
             </div>
 
+            <!-- START editing an existing item -->
             <div v-if="item.isEditing" class="wishlist-item-container-form-editing">
               <form
                 id="edit-wishlist-item"
                 class="edit-wishlist-item"
-                v-on:submit="updateWishlistItem(item.id)"
                 v-on:keyup.enter="updateWishlistItem(item.id)"
                 v-on:submit.prevent
               >
@@ -97,7 +99,11 @@
                   rows="6"
                   maxlength="250"
                 />
-                <button type="submit" for="edit-wishlist-item">Save changes</button>
+                <button
+                  type="submit"
+                  for="edit-wishlist-item"
+                  v-on:click="updateWishlistItem(item.id)"
+                >Save changes</button>
                 <button
                   for="edit-wishlist-item"
                   type="button"
@@ -109,14 +115,18 @@
                 >Cancel editing</button>
               </form>
             </div>
+            <!-- START editing an existing item -->
           </li>
         </ul>
+
         <button
           type="button"
           v-if="!addingItem"
           v-on:click="addingItem = true"
           :disabled="editing"
         >Add new wishlist item</button>
+
+        <!-- START new item being added -->
         <div v-if="addingItem" class="wishlist-item-container-form-editing">
           <form
             id="add-wishlist-item-form"
@@ -151,10 +161,16 @@
               rows="6"
               maxlength="250"
             />
-            <button for="add-wishlist-item-form" type="submit" v-if="addingItem">Add this item</button>
+            <button
+              for="add-wishlist-item-form"
+              type="submit"
+              v-if="addingItem"
+              v-on:click="addItem"
+            >Add this item</button>
             <button type="button" v-if="addingItem" v-on:click="cancelAddItem">Cancel adding item</button>
           </form>
         </div>
+        <!-- END new item being added -->
       </div>
     </div>
   </div>

@@ -11,24 +11,33 @@ const namespaced = true;
 
 const state = {
   groups: [],
+  // searching for group to join
   foundGroupName: "",
   foundGroupMembers: [],
   foundGroupExchange: "",
   foundGroupClosed: "",
   findingGroup: true,
   groupNotFound: false,
+  loadingFindGroup: false,
+  loadingJoinGroup: false,
+
+  // viewing group or searching for group to join
   groupInfo: {},
+
+  // updating group info
   groupInfoToUpdate: {},
+
+  // viewing group page
   userGroupInfo: {},
   fetchedGroupInfo: false,
   fetchedUserGroupInfo: false,
-  createGroupSuccess: false,
-  createdGroupId: "",
   loadingDrawNames: false,
-  loadingJoinGroup: false,
-  loadingFindGroup: false,
   loadingLeaveGroup: false,
   loadingEditGroup: false,
+
+  // creating new group
+  createGroupSuccess: false,
+  createdGroupId: "",
 };
 
 const getters = {};
@@ -36,7 +45,6 @@ const getters = {};
 const mutations = {
   setUserGroupInfo(state, userGroupInfo) {
     state.userGroupInfo = userGroupInfo;
-
     const localStorageName = `undercoverElfMyWishlist${userGroupInfo.sk}`;
     localStorage.setItem(localStorageName, JSON.stringify(userGroupInfo));
     state.fetchedUserGroupInfo = true;
@@ -148,7 +156,6 @@ const actions = {
       });
 
       const updatedGroupArray = JSON.parse(localStorage.undercoverElfGroups);
-
       const newGroup = {
         groupId: `group_${groupId}`,
         groupName: foundGroupName,
@@ -366,11 +373,6 @@ const actions = {
         });
     }
   },
-
-  /*removeUser(context, { userId, groupId }) {
-    console.log(userId, groupId);
-    // make a request to API to delete the user group entry, to user's profile to remove group from groups array, and to group meta to remove member from members array
-  },*/
 
   drawNames({ commit, dispatch }, { groupId }) {
     var result = confirm(

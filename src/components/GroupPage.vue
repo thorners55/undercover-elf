@@ -1,11 +1,7 @@
 <template>
   <div>
     <Loading
-      v-if="
-        loadingLeaveGroup ||
-          loadingDrawNames || !fetchedGroupInfo &&
-          !fetchedUserGroupInfo 
-      "
+      v-if="loadingLeaveGroup || loadingDrawNames || !fetchedGroupInfo && !fetchedUserGroupInfo"
     />
     <div
       class="top-of-page"

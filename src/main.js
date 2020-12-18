@@ -19,6 +19,7 @@ new Vue({
   },
   modules: {
     groups: {
+      // namespaced means can access other module states
       namespaced: true,
     },
     loggedIn: {

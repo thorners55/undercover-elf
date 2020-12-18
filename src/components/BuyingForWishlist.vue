@@ -6,10 +6,7 @@
       <img src="../assets/sock.svg" id="logo" width="50rem" />
       <h2>{{ name }}'s Wishlist</h2>
       <p>
-        <b>
-          REMEMBER: You are the only person who can see {{ name }}'s
-          wishlist!
-        </b>
+        <b>REMEMBER: You are the only person who can see {{ name }}'s wishlist!</b>
       </p>
       <p
         v-if="buyingForWishlist.length < 1"
