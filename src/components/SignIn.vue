@@ -10,18 +10,18 @@
             <form
               id="sign-in"
               v-on:submit="
-                signIn(signIn.signInEmail);
+                signInFunc(signIn.signInEmail);
                 signUp.signUpEmail = '';
                 signUp.signUpPassword = '';
               "
-              v-on:keyup.enter="signIn(signIn.signInEmail)"
+              v-on:keyup.enter="signInFunc(signIn.signInEmail)"
               v-on:submit.prevent
             >
               <label for="email">Email</label>
               <input type="email" id="email" v-model="signIn.signInEmail" />
               <label for="password">Password</label>
               <input
-                :type="signIn.signIn.showsignIn.signInPassword ? 'text' : 'password'"
+                :type="signIn.showSignInPassword ? 'text' : 'password'"
                 id="password"
                 v-model="signIn.signInPassword"
               />
@@ -30,7 +30,7 @@
                 type="checkbox"
                 v-on:click="toggleShowPassword('signIn')"
                 id="show-sign-in-password-checkbox"
-                :checked="signIn.showsignIn.signInPassword ? true : false"
+                :checked="signIn.showSignInPassword ? true : false"
               />
               <label for="show-sign-in-password-checkbox" class="show-password-label">Show password</label>
             </form>
@@ -44,7 +44,7 @@
             >Forgotten password?</button>
           </div>
           <div v-if="forgotPassword.showForgotPassword">
-            <form id="forgot-password" v-on:submit.prevent v-on:keyup.enter="forgotPassword">
+            <form id="forgot-password" v-on:submit.prevent v-on:keyup.enter="forgotPasswordFunc">
               <!-- FIX -->
               <label for="forgot-password-email">Email:</label>
               <input
@@ -53,7 +53,11 @@
                 v-model="forgotPassword.forgottenEmail"
               />
             </form>
-            <button for="forgot-password" type="button" v-on:click="forgotPassword">Reset password</button>
+            <button
+              for="forgot-password"
+              type="button"
+              v-on:click="forgotPasswordFunc"
+            >Reset password</button>
 
             <button
               type="button"
@@ -81,7 +85,7 @@
               />
               <label for="forgot-password-new-password">New password:</label>
               <input
-                :type="forgotPassword.forgotPassword.showForgotPasswordPassword ? 'text' : 'password'"
+                :type="forgotPassword.showForgotPasswordPassword ? 'text' : 'password'"
                 id="forgot-password-new-password"
                 @input="handlePasswords"
                 v-model="forgotPassword.forgottenPasswordNewPassword"
@@ -89,7 +93,7 @@
 
               <label for="forgot-password-new-password">Re-type new password:</label>
               <input
-                :type="forgotPassword.forgotPassword.showForgotPasswordPassword ? 'text' : 'password'"
+                :type="forgotPassword.showForgotPasswordPassword ? 'text' : 'password'"
                 id="forgot-password-new-password-retype"
                 @input="handlePasswords"
                 v-model="forgotPassword.forgottenPasswordNewPasswordRetype"
@@ -98,7 +102,7 @@
                 type="checkbox"
                 v-on:click="toggleShowPassword('forgotPassword')"
                 id="show-forgot-password-checkbox"
-                :checked="forgotPassword.forgotPassword.showForgotPasswordPassword ? true : false"
+                :checked="forgotPassword.showForgotPasswordPassword ? true : false"
               />
               <label for="show-forgot-password-checkbox" class="show-password-label">Show password</label>
             </form>
@@ -128,7 +132,7 @@
               v-on:click="
                 forgotPassword.showForgotPassword = false;
                 forgotPassword.hideSignInForgottenPassword = false;
-                forgotPassword.forgotPassword.showForgotPasswordConfirm = false;
+                forgotPassword.showForgotPasswordConfirm = false;
                 forgotPassword.forgottenEmail = '';
               "
             >Back to sign in</button>
@@ -142,9 +146,9 @@
         v-if="
           !signIn.loggingIn &&
             !signIn.signingUp &&
-            !uncomfirmedUser.userNotConfirmed &&
+            !unconfirmedUser.userNotConfirmed &&
             !forgotPassword.showForgotPassword &&
-            !forgotPassword.forgotPassword.showForgotPasswordConfirm
+            !forgotPassword.showForgotPasswordConfirm
         "
       >
         <p>Don't have an account?</p>
@@ -282,7 +286,7 @@ export default {
   },
   methods: {
     ...mapActions("loggedIn", ["logIn", "logOut"]),
-    async signIn(email) {
+    async signInFunc(email) {
       this.signIn.loggingIn = true;
       let password;
       if (this.signIn.signInPassword.length > 1) {
@@ -295,14 +299,14 @@ export default {
         let user = await Auth.signIn(email, password);
         let payload = { userId: user.username, name: user.attributes.name };
         this.logIn(payload);
-        this.signIn.loggingIn = false;
+        /* this.signIn.loggingIn = false;
         this.signIn.signInEmail = "";
         this.signIn.signInPassword = "";
         this.signUp.signUpName = "";
         this.signUp.signUpEmail = "";
         this.signUp.signUpPassword = "";
         this.signUp.signUpPasswordRetype = "";
-        this.errors.showErrorMessage = false;
+        this.errors.showErrorMessage = false;*/
       } catch (error) {
         this.signIn.loggingIn = false;
         this.signIn.showSignIn = true;
@@ -330,25 +334,24 @@ export default {
     },
     toggleShowPassword(signInUpOrForgotPassword) {
       if (signInUpOrForgotPassword === "signIn") {
-        this.signIn.showsignIn.signInPassword = !this.signIn.showsignIn
-          .signInPassword;
+        this.signIn.showsSignInPassword = !this.signIn.showSignInPassword;
       } else if (signInUpOrForgotPassword === "signUp") {
         this.signUp.showSignUpPassword = !this.signUp.showSignUpPassword;
       } else {
-        this.forgotPassword.forgotPassword.showForgotPasswordPassword = !this
-          .forgotPassword.forgotPassword.showForgotPasswordPassword;
+        this.forgotPassword.showForgotPasswordPassword = !this.forgotPassword
+          .showForgotPasswordPassword;
       }
     },
-    async forgotPassword() {
+    async forgotPasswordFunc() {
       try {
         const isSuccess = await Auth.forgotPassword(
           this.forgotPassword.forgottenEmail
         );
-        this.forgotPassword.forgotPassword.showForgotPasswordConfirm = true;
+        this.forgotPassword.showForgotPasswordConfirm = true;
         this.forgotPassword.showForgotPassword = false;
       } catch (error) {
         this.forgotPassword.showForgotPassword = true;
-        this.forgotPassword.forgotPassword.showForgotPasswordConfirm = false;
+        this.forgotPassword.showForgotPasswordConfirm = false;
         alert("Error: " + error.message);
         this.forgotPassword.showForgottenPasswordError = true;
         this.forgotPassword.forgottenPasswordErrorMessage =
@@ -367,7 +370,7 @@ export default {
         this.forgotPassword.forgottenPasswordNewPassword = "";
         this.forgottenPasswordError = false;
         this.forgotPassword.forgottenPasswordErrorMessage = "";
-        this.forgotPassword.forgotPassword.showForgotPasswordConfirm = false;
+        this.forgotPassword.showForgotPasswordConfirm = false;
         this.signIn.showSignIn = true;
         this.forgotPassword.hideSignInForgottenPassword = false;
         alert(
@@ -423,7 +426,7 @@ export default {
         );
 
         //this.signUp.signUpEmail = "";
-        this.signIn(email);
+        this.signInFunc(email);
         this.signIn.signingUp = false;
         this.signIn.showSignIn = true;
         this.signIn.confirmingSignUp = false;
@@ -489,7 +492,7 @@ export default {
         confirmingSignUp: false,
         signInEmail: "",
         signInPassword: "",
-        signInPassword: false
+        showSignInPassword: false
       },
       signUp: {
         showSignUpPassword: false,
