@@ -4,7 +4,7 @@
     <h2>Create group</h2>
     <div v-if="!createGroupSuccess">
       <!-- can't put button inside form for styling reasons--->
-      <form id="create-group-form" v-on:submit="createGroup" v-on:keyup.enter="createGroup">
+      <form id="create-group-form" v-on:keyup.enter="createGroup" v-on:submit.prevent>
         <label for="group-name">Group name</label>
         <input type="text" id="group-name" v-model="newGroup.groupName" required />
         <label for="exchange">Gift exchange</label>
@@ -15,6 +15,7 @@
       <button
         type="submit"
         for="create-group-form"
+        v-on:click="createGroup"
         :disabled="
           !newGroup.groupName || !newGroup.exchange || !newGroup.budget
             ? true

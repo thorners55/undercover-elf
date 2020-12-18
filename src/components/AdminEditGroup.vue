@@ -2,18 +2,16 @@
   <div>
     <Loading v-if="loadingDrawNames" />
     <div v-if="!loadingDrawNames">
-      <router-link :to="`/groups/${groupInfo.pk}/profile`"
-        >Back to {{ groupInfo.groupName }} page</router-link
-      >
+      <router-link :to="`/groups/${groupInfo.pk}/profile`">Back to {{ groupInfo.groupName }} page</router-link>
       <div class="top-of-page">
         <h2>Edit group settings for {{ groupInfo.groupName }}</h2>
         <Loading v-if="loadingEditGroup" />
         <div v-if="!loadingEditGroup">
-          <p>
-            <b
-              >IMPORTANT: Press "Submit" at the bottom of the page after making
-              changes!</b
-            >
+          <p class="message">
+            <b>
+              IMPORTANT: Press "Submit" at the bottom of the page after making
+              changes!
+            </b>
           </p>
 
           <div class="info">
@@ -33,15 +31,7 @@
           <ul>
             <li v-for="member in groupInfo.members" :key="member.pk">
               <p v-if="member.pk === userId">{{ member.name }} (you)</p>
-              <p v-if="member.pk !== userId">
-                {{ member.name }}
-                <button
-                  v-if="member.pk !== userId"
-                  v-on:click="removeUser(member.pk, groupInfo.pk)"
-                >
-                  Remove user from group
-                </button>
-              </p>
+              <p v-if="member.pk !== userId">{{ member.name }}</p>
             </li>
           </ul>
 
@@ -83,9 +73,7 @@
                   groupInfoToUpdate,
                 })
               "
-            >
-              Submit
-            </button>
+            >Submit</button>
           </div>
         </div>
       </div>
@@ -100,15 +88,15 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "AdminEdesitGroup",
   components: {
-    Loading,
+    Loading
   },
   methods: {
-    ...mapActions("groups", ["updateGroup", "fetchGroupInfo", "removeUser"]),
+    ...mapActions("groups", ["updateGroup", "fetchGroupInfo"]),
     resetInfo() {
       this.groupInfoToUpdate.groupName = this.groupInfo.groupName;
       this.groupInfoToUpdate.exchange = this.groupInfo.exchange;
       this.groupInfoToUpdate.budget = this.groupInfo.budget;
-    },
+    }
   },
   computed: {
     groupId() {
@@ -118,18 +106,17 @@ export default {
       "groupInfo",
       "groupInfoToUpdate",
       "loadingDrawNames",
-      "loadingEditGroup",
-    ]),
+      "loadingEditGroup"
+    ])
   },
   created() {
     this.fetchGroupInfo(this.groupId);
   },
   data() {
     return {
-      userId: `user_${localStorage.undercoverElfUserId}`,
-      originalState: {},
+      userId: `user_${localStorage.undercoverElfUserId}`
     };
-  },
+  }
 };
 </script>
 

@@ -9,11 +9,6 @@
             <h2>Log in</h2>
             <form
               id="sign-in"
-              v-on:submit="
-                signInFunc(signIn.signInEmail);
-                signUp.signUpEmail = '';
-                signUp.signUpPassword = '';
-              "
               v-on:keyup.enter="signInFunc(signIn.signInEmail)"
               v-on:submit.prevent
             >
@@ -35,7 +30,15 @@
               <label for="show-sign-in-password-checkbox" class="show-password-label">Show password</label>
             </form>
             <p v-if="errors.showErrorMessage" class="message">{{ errors.errorMessage }}</p>
-            <button type="button">Log in</button>
+            <button
+              for="sign-in"
+              type="submit"
+              v-on:click="
+                signInFunc(signIn.signInEmail);
+                signUp.signUpEmail = '';
+                signUp.signUpPassword = '';
+              "
+            >Log in</button>
             <button
               v-on:click="
                 forgotPassword.showForgotPassword = true;
@@ -140,9 +143,6 @@
           <!-- if user has forgotten password END -->
         </div>
       </div>
-      <!-- END if user is signing in, not making new account -->
-
-      <!-- START if not making new account (signing up) -->
       <div
         v-if="
           !signIn.loggingIn &&
@@ -160,19 +160,14 @@
           "
         >Create an account</button>
       </div>
-      <!-- END if not making new account (signing up) -->
+      <!-- END if user is signing in, not making new account -->
 
       <!-- START if making new account (signing up) -->
       <div v-if="signIn.signingUp">
         <div id="signup-grid">
           <div></div>
           <h2>Create an account</h2>
-          <form
-            id="create-account"
-            v-on:submit="createAccount"
-            v-on:keyup.enter="createAccount"
-            v-on:submit.prevent
-          >
+          <form id="create-account" v-on:keyup.enter="createAccount" v-on:submit.prevent>
             <label for="name">Name</label>
             <input type="text" id="name" v-model="signUp.signUpName" />
             <label for="email">Email</label>
@@ -213,8 +208,9 @@
         </ul>
         <p class="message" v-if="passwordFormat.passwordsDoNotMatchMessage">Passwords do not match</p>
         <button
-          type="button"
+          type="submit"
           for="create-account"
+          v-on:click="createAccount"
           :disabled="!passwordFormat.validPassword"
         >Create account</button>
         <button
@@ -238,12 +234,7 @@
           v-if="unconfirmedUser.userNotConfirmed && unconfirmedUser.userNotConfirmedMessage"
           class="message"
         >You must confirm your account to sign in</p>
-        <form
-          id="confirm-sign-up"
-          v-on:submit="confirmSignUp"
-          v-on:keyup.enter="confirmSignUp"
-          v-on:submit.prevent
-        >
+        <form id="confirm-sign-up" v-on:keyup.enter="confirmSignUp" v-on:submit.prevent>
           <label for="code">Verification code:</label>
           <input type="text" id="password" v-model="signUp.confirmSignUpCode" />
         </form>
@@ -252,7 +243,11 @@
           receive an email, check your junk folder.
         </p>
 
-        <button for="confirm-sign-up" type="submit">Submit verification code</button>
+        <button
+          for="confirm-sign-up"
+          type="submit"
+          v-on:click="confirmSignUp"
+        >Submit verification code</button>
         <button v-on:click="resendCode">Re-send verification code</button>
         <button
           v-on:click="
@@ -332,7 +327,7 @@ export default {
     },
     toggleShowPassword(signInUpOrForgotPassword) {
       if (signInUpOrForgotPassword === "signIn") {
-        this.signIn.showsSignInPassword = !this.signIn.showSignInPassword;
+        this.signIn.showSignInPassword = !this.signIn.showSignInPassword;
       } else if (signInUpOrForgotPassword === "signUp") {
         this.signUp.showSignUpPassword = !this.signUp.showSignUpPassword;
       } else {

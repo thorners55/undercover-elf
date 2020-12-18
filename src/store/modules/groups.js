@@ -367,11 +367,6 @@ const actions = {
     }
   },
 
-  /*removeUser(context, { userId, groupId }) {
-    console.log(userId, groupId);
-    // make a request to API to delete the user group entry, to user's profile to remove group from groups array, and to group meta to remove member from members array
-  },*/
-
   drawNames({ commit, dispatch }, { groupId }) {
     var result = confirm(
       "Are you sure you want to draw names? The group will be closed and no new members will be able to join."

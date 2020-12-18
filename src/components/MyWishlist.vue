@@ -69,7 +69,6 @@
               <form
                 id="edit-wishlist-item"
                 class="edit-wishlist-item"
-                v-on:submit="updateWishlistItem(item.id)"
                 v-on:keyup.enter="updateWishlistItem(item.id)"
                 v-on:submit.prevent
               >
@@ -97,7 +96,11 @@
                   rows="6"
                   maxlength="250"
                 />
-                <button type="submit" for="edit-wishlist-item">Save changes</button>
+                <button
+                  type="submit"
+                  for="edit-wishlist-item"
+                  v-on:click="updateWishlistItem(item.id)"
+                >Save changes</button>
                 <button
                   for="edit-wishlist-item"
                   type="button"
@@ -151,7 +154,12 @@
               rows="6"
               maxlength="250"
             />
-            <button for="add-wishlist-item-form" type="submit" v-if="addingItem">Add this item</button>
+            <button
+              for="add-wishlist-item-form"
+              type="submit"
+              v-if="addingItem"
+              v-on:click="addItem"
+            >Add this item</button>
             <button type="button" v-if="addingItem" v-on:click="cancelAddItem">Cancel adding item</button>
           </form>
         </div>
