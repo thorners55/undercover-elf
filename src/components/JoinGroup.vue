@@ -5,13 +5,14 @@
     <Loading v-if="loadingJoinGroup" />
     <div v-if="!loadingJoinGroup">
       <div v-show="findingGroup">
-        <!-- hides the input when begin search -->
+        <!-- hides the input fields once have submitted the groupId-->
         <form id="find-group" v-on:keyup.enter="findGroup(groupId)" v-on:submit.prevent>
           <label for="groupId">Invitation ID:</label>
           <input type="text" id="groupId" v-model="groupId" v-on:keyup.enter="findGroup(groupId)" />
         </form>
         <!--- button outside of form for styling -->
         <button type="submit" for="find-group" v-on:click="findGroup(groupId)">Find group</button>
+
         <!-- if group isn't found, shows this message -->
         <div v-show="groupNotFound">
           <p class="message">Group not found. Please try again.</p>

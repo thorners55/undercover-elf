@@ -30,6 +30,7 @@
               <label for="show-sign-in-password-checkbox" class="show-password-label">Show password</label>
             </form>
             <p v-if="errors.showErrorMessage" class="message">{{ errors.errorMessage }}</p>
+            <!-- can't put button inside form for styling reasons--->
             <button
               for="sign-in"
               type="submit"
@@ -56,12 +57,12 @@
                 v-model="forgotPassword.forgottenEmail"
               />
             </form>
+            <!-- can't put button inside form for styling reasons--->
             <button
               for="forgot-password"
               type="button"
               v-on:click="forgotPasswordFunc"
             >Reset password</button>
-
             <button
               type="button"
               v-on:click="
@@ -123,6 +124,7 @@
               class="message"
               v-if="passwordFormat.passwordsDoNotMatchMessage"
             >Passwords do not match</p>
+            <!-- can't put button inside form for styling reasons--->
             <button
               type="button"
               for="forgot-password-confirm-code"
@@ -207,6 +209,7 @@
           <li>A number</li>
         </ul>
         <p class="message" v-if="passwordFormat.passwordsDoNotMatchMessage">Passwords do not match</p>
+        <!-- can't put button inside form for styling reasons--->
         <button
           type="submit"
           for="create-account"
@@ -242,7 +245,7 @@
           Please enter the verification code sent to your email. If you do not
           receive an email, check your junk folder.
         </p>
-
+        <!-- can't put button inside form for styling reasons--->
         <button
           for="confirm-sign-up"
           type="submit"
