@@ -2,10 +2,10 @@
   <div id="header">
     <div id="grid">
       <span></span>
-      <div>
+      <header>
         <img src="../assets/elf.svg" id="logo" width="100rem" />
         <h1>Undercover Elf</h1>
-      </div>
+      </header>
 
       <LogOut v-if="loggedIn" id="logOut" />
     </div>
@@ -23,9 +23,9 @@ export default {
   name: "Header",
   components: {
     NavBar,
-    LogOut,
+    LogOut
   },
-  computed: mapState("loggedIn", ["loggedIn"]),
+  computed: mapState("loggedIn", ["loggedIn"])
 };
 </script>
 
