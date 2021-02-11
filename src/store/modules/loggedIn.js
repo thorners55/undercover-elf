@@ -38,6 +38,10 @@ const actions = {
     localStorage.setItem("undercoverElfUserId", userId);
     localStorage.setItem("undercoverElfLoggedIn", "true");
     localStorage.setItem("undercoverElfName", name);
+    setTimeout(() => {
+      console.log("logging out");
+      document.addEventListener("beforeunload", this.logOut()), 2000;
+    });
   },
 
   logOut({ commit }) {
