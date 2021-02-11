@@ -45,12 +45,14 @@ export default {
   },
   computed: mapState("loggedIn", ["loggedIn"]),
   methods: {
-    ...mapActions("profile", ["fetchUserProfile"])
+    ...mapActions("profile", ["fetchUserProfile"]),
+    ...mapActions("loggedIn", ["logIn", "logOut"])
   },
   created() {
     if (this.loggedIn) {
       this.fetchUserProfile(this.userId);
     }
+    document.addEventListener("beforeunload", this.logOut);
   }
 };
 </script>
