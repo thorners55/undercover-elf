@@ -2,21 +2,19 @@
   <div id="app">
     <Header />
 
-    <div id="main-signin-nav">
-      <SignIn v-if="!loggedIn" />
-      <main v-if="loggedIn">
-        <router-view>
-          <AllGroups />
-          <Profile />
-          <CreateGroup />
-          <JoinGroup />
-          <GroupPage />
-          <AdminEditGroup />
-          <MyWishlist />
-          <BuyingForWishlist />
-        </router-view>
-      </main>
-    </div>
+    <main id="main-signin-nav">
+      <SignIn />
+      <router-view v-if="loggedIn">
+        <AllGroups />
+        <Profile />
+        <CreateGroup />
+        <JoinGroup />
+        <GroupPage />
+        <AdminEditGroup />
+        <MyWishlist />
+        <BuyingForWishlist />
+      </router-view>
+    </main>
   </div>
 </template>
 
