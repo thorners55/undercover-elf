@@ -40,6 +40,7 @@ const actions = {
         commit("setProfile", body);
       })
       .catch((err) => {
+        // need to stop it from stuck on loading if there is an error
         console.log(err);
       });
   },

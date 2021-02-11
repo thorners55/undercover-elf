@@ -43,17 +43,17 @@ export default {
     JoinGroup,
     AdminEditGroup,
     BuyingForWishlist,
-    MyWishlist,
+    MyWishlist
   },
   computed: mapState("loggedIn", ["loggedIn"]),
   methods: {
-    ...mapActions("profile", ["fetchUserProfile"]),
+    ...mapActions("profile", ["fetchUserProfile"])
   },
   created() {
     if (this.loggedIn) {
       this.fetchUserProfile(this.userId);
     }
-  },
+  }
 };
 </script>
 
@@ -63,7 +63,7 @@ html {
 }
 
 #app {
-  font-family: "Bubbleboddy Regular";
+  font-family: "Bubbleboddy Regular", sans-serif;
   font-size: 62.5%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -94,7 +94,7 @@ a:hover {
 @import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap");
 
 h1 {
-  font-family: "Bubbleboddy Regular";
+  font-family: "Bubbleboddy Regular", sans-serif;
   font-size: 3rem;
   margin: 0.5rem;
 }
