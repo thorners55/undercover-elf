@@ -52,7 +52,6 @@ export default {
     if (this.loggedIn) {
       this.fetchUserProfile(this.userId);
     }
-    document.addEventListener("beforeunload", this.logOut());
   }
 };
 </script>

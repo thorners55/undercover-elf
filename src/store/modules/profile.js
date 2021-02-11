@@ -50,7 +50,6 @@ const actions = {
       .catch((err) => {
         // need to stop it from stuck on loading if there is an error
         console.log(err);
-        commit("setProfile");
         alert(
           "An error has occured retrieving your account information. Please get in touch with Stephanie."
         );
