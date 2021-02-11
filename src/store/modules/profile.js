@@ -21,12 +21,20 @@ const getters = {
 
 const mutations = {
   setProfile(state, profile) {
-    state.groups = profile.groups;
-    state.name = profile.name;
-    state.userId = profile.pk;
-    localStorage.setItem("undercoverElfGroups", JSON.stringify(profile.groups));
-    state.userGroupsLoading = false;
-    state.loadingUserProfile = false;
+    if (!profile) {
+      state.userGroupsLoading = false;
+      return;
+    } else {
+      state.groups = profile.groups;
+      state.name = profile.name;
+      state.userId = profile.pk;
+      localStorage.setItem(
+        "undercoverElfGroups",
+        JSON.stringify(profile.groups)
+      );
+      state.userGroupsLoading = false;
+      state.loadingUserProfile = false;
+    }
   },
 };
 
@@ -42,6 +50,10 @@ const actions = {
       .catch((err) => {
         // need to stop it from stuck on loading if there is an error
         console.log(err);
+        commit("setProfile");
+        alert(
+          "An error has occured retrieving your account information. Please get in touch with Stephanie."
+        );
       });
   },
 };
