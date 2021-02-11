@@ -40,7 +40,7 @@ const actions = {
     localStorage.setItem("undercoverElfName", name);
     setTimeout(() => {
       console.log("logging out");
-      document.addEventListener("beforeunload", this.logOut()), 2000;
+      document.addEventListener("beforeunload", commit("setLoggedOut")), 2000;
     });
   },
 
