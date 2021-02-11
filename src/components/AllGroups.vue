@@ -1,6 +1,5 @@
 <template>
   <div>
-    <LogOut />
     <Loading v-if="userGroupsLoading" />
     <div v-if="!userGroupsLoading" class="top-of-page">
       <img src="../assets/cabin.svg" id="logo" width="50rem" />
@@ -34,7 +33,6 @@
 
 <script>
 import Loading from "./Loading.vue";
-import LogOut from "./LogOut.vue";
 import { mapActions, mapState } from "vuex";
 
 export default {
