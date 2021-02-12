@@ -132,7 +132,7 @@ app.patch("/groups", async function(request, response) {
   const {
     groupInfoToUpdate,
     updateNameOrExchange,
-    localStateGroups,
+    groups,
     userId,
   } = request.body;
 
@@ -187,7 +187,7 @@ app.patch("/groups", async function(request, response) {
     },
     UpdateExpression: "set groups = :g",
     ExpressionAttributeValues: {
-      ":g": localStateGroups,
+      ":g": groups,
     },
     ReturnValues: "UPDATED_NEW",
   };

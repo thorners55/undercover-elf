@@ -9,15 +9,7 @@ const state = {
   loadingUserProfile: true,
 };
 
-const getters = {
-  groupAdmin() {
-    const groups = JSON.parse(localStorage.undercoverElfGroups);
-    const adminGroups = groups.filter((group) => {
-      return group.admin === 1;
-    });
-    return adminGroups;
-  },
-};
+const getters = {};
 
 const mutations = {
   setProfile(state, profile) {
@@ -28,10 +20,6 @@ const mutations = {
       state.groups = profile.groups;
       state.name = profile.name;
       state.userId = profile.pk;
-      localStorage.setItem(
-        "undercoverElfGroups",
-        JSON.stringify(profile.groups)
-      );
       state.userGroupsLoading = false;
       state.loadingUserProfile = false;
     }

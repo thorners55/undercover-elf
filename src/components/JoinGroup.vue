@@ -6,12 +6,27 @@
     <div v-if="!loadingJoinGroup">
       <div v-show="findingGroup">
         <!-- hides the input fields once have submitted the groupId-->
-        <form id="find-group" v-on:keyup.enter="findGroup(groupId)" v-on:submit.prevent>
+        <form
+          id="find-group"
+          v-on:keyup.enter="findGroup({ groupId, groups })"
+          v-on:submit.prevent
+        >
           <label for="groupId">Invitation ID:</label>
-          <input type="text" id="groupId" v-model="groupId" v-on:keyup.enter="findGroup(groupId)" />
+          <input
+            type="text"
+            id="groupId"
+            v-model="groupId"
+            v-on:keyup.enter="findGroup({ groupId, groups })"
+          />
         </form>
         <!--- button outside of form for styling -->
-        <button type="submit" for="find-group" v-on:click="findGroup(groupId)">Find group</button>
+        <button
+          type="submit"
+          for="find-group"
+          v-on:click="findGroup({ groupId, groups })"
+        >
+          Find group
+        </button>
 
         <!-- if group isn't found, shows this message -->
         <div v-show="groupNotFound">
@@ -43,7 +58,9 @@
             joinGroup({ name, userId, groupId, foundGroupName });
             groupId = '';
           "
-        >Join group</button>
+        >
+          Join group
+        </button>
         <p v-if="foundGroupClosed === 1" class="message">
           Cannot join group - this group has already drawn names and is closed
           to new members.
@@ -54,7 +71,9 @@
             resetState();
             groupId = '';
           "
-        >Search again</button>
+        >
+          Search again
+        </button>
       </div>
     </div>
   </div>
@@ -67,10 +86,11 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "JoinGroup",
   components: {
-    Loading
+    Loading,
   },
   computed: {
     ...mapState("loggedIn", ["userId", "name"]),
+    ...mapState("profile", ["profile", "groups"]),
     ...mapState("groups", [
       "foundGroupName",
       "foundGroupExchange",
@@ -78,17 +98,17 @@ export default {
       "foundGroupClosed",
       "findingGroup",
       "groupNotFound",
-      "loadingJoinGroup"
-    ])
+      "loadingJoinGroup",
+    ]),
   },
   methods: {
     ...mapActions("groups", ["joinGroup", "findGroup", "resetState"]),
-    ...mapActions("profile", ["fetchUserProfile"])
+    ...mapActions("profile", ["fetchUserProfile"]),
   },
   created() {
     if (this.$route.query.id && this.userId) {
       this.fetchUserProfile(this.userId);
-      this.findGroup(this.$route.query.id);
+      this.findGroup({ groupId: this.$route.query.id, groups: this.groups });
       this.groupId = this.$route.query.id;
     }
   },
@@ -97,9 +117,9 @@ export default {
   },
   data() {
     return {
-      groupId: ""
+      groupId: "",
     };
-  }
+  },
 };
 </script>
 

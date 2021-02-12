@@ -17,13 +17,16 @@ const mutations = {
     state.loggedIn = true;
     state.name = name;
   },
+
   async isLoggedIn(state) {
     const isAuthenticated = await Auth.currentAuthenticatedUser();
     if (isAuthenticated.username) {
       state.loggedIn = true;
       state.userId = isAuthenticated.username;
       state.name = isAuthenticated.attributes.name;
-    }
+    } else return;
+    // NEED TO HANDLE UNCAUGHT PROMISE
+    // DOES THIS NEED TO BE IN ACTIONS?
   },
 
   setLoggedOut(state) {
