@@ -1,10 +1,9 @@
 <template>
   <div id="app">
     <Header />
-
     <main id="main-signin-nav">
-      <SignIn />
-      <router-view v-if="loggedIn">
+      <SignIn v-if="!loggedIn || !userAuthenticated" />
+      <router-view v-if="loggedIn && userAuthenticated">
         <AllGroups />
         <Profile />
         <CreateGroup />
@@ -19,6 +18,7 @@
 </template>
 
 <script>
+import { Auth } from "aws-amplify";
 import { mapState, mapActions } from "vuex";
 import Header from "./components/Header.vue";
 import SignIn from "./components/SignIn.vue";
@@ -46,12 +46,25 @@ export default {
   computed: mapState("loggedIn", ["loggedIn"]),
   methods: {
     ...mapActions("profile", ["fetchUserProfile"]),
-    ...mapActions("loggedIn", ["logIn", "logOut"])
+    ...mapActions("loggedIn", ["logIn", "logOut"]),
+    async checkIfLoggedIn() {
+      const isAuthenticated = await Auth.currentAuthenticatedUser();
+      if (isAuthenticated.username) {
+        this.userAuthenticated = true;
+      }
+    }
   },
   created() {
     if (this.loggedIn) {
       this.fetchUserProfile(this.userId);
     }
+    this.checkIfLoggedIn();
+    //document.addEventListener("beforeunload", this.logOut());
+  },
+  data() {
+    return {
+      userAuthenticated: false
+    };
   }
 };
 </script>

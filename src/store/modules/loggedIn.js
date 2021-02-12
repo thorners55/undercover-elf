@@ -1,3 +1,5 @@
+import { Auth } from "aws-amplify";
+
 const namespaced = true;
 
 const state = {
@@ -15,11 +17,12 @@ const mutations = {
     state.loggedIn = true;
     state.name = name;
   },
-  isLoggedIn(state) {
-    if (localStorage.undercoverElfLoggedIn === "true") {
+  async isLoggedIn(state) {
+    const isAuthenticated = await Auth.currentAuthenticatedUser();
+    if (isAuthenticated.username) {
       state.loggedIn = true;
-      state.userId = localStorage.undercoverElfUserId;
-      state.name = localStorage.undercoverElfName;
+      state.userId = isAuthenticated.username;
+      state.name = isAuthenticated.attributes.name;
     }
   },
 
@@ -27,25 +30,17 @@ const mutations = {
     state.loggedIn = false;
     state.userId = "";
     state.name = "";
-    localStorage.removeItem("undercoverElfName");
-    localStorage.undercoverElfGroups = "[]";
   },
 };
 
 const actions = {
   logIn({ commit }, { userId, name }) {
     commit("setUserId", { userId, name });
-    localStorage.setItem("undercoverElfUserId", userId);
-    localStorage.setItem("undercoverElfLoggedIn", "true");
-    localStorage.setItem("undercoverElfName", name);
-    setTimeout(() => {
-      console.log("logging out");
-      document.addEventListener("beforeunload", commit("setLoggedOut")), 2000;
-    });
+    /* // user is automatically logged out after 30 minutes
+    setTimeout(() => commit("setLoggedOut"), 1800000); */
   },
 
   logOut({ commit }) {
-    localStorage.undercoverElfLoggedIn = false;
     commit("setLoggedOut");
   },
 };

@@ -223,7 +223,7 @@ const actions = {
       });
   },
 
-  postGroup({ commit }, newGroupInfo) {
+  postGroup({ commit, rootState }, newGroupInfo) {
     const tryDate = date.transform(
       newGroupInfo.exchange,
       "YYYY-MM-DD",
@@ -233,11 +233,11 @@ const actions = {
     const groupId = uuidv4();
     newGroupInfo.exchange = tryDate;
     newGroupInfo.pk = groupId;
-    newGroupInfo.admin = localStorage.undercoverElfName;
+    newGroupInfo.admin = rootState.loggedIn.name;
     newGroupInfo.members = [
       {
-        pk: `user_${localStorage.undercoverElfUserId}`,
-        name: localStorage.undercoverElfName,
+        pk: `user_${rootState.loggedIn.userId}`,
+        name: rootState.loggedIn.name,
       },
     ];
 
@@ -271,14 +271,14 @@ const actions = {
     commit("resetCreatedGroupId");
   },
 
-  updateGroup({ commit }, { groupId, groupInfoToUpdate }) {
+  updateGroup({ commit, rootState }, { groupId, groupInfoToUpdate }) {
     var result = confirm("Are you sure you want to change the group settings?");
     if (result) {
       commit("setLoading", { of: "EditGroup", to: true });
 
       const id = splitId(groupId);
 
-      const userId = `user_${localStorage.undercoverElfUserId}`;
+      const userId = `user_${rootState.loggedIn.userId}`;
 
       const originalName = state.groupInfo.groupName;
       const updatedName = groupInfoToUpdate.groupName;

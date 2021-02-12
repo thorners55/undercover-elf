@@ -77,7 +77,7 @@
             >{{ forgotPassword.forgottenPasswordErrorMessage }}</p>
             <p>Email: {{ forgotPassword.forgottenEmail }}</p>
             <form
-              id="forgot-password-confirm-code"
+              id="forgot-password-confirm"
               v-on:keyup.enter="changePassword"
               v-on:submit.prevent
             >
@@ -127,7 +127,7 @@
             <!-- can't put button inside form for styling reasons--->
             <button
               type="button"
-              for="forgot-password-confirm-code"
+              for="forgot-password-confirm"
               v-on:click="changePassword"
               :disabled="!passwordFormat.validPassword"
             >Change password</button>
