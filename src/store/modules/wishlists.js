@@ -46,7 +46,7 @@ const actions = {
       });
   },
 
-  updateWishlist({ commit }, { userId, groupId, wishlist, localStorageName }) {
+  updateWishlist({ commit }, { userId, groupId, wishlist }) {
     API.patch(
       "undercoverElfApi",
       `/users/user_${userId}/groups?groupId=${groupId}`,
@@ -56,7 +56,6 @@ const actions = {
     )
       .then(() => {
         commit("setMyWishlist", wishlist);
-        //localStorage[localStorageName] = JSON.stringify(wishlist);
       })
       .catch((err) => {
         console.log(err);

@@ -45,8 +45,6 @@ const getters = {};
 const mutations = {
   setUserGroupInfo(state, userGroupInfo) {
     state.userGroupInfo = userGroupInfo;
-    const localStorageName = `undercoverElfMyWishlist${userGroupInfo.sk}`;
-    localStorage.setItem(localStorageName, JSON.stringify(userGroupInfo));
     state.fetchedUserGroupInfo = true;
   },
 
