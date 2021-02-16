@@ -72,7 +72,7 @@
               <form
                 id="edit-wishlist-item"
                 class="edit-wishlist-item"
-                v-on:keyup.enter="updateWishlistItem(item.id)"
+                v-on:keyup.enter="submitUpdatedWishlistItem(item.id)"
                 v-on:submit.prevent
               >
                 <label for="update-item-description">Description:</label>
@@ -102,7 +102,7 @@
                 <button
                   type="submit"
                   for="edit-wishlist-item"
-                  v-on:click="updateWishlistItem(item.id)"
+                  v-on:click="submitUpdatedWishlistItem(item.id)"
                 >Save changes</button>
                 <button
                   for="edit-wishlist-item"
@@ -191,27 +191,19 @@ export default {
       return this.$route.query.groupId;
     },
     ...mapState("loggedIn", ["userId"]),
-    ...mapState("groups", ["fetchedUserGroupInfo"]),
-    ...mapState("wishlists", ["myWishlist"])
+    ...mapState("groups", ["fetchedUserGroupInfo", "userGroupInfo"]),
+    ...mapState("wishlists", ["myWishlist", "editedWishlist"])
   },
   created() {
     this.fetchUserGroupInfo({ userId: this.userId, groupId: this.groupId });
-    this.localStorageName = `undercoverElfMyWishlist${this.groupId}`;
-    this.userGroupInfo = JSON.parse(localStorage[this.localStorageName]);
-  },
-  beforeDestroy() {
-    localStorage.removeItem(this.localStorageName);
   },
   methods: {
     ...mapActions("groups", ["fetchUserGroupInfo"]),
-    ...mapActions("wishlists", ["updateWishlist"]),
-    updateDescription(event) {
-      this.copiedUserGroupInfo.description = event.target.value;
-    },
+    ...mapActions("wishlists", ["updateWishlist", "editWishlist"]),
     updateItem(event, index, type) {
       this.myWishlist[index][type] = event.target.value;
     },
-    updateWishlistItem(id) {
+    submitUpdatedWishlistItem(id) {
       this.myWishlist.forEach(item => {
         if (item.id === id) {
           if (!item.description) {
@@ -226,12 +218,8 @@ export default {
             this.updateWishlist({
               userId: this.userId,
               groupId: this.groupId,
-              wishlist: this.myWishlist,
-              localStorageName: this.localStorageName
+              wishlist: this.myWishlist
             });
-            localStorage[this.localStorageName] = JSON.stringify(
-              this.myWishlist
-            );
           }
         }
       });
@@ -258,15 +246,14 @@ export default {
         this.updateWishlist({
           userId: this.userId,
           groupId: this.groupId,
-          wishlist: this.myWishlist,
-          localStorageName: this.localStorageName
+          wishlist: this.myWishlist
         });
       }
     },
     cancelEdit(index) {
-      let originalWishlist = JSON.parse(localStorage[this.localStorageName]);
+      /* let originalWishlist = JSON.parse(localStorage[this.localStorageName]);
       let originalItem = originalWishlist.wishlist[index];
-      this.myWishlist[index] = originalItem;
+      this.myWishlist[index] = originalItem; */
     },
     cancelAddItem() {
       this.addItemDescription = "";
@@ -285,8 +272,8 @@ export default {
         this.updateWishlist({
           userId: this.userId,
           groupId: this.groupId,
-          wishlist: updatedWishlist,
-          localStorageName: this.localStorageName
+          wishlist: updatedWishlist
+          //localStorageName: this.localStorageName
         });
         console.log("after updating database");
       }

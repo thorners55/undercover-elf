@@ -7,7 +7,7 @@ const state = {
   groupName: "",
   buyingForWishlist: [],
   loadingWishlist: false,
-  myWishlist: [],
+  myWishlist: [], // myWishlist is set from inside groups store where user group info is fetched
 };
 
 const getters = {};
@@ -56,7 +56,7 @@ const actions = {
     )
       .then(() => {
         commit("setMyWishlist", wishlist);
-        localStorage[localStorageName] = JSON.stringify(wishlist);
+        //localStorage[localStorageName] = JSON.stringify(wishlist);
       })
       .catch((err) => {
         console.log(err);
