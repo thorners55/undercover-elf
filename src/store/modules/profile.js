@@ -46,3 +46,9 @@ const actions = {
 };
 
 export default { state, getters, actions, mutations, namespaced };
+
+/* {
+      "admin": 1,
+      "groupId": "group_58db8ed4-9327-4f01-af6f-9f23634faa74",
+      "groupName": "Test7TestyTesterson"
+    } */
