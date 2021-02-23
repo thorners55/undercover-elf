@@ -2,8 +2,8 @@
   <div id="app">
     <Header />
     <main id="main-signin-nav">
-      <SignIn v-if="!loggedIn || !userAuthenticated" />
-      <router-view v-if="loggedIn && userAuthenticated">
+      <SignIn v-if="!loggedIn" />
+      <router-view v-if="loggedIn">
         <AllGroups />
         <Profile />
         <CreateGroup />
@@ -41,31 +41,21 @@ export default {
     JoinGroup,
     AdminEditGroup,
     BuyingForWishlist,
-    MyWishlist
+    MyWishlist,
   },
   computed: mapState("loggedIn", ["loggedIn"]),
   methods: {
     ...mapActions("profile", ["fetchUserProfile"]),
-    ...mapActions("loggedIn", ["logIn", "logOut"]),
-    async checkIfLoggedIn() {
-      const isAuthenticated = await Auth.currentAuthenticatedUser();
-      if (isAuthenticated.username) {
-        this.userAuthenticated = true;
-      }
-    }
+    ...mapActions("loggedIn", ["logIn", "logOut", "isLoggedIn"]),
   },
   created() {
     if (this.loggedIn) {
       this.fetchUserProfile(this.userId);
+    } else {
+      this.isLoggedIn();
     }
-    this.checkIfLoggedIn();
     //document.addEventListener("beforeunload", this.logOut());
   },
-  data() {
-    return {
-      userAuthenticated: false
-    };
-  }
 };
 </script>
 

@@ -63,16 +63,20 @@ export default {
     ...mapActions("profile", ["fetchUserProfile"]),
   },
   computed: {
-    ...mapState("loggedIn", ["userId", "name", "groups"]),
-    ...mapState("profile", ["loadingUserProfile"]),
+    ...mapState("loggedIn", ["userId", "name"]),
+    ...mapState("profile", ["loadingUserProfile", "groups"]),
   },
   created() {
     this.fetchUserProfile(this.userId);
     this.getEmail();
+    this.groupAdmin = this.groups.filter((group) => {
+      return group.admin;
+    });
   },
   data() {
     return {
       email: "",
+      groupAdmin: [],
     };
   },
 };
