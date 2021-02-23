@@ -107,15 +107,15 @@ export default {
       "groupInfoToUpdate",
       "loadingDrawNames",
       "loadingEditGroup"
-    ])
+    ]),
+    ...mapState("loggedIn", ["userId"])
   },
   created() {
+    console.log(this.userId);
     this.fetchGroupInfo(this.groupId);
   },
   data() {
-    return {
-      userId: `user_${localStorage.undercoverElfUserId}`
-    };
+    return {};
   }
 };
 </script>

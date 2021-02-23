@@ -65,7 +65,6 @@ export default {
   computed: {
     ...mapState("loggedIn", ["userId", "name", "groups"]),
     ...mapState("profile", ["loadingUserProfile"]),
-    ...mapGetters("profile", ["groupAdmin"]),
   },
   created() {
     this.fetchUserProfile(this.userId);

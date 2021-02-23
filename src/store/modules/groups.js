@@ -45,8 +45,6 @@ const getters = {};
 const mutations = {
   setUserGroupInfo(state, userGroupInfo) {
     state.userGroupInfo = userGroupInfo;
-    const localStorageName = `undercoverElfMyWishlist${userGroupInfo.sk}`;
-    localStorage.setItem(localStorageName, JSON.stringify(userGroupInfo));
     state.fetchedUserGroupInfo = true;
   },
 
@@ -79,10 +77,9 @@ const mutations = {
     state.fetchedGroupInfo = true;
   },
 
-  setCreatedGroupId(state, { groupId, updatedGroupArray }) {
+  setCreatedGroupId(state, groupId) {
     state.createGroupSuccess = true;
     state.createdGroupId = groupId;
-    localStorage.undercoverElfGroups = JSON.stringify(updatedGroupArray);
   },
 
   resetCreatedGroupId(state) {
@@ -90,15 +87,13 @@ const mutations = {
     state.createdGroupId = "";
   },
 
-  setNamesDrawn(state, assignNamesResponse) {
-    for (let i = 0; i < assignNamesResponse.length; i++) {
-      if (
-        assignNamesResponse[i].pk === `user_${localStorage.undercoverElfUserId}`
-      ) {
+  setNamesDrawn(state, { namesAssigned, userId }) {
+    // if the user on the iteration is the user who is logged in, update info so as to make the group page update with the new drawn info, otherwise it still shows 'draw names' and that names have not been drawn
+    for (let i = 0; i < namesAssigned.length; i++) {
+      if (namesAssigned[i].pk === `user_${userId}`) {
         state.groupInfo.closed = 1;
-        state.groupInfo.buyingForName = assignNamesResponse[i].buyingForName;
-        state.groupInfo.buyingForUserId =
-          assignNamesResponse[i].buyingForUserId;
+        state.groupInfo.buyingForName = namesAssigned[i].buyingForName;
+        state.groupInfo.buyingForUserId = namesAssigned[i].buyingForUserId;
         break;
       } else continue;
     }
@@ -111,8 +106,8 @@ const mutations = {
 
 const actions = {
   // searches to find a group using the ID the user has input
-  findGroup({ commit }, groupId) {
-    const alreadyMember = isAlreadyMember(groupId);
+  findGroup({ commit }, { groupId, groups }) {
+    const alreadyMember = isAlreadyMember(groupId, groups);
     if (alreadyMember) {
       alert(
         "You are already a member of this group! Please search for another group."
@@ -138,8 +133,11 @@ const actions = {
   },
 
   // join a group that user has previously searched for
-  joinGroup({ commit }, { name, userId, groupId, foundGroupName }) {
-    const alreadyMember = isAlreadyMember(groupId);
+  joinGroup(
+    { commit, rootState },
+    { name, userId, groupId, foundGroupName, groups }
+  ) {
+    const alreadyMember = isAlreadyMember({ groupId, groups });
     if (alreadyMember) {
       alert(
         "You are already a member of this group! Please search for another group."
@@ -155,13 +153,13 @@ const actions = {
         name,
       });
 
-      const updatedGroupArray = JSON.parse(localStorage.undercoverElfGroups);
       const newGroup = {
         groupId: `group_${groupId}`,
         groupName: foundGroupName,
         admin: 0,
       };
 
+      const updatedGroupArray = rootState.profile.groups;
       updatedGroupArray.push(newGroup);
 
       API.post(
@@ -182,10 +180,8 @@ const actions = {
       )
         .then((response) => {
           alert(`Successfully joined group!`);
-          localStorage.undercoverElfGroups = JSON.stringify(updatedGroupArray);
           commit("setLoading", { of: "JoinGroup", to: false });
           router.push({ path: "/" });
-          localStorage.undercoverElfGroups = updatedGroupArray;
         })
         .catch((err) => {
           commit("setLoading", { of: "JoinGroup", to: false });
@@ -223,7 +219,7 @@ const actions = {
       });
   },
 
-  postGroup({ commit }, newGroupInfo) {
+  postGroup({ commit, rootState }, newGroupInfo) {
     const tryDate = date.transform(
       newGroupInfo.exchange,
       "YYYY-MM-DD",
@@ -233,19 +229,15 @@ const actions = {
     const groupId = uuidv4();
     newGroupInfo.exchange = tryDate;
     newGroupInfo.pk = groupId;
-    newGroupInfo.admin = localStorage.undercoverElfName;
+    newGroupInfo.admin = rootState.loggedIn.name;
     newGroupInfo.members = [
       {
-        pk: `user_${localStorage.undercoverElfUserId}`,
-        name: localStorage.undercoverElfName,
+        pk: `user_${rootState.loggedIn.userId}`,
+        name: rootState.loggedIn.name,
       },
     ];
 
-    const localGroups = JSON.parse(localStorage.undercoverElfGroups);
-
-    const updatedGroupArray = localGroups.map((group) => {
-      return group;
-    });
+    const updatedGroupArray = rootState.profile.groups;
     updatedGroupArray.push({
       groupId: `group_${groupId}`,
       groupName: newGroupInfo.groupName,
@@ -259,8 +251,7 @@ const actions = {
       },
     })
       .then((response) => {
-        localStorage.undercoverElfGroups = JSON.stringify(updatedGroupArray);
-        commit("setCreatedGroupId", { groupId, updatedGroupArray });
+        commit("setCreatedGroupId", groupId);
       })
       .catch((err) => {
         console.log(err);
@@ -271,14 +262,14 @@ const actions = {
     commit("resetCreatedGroupId");
   },
 
-  updateGroup({ commit }, { groupId, groupInfoToUpdate }) {
+  updateGroup({ commit, rootState }, { groupId, groupInfoToUpdate }) {
     var result = confirm("Are you sure you want to change the group settings?");
     if (result) {
       commit("setLoading", { of: "EditGroup", to: true });
 
       const id = splitId(groupId);
 
-      const userId = `user_${localStorage.undercoverElfUserId}`;
+      const userId = `user_${rootState.loggedIn.userId}`;
 
       const originalName = state.groupInfo.groupName;
       const updatedName = groupInfoToUpdate.groupName;
@@ -307,11 +298,10 @@ const actions = {
         commit("setLoading", { of: "EditGroup", to: false });
         alert("Nothing to update!");
       } else {
-        let localStateGroups = JSON.parse(localStorage.undercoverElfGroups);
-
-        for (let i = 0; i < localStateGroups.length; i++) {
-          if (localStateGroups[i].groupId === groupId) {
-            localStateGroups[i].groupName = groupInfoToUpdate.groupName;
+        const groups = rootState.profile.groups;
+        for (let i = 0; i < groups.length; i++) {
+          if (groups[i].groupId === groupId) {
+            groups[i].groupName = groupInfoToUpdate.groupName;
             break;
           } else continue;
         }
@@ -320,12 +310,11 @@ const actions = {
           body: {
             groupInfoToUpdate,
             updateNameOrExchange,
-            localStateGroups,
+            groups,
             userId,
           },
         })
           .then(() => {
-            localStorage.undercoverElfGroups = JSON.stringify(localStateGroups);
             router.push({ path: `/groups/${groupId}/profile` });
             alert("Group information successfully changed!");
             commit("setLoading", { of: "EditGroup", to: false });
@@ -338,7 +327,7 @@ const actions = {
     } else return;
   },
 
-  leaveGroup({ commit }, { userId, groupId, groupName, members }) {
+  leaveGroup({ commit, rootState }, { userId, groupId, groupName, members }) {
     const result = confirm(`Are you sure you what to leave ${groupName}?`);
 
     const id = splitId(groupId);
@@ -346,8 +335,8 @@ const actions = {
       // filter through local storage array to remove that group, then use this new array to update the user group profile
       commit("setLoading", { of: "LeaveGroup", to: true });
 
-      const localStateGroups = JSON.parse(localStorage.undercoverElfGroups);
-      const removedGroupFromUserProfile = localStateGroups.filter((group) => {
+      const groups = rootState.profile.groups;
+      const removedGroupFromUserProfile = groups.filter((group) => {
         return group.groupId !== groupId;
       });
 
@@ -449,7 +438,10 @@ const actions = {
     return;
   },
 
-  async assignNames({ commit, dispatch }, { response, copyResponse, id }) {
+  async assignNames(
+    { commit, dispatch, rootState },
+    { response, copyResponse, id }
+  ) {
     try {
       await dispatch("pickNames", { response, copyResponse });
       const assignNamesResponse = await API.patch(
@@ -459,8 +451,10 @@ const actions = {
           body: response,
         }
       );
+      const userId = rootState.loggedIn.userId;
+      const namesAssigned = assignNamesResponse.body;
       commit("setLoading", { of: "DrawNames", to: false });
-      commit("setNamesDrawn", assignNamesResponse.body);
+      commit("setNamesDrawn", { namesAssigned, userId });
       alert(
         "Names have been drawn successfully! Close this box to return to the group page."
       );
