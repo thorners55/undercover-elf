@@ -16,7 +16,7 @@ new Vue({
   store,
   beforeCreate() {
     // means before the app is loaded can detect whether or not is logged in from loggedIn module.
-    this.$store.commit("loggedIn/isLoggedIn");
+    this.$store.dispatch("loggedIn/isLoggedIn");
   },
   modules: {
     groups: {

@@ -18,17 +18,6 @@ const mutations = {
     state.name = name;
   },
 
-  async isLoggedIn(state) {
-    const isAuthenticated = await Auth.currentAuthenticatedUser();
-    if (isAuthenticated.username) {
-      state.loggedIn = true;
-      state.userId = isAuthenticated.username;
-      state.name = isAuthenticated.attributes.name;
-    } else return;
-    // NEED TO HANDLE UNCAUGHT PROMISE
-    // DOES THIS NEED TO BE IN ACTIONS?
-  },
-
   setLoggedOut(state) {
     state.loggedIn = false;
     state.userId = "";
@@ -45,6 +34,20 @@ const actions = {
 
   logOut({ commit }) {
     commit("setLoggedOut");
+  },
+
+  async isLoggedIn({ commit }) {
+    try {
+      let isAuthenticated = await Auth.currentAuthenticatedUser();
+      if (isAuthenticated.username) {
+        commit("setUserId", {
+          userId: isAuthenticated.username,
+          name: isAuthenticated.attributes.name,
+        });
+      } else return;
+    } catch (error) {
+      console.log(error);
+    }
   },
 };
 
