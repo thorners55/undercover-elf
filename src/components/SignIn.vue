@@ -11,6 +11,7 @@
               id="sign-in"
               v-on:keyup.enter="signInFunc(signIn.signInEmail)"
               v-on:submit.prevent
+              autocomplete="off"
             >
               <label for="email">Email</label>
               <input type="email" id="email" v-model="signIn.signInEmail" />
@@ -19,6 +20,7 @@
                 :type="signIn.showSignInPassword ? 'text' : 'password'"
                 id="password"
                 v-model="signIn.signInPassword"
+                autocomplete="off"
               />
 
               <input

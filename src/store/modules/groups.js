@@ -38,6 +38,7 @@ const state = {
   // creating new group
   createGroupSuccess: false,
   createdGroupId: "",
+  loadingCreatingGroup: false,
 };
 
 const getters = {};
@@ -77,9 +78,14 @@ const mutations = {
     state.fetchedGroupInfo = true;
   },
 
+  setCreatingGroup(state) {
+    state.loadingCreatingGroup = true;
+  },
+
   setCreatedGroupId(state, groupId) {
     state.createGroupSuccess = true;
     state.createdGroupId = groupId;
+    state.loadingCreatingGroup = false;
   },
 
   resetCreatedGroupId(state) {
@@ -92,8 +98,8 @@ const mutations = {
     for (let i = 0; i < namesAssigned.length; i++) {
       if (namesAssigned[i].pk === `user_${userId}`) {
         state.groupInfo.closed = 1;
-        state.groupInfo.buyingForName = namesAssigned[i].buyingForName;
-        state.groupInfo.buyingForUserId = namesAssigned[i].buyingForUserId;
+        state.userGroupInfo.buyingForName = namesAssigned[i].buyingForName;
+        state.userGroupInfo.buyingForUserId = namesAssigned[i].buyingForUserId;
         break;
       } else continue;
     }
@@ -220,6 +226,7 @@ const actions = {
   },
 
   postGroup({ commit, rootState }, newGroupInfo) {
+    commit("setCreatingGroup");
     const tryDate = date.transform(
       newGroupInfo.exchange,
       "YYYY-MM-DD",
