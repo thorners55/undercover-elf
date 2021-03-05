@@ -55,7 +55,7 @@
         <button
           v-if="foundGroupClosed === 0"
           v-on:click="
-            joinGroup({ name, userId, groupId, foundGroupName });
+            joinGroup({ name, userId, groupId, foundGroupName, groups });
             groupId = '';
           "
         >
@@ -106,6 +106,7 @@ export default {
     ...mapActions("profile", ["fetchUserProfile"]),
   },
   created() {
+    console.log(this.groups, "groups");
     if (this.$route.query.id && this.userId) {
       this.fetchUserProfile(this.userId);
       this.findGroup({ groupId: this.$route.query.id, groups: this.groups });

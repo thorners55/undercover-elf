@@ -142,10 +142,10 @@ const actions = {
 
   // join a group that user has previously searched for
   async joinGroup(
-    { commit, rootState },
+    { commit },
     { name, userId, groupId, foundGroupName, groups }
   ) {
-    const alreadyMember = isAlreadyMember({ groupId, groups });
+    const alreadyMember = isAlreadyMember(groupId, groups);
     if (alreadyMember) {
       alert(
         "You are already a member of this group! Please search for another group."
