@@ -78,8 +78,10 @@ const mutations = {
     state.fetchedGroupInfo = true;
   },
 
-  setCreatingGroup(state) {
-    state.loadingCreatingGroup = true;
+  setCreatingGroup(state, error) {
+    if (error) {
+      state.loadingCreatingGroup = false;
+    } else state.loadingCreatingGroup = true;
   },
 
   setCreatedGroupId(state, groupId) {
@@ -139,7 +141,7 @@ const actions = {
   },
 
   // join a group that user has previously searched for
-  joinGroup(
+  async joinGroup(
     { commit, rootState },
     { name, userId, groupId, foundGroupName, groups }
   ) {
@@ -165,8 +167,22 @@ const actions = {
         admin: 0,
       };
 
-      const updatedGroupArray = rootState.profile.groups;
-      updatedGroupArray.push(newGroup);
+      // get existing user groups from database first, then make an updated array including new group
+      let existingGroupsArray;
+
+      try {
+        const getGroups = await API.get(
+          "undercoverElfApi",
+          `/users/${userId}/profile`,
+          {}
+        );
+        existingGroupsArray = getGroups;
+      } catch (error) {
+        console.log(error);
+        commit("setCreatingGroup", error);
+      }
+
+      const updatedGroupArray = [...existingGroupsArray.body.groups, newGroup];
 
       API.post(
         "undercoverElfApi",
@@ -225,8 +241,11 @@ const actions = {
       });
   },
 
-  postGroup({ commit, rootState }, newGroupInfo) {
+  async postGroup({ commit, rootState }, newGroupInfo) {
     commit("setCreatingGroup");
+
+    const userId = rootState.loggedIn.userId;
+
     const tryDate = date.transform(
       newGroupInfo.exchange,
       "YYYY-MM-DD",
@@ -244,12 +263,29 @@ const actions = {
       },
     ];
 
-    const updatedGroupArray = rootState.profile.groups;
-    updatedGroupArray.push({
-      groupId: `group_${groupId}`,
-      groupName: newGroupInfo.groupName,
-      admin: 1,
-    });
+    // get existing user groups from database first, then make an updated array including new group
+    let existingGroupsArray;
+
+    try {
+      const getGroups = await API.get(
+        "undercoverElfApi",
+        `/users/${userId}/profile`,
+        {}
+      );
+      existingGroupsArray = getGroups;
+    } catch (error) {
+      console.log(error);
+      commit("setCreatingGroup", error);
+    }
+
+    const updatedGroupArray = [
+      ...existingGroupsArray.body.groups,
+      {
+        groupId: `group_${groupId}`,
+        groupName: newGroupInfo.groupName,
+        admin: 1,
+      },
+    ];
 
     API.post("undercoverElfApi", "/groups", {
       body: {

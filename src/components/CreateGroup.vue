@@ -94,7 +94,7 @@ export default {
   },
   methods: {
     ...mapActions("groups", ["postGroup", "resetCreateGroup"]),
-    createGroup() {
+    createGroup(userId) {
       // have to check that all fields are filled as required attribute is not enough - to be able to use disabled styling, need to be able to check if fields have required inputs as go along
       if (
         !this.newGroup.groupName ||
