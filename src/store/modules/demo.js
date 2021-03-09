@@ -99,8 +99,19 @@ const state = {
 };
 
 const getters = {
-  getGroup: (state) => (groupId) => {
+  getGroup: (state) => ({ groupId, editing }) => {
     let groupToGet = state.groups.find((group) => group.groupId == groupId);
+    console.log(groupToGet);
+    if (!editing) {
+      let formattedDate = date.transform(
+        groupToGet.exchange,
+        "YYYY-MM-DD",
+        "DD-MM-YYYY"
+      );
+      console.log(formattedDate);
+
+      groupToGet.exchange = formattedDate;
+    }
     return groupToGet;
   },
 

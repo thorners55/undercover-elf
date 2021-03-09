@@ -23,12 +23,6 @@
               "
         />
       </div>
-      <h3>Group members:</h3>
-      <ul>
-        <li v-for="member in groupInfo.members" :key="member.pk">
-          <p>{{ member }}</p>
-        </li>
-      </ul>
 
       <div class="info">
         <h3>Exchange date:</h3>
@@ -95,7 +89,7 @@ export default {
     ...mapGetters("demo", ["getGroup"])
   },
   created() {
-    this.groupInfo = this.getGroup(this.groupId);
+    this.groupInfo = this.getGroup({ groupId: this.groupId, editing: true });
     this.groupInfoToUpdate.groupName = this.groupInfo.name;
     this.groupInfoToUpdate.exchange = this.groupInfo.exchange;
     this.groupInfoToUpdate.budget = this.groupInfo.budget;

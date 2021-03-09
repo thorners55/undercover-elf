@@ -80,14 +80,7 @@ export default {
     ...mapActions("demo", ["leaveGroup"])
   },
   created() {
-    this.group = this.getGroup(this.groupId);
-    let formattedDate = date.transform(
-      this.group.exchange,
-      "YYYY-MM-DD",
-      "DD-MM-YYYY"
-    );
-
-    this.group.exchange = formattedDate;
+    this.group = this.getGroup({ groupId: this.groupId, editing: false });
   },
   data() {
     return {
