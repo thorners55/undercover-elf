@@ -6,33 +6,13 @@
       <h2>Create group</h2>
       <div v-if="!createGroupSuccess">
         <!-- can't put button inside form for styling reasons--->
-        <form
-          id="create-group-form"
-          v-on:keyup.enter="createGroup"
-          v-on:submit.prevent
-        >
+        <form id="create-group-form" v-on:keyup.enter="createGroup" v-on:submit.prevent>
           <label for="group-name">Group name</label>
-          <input
-            type="text"
-            id="group-name"
-            v-model="newGroup.groupName"
-            required
-          />
+          <input type="text" id="group-name" v-model="newGroup.groupName" required />
           <label for="exchange">Gift exchange</label>
-          <input
-            type="date"
-            id="exchange"
-            v-model="newGroup.exchange"
-            required
-          />
+          <input type="date" id="exchange" v-model="newGroup.exchange" required />
           <label for="budget">Budget</label>
-          <input
-            type="text"
-            id="budget"
-            v-model="newGroup.budget"
-            placeholder="e.g. £15"
-            required
-          />
+          <input type="text" id="budget" v-model="newGroup.budget" placeholder="e.g. £15" required />
         </form>
         <button
           type="submit"
@@ -43,9 +23,7 @@
               ? true
               : false
           "
-        >
-          Create group
-        </button>
+        >Create group</button>
       </div>
       <div v-if="createGroupSuccess">
         <p>Group successfully created!</p>
@@ -56,28 +34,28 @@
           </p>
           <p>
             Invitation link for {{ newGroup.groupName }} is:
-            <b
-              ><a
+            <b>
+              <a
                 :href="
                   `https://master.dngg2cj4n9n4p.amplifyapp.com/#/groups/join?id=${createdGroupId}`
                 "
-                >{{
-                  `https://master.dngg2cj4n9n4p.amplifyapp.com/#/groups/join?id=${createdGroupId}`
+              >
+                {{
+                `https://master.dngg2cj4n9n4p.amplifyapp.com/#/groups/join?id=${createdGroupId}`
                 }}
-              </a></b
-            >
+              </a>
+            </b>
           </p>
           <p>
             To invite people to this group, you can send them the group ID that
             has been generated for you, to be pasted into the search by that
             appears when you click the 'Join Group' button on the homepage, or
-            send them the invitation link.<br /><br />
-            The group invitation ID can be found in the group settings.
+            send them the invitation link.
+            <br />
+            <br />The group invitation ID can be found in the group settings.
           </p>
         </div>
-        <router-link :to="`/groups/group_${createdGroupId}/profile`"
-          >View group page</router-link
-        >
+        <router-link :to="`/groups/group_${createdGroupId}/profile`">View group page</router-link>
       </div>
     </div>
   </div>
@@ -90,7 +68,7 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "CreateGroup",
   components: {
-    Loading,
+    Loading
   },
   methods: {
     ...mapActions("groups", ["postGroup", "resetCreateGroup"]),
@@ -107,7 +85,7 @@ export default {
         this.creatingGroup = false;
         this.postGroup(this.newGroup);
       }
-    },
+    }
   },
   computed: {
     ...mapState("profile", ["name", "userId"]),
@@ -115,8 +93,8 @@ export default {
       "createdGroupId",
       "groups",
       "createGroupSuccess",
-      "loadingCreatingGroup",
-    ]),
+      "loadingCreatingGroup"
+    ])
   },
   beforeDestroy() {
     this.resetCreateGroup();
@@ -127,11 +105,11 @@ export default {
         groupName: "",
         exchange: "",
         members: "",
-        budget: "",
+        budget: ""
       },
-      creatingGroup: false,
+      creatingGroup: false
     };
-  },
+  }
 };
 </script>
 
