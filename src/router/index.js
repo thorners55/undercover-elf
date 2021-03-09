@@ -6,9 +6,10 @@ import GroupPage from "../components/GroupPage.vue";
 import AdminEditGroup from "../components/AdminEditGroup.vue";
 import MyWishlist from "../components/MyWishlist.vue";
 import BuyingForWishlist from "../components/BuyingForWishlist.vue";
+import CreateGroup from "../components/CreateGroup.vue";
 /* 
 import JoinGroup from "../components/JoinGroup.vue";
-import CreateGroup from "../components/CreateGroup.vue";
+
 
  */
 
@@ -21,9 +22,10 @@ const routes = [
   { path: "/groups/edit", component: AdminEditGroup },
   { path: "/my-wishlist", component: MyWishlist },
   { path: "/wishlist/:userId", component: BuyingForWishlist },
+  { path: "/groups/create", component: CreateGroup },
   /*
   { path: "/groups/join", component: JoinGroup },
-  { path: "/groups/create", component: CreateGroup },
+ 
   { path: "/groups/edit", component: AdminEditGroup },
  */
 ];

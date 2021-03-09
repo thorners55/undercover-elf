@@ -4,6 +4,7 @@
     <main>
       <router-view>
         <AllGroups />
+        <CreateGroup />
         <Profile />
         <GroupPage />
         <AdminEditGroup />
@@ -18,6 +19,7 @@
 import NavBar from "./components/NavBar.vue";
 import AllGroups from "./components/AllGroups.vue";
 import Profile from "./components/Profile.vue";
+import CreateGroup from "./components/CreateGroup.vue";
 import GroupPage from "./components/GroupPage.vue";
 import AdminEditGroup from "./components/AdminEditGroup.vue";
 import MyWishlist from "./components/MyWishlist.vue";
@@ -28,6 +30,7 @@ export default {
   components: {
     NavBar,
     AllGroups,
+    CreateGroup,
     Profile,
     GroupPage,
     AdminEditGroup,

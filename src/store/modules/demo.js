@@ -1,4 +1,5 @@
 import router from "../../router";
+import date from "date-and-time";
 
 const namespaced = true;
 
@@ -126,9 +127,31 @@ const getters = {
 };
 
 const mutations = {
+  setCreatedGroup(state, newGroup) {
+    const formattedDate = date.transform(
+      newGroup.exchange,
+      "YYYY-MM-DD",
+      "DD-MM-YYYY"
+    );
+
+    let group = {
+      name: newGroup.groupName,
+      groupId: newGroup.createdGroupId,
+      exchange: formattedDate,
+      budget: newGroup.budget,
+      admin: true,
+      closed: false,
+      buyingFor: "",
+      members: [state.profile.name],
+      wishlist: [],
+    };
+    state.groups.push(group);
+    state.createGroupSuccess = true;
+  },
+
   setUpdatedGroup(state, { groupId, groupInfoToUpdate }) {
     const { budget, exchange, groupName } = groupInfoToUpdate;
-    console.log(groupId, groupInfoToUpdate);
+
     for (let i = 0; i < state.groups.length; i++) {
       if (state.groups[i].groupId === groupId) {
         state.groups[i].budget = budget;
@@ -156,6 +179,10 @@ const mutations = {
 };
 
 const actions = {
+  postGroup({ commit }, newGroup) {
+    commit("setCreatedGroup", newGroup);
+  },
+
   updateGroup({ commit }, { groupId, groupInfoToUpdate }) {
     commit("setUpdatedGroup", {
       groupId,

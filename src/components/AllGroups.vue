@@ -9,6 +9,8 @@
         a group below.
       </p>
 
+      <button type="button" v-on:click="$router.push('/groups/create')">Create new group</button>
+
       <h2>You are a member of:</h2>
       <ul>
         <li v-for="group in groups" :key="group.groupId">

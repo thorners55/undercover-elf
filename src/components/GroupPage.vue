@@ -65,6 +65,7 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
+import date from "date-and-time";
 
 export default {
   name: "GroupPage",
@@ -80,6 +81,13 @@ export default {
   },
   created() {
     this.group = this.getGroup(this.groupId);
+    let formattedDate = date.transform(
+      this.group.exchange,
+      "YYYY-MM-DD",
+      "DD-MM-YYYY"
+    );
+
+    this.group.exchange = formattedDate;
   },
   data() {
     return {
