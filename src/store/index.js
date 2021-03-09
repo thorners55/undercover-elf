@@ -2,6 +2,7 @@ import Vuex from "vuex";
 import Vue from "vue";
 
 // import a module
+import demo from "./modules/demo.js";
 import groups from "./modules/groups.js";
 import loggedIn from "./modules/loggedIn.js";
 import profile from "./modules/profile.js";
@@ -12,5 +13,5 @@ Vue.use(Vuex);
 
 // Create store
 export default new Vuex.Store({
-  modules: { loggedIn, groups, profile, wishlists },
+  modules: { demo, loggedIn, groups, profile, wishlists },
 });

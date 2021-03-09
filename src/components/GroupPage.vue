@@ -1,160 +1,143 @@
 <template>
   <div>
-    <Loading
-      v-if="
-        loadingLeaveGroup ||
-          loadingDrawNames ||
-          (!fetchedGroupInfo && !fetchedUserGroupInfo)
-      "
-    />
-    <div
-      class="top-of-page"
-      v-show="!loadingLeaveGroup && fetchedUserGroupInfo && !loadingDrawNames"
-    >
+    <div class="top-of-page">
       <img src="../assets/gift-bag.svg" id="logo" width="50rem" />
-      <h2>{{ groupInfo.groupName }}</h2>
+      <h2>{{ groupName }}</h2>
       <button
         class="settings"
-        v-if="userGroupInfo.admin === 1"
+        v-if="admin"
         v-on:click="$router.push(`/groups/edit?groupId=${groupId}`)"
       >
         <span>
           <i class="fas fa-cog"></i>
         </span>
       </button>
-      <button
-        id="draw-names-button"
-        v-if="groupInfo.closed === 0 && userGroupInfo.admin === 1"
-        v-on:click="drawNames({ groupId })"
-      >
-        Draw names
-      </button>
-      <router-link
-        v-if="userGroupInfo.admin === 1"
-        id="view-my-wishlist"
-        :to="`/my-wishlist?groupId=${groupId}`"
-        >View my wishlist for this group</router-link
-      >
-      <button
-        id="leave-group-button"
-        v-if="userGroupInfo.admin === 0 && groupInfo.closed === 0"
-        v-on:click="
-          leaveGroup({
-            userId,
-            groupId,
-            groupName: groupInfo.groupName,
-            members: groupInfo.members,
-          })
-        "
-      >
-        Leave group
-      </button>
-      <div
-        id="invite-info"
-        v-if="userGroupInfo.admin === 1 && groupInfo.closed === 0"
-      >
+      <button id="leave-group-button" v-if="!admin && !namesDrawn">Leave group</button>
+      <div id="invite-info" v-if="admin">
         <h3>Invitation ID:</h3>
-        <p>{{ groupInfo.inviteId }}</p>
+        <p>{{ invitationId }}</p>
 
         <h3>Invitation link:</h3>
-        <a
-          :href="
-            `https://master.dngg2cj4n9n4p.amplifyapp.com/#/groups/join?id=${splitId}`
-          "
-        >
-          {{
-            `https://master.dngg2cj4n9n4p.amplifyapp.com/#/groups/join?id=${splitId}`
-          }}
-        </a>
+        <p>{{ `https://undercover-elf-demo.com/groups/join?id=${invitationId}` }}</p>
       </div>
 
       <router-link
-        v-if="userGroupInfo.admin === 0"
         id="view-my-wishlist"
         :to="`/my-wishlist?groupId=${groupId}`"
-        >View my wishlist for this group</router-link
-      >
-
+      >View my wishlist for this group</router-link>
       <div id="group-info">
-        <h3>Group members:</h3>
-        <ul>
-          <li v-for="member in groupInfo.members" :key="member.pk">
-            {{ member.name }}
-          </li>
-        </ul>
         <div>
           <h3>Exchange date:</h3>
-          <p>{{ groupInfo.exchange }}</p>
+          <p>{{ exchange }}</p>
         </div>
         <div>
           <h3>Budget:</h3>
-          <p>{{ groupInfo.budget }}</p>
+          <p>{{ budget }}</p>
         </div>
         <div>
           <h3>Group admin:</h3>
-          <p>{{ groupInfo.admin }}</p>
+          <p>{{ adminName }}</p>
         </div>
         <div>
           <h3>You are buying for:</h3>
-          <div v-if="groupInfo.closed === 1">
-            <p>{{ userGroupInfo.buyingForName }}</p>
+          <div>
+            <p v-if="namesDrawn">{{ buyingFor }}</p>
+            <p v-if="!namesDrawn">Names have not been drawn yet</p>
             <router-link
-              :to="
-                `/wishlist/${userGroupInfo.buyingForUserId}?groupId=${groupId}`
-              "
-              >View {{ userGroupInfo.buyingForName }}'s wishlist</router-link
-            >
+              :to="`/wishlist/r2888e66cla9?groupId=${groupId}`"
+              v-if="namesDrawn"
+            >View {{ buyingFor }}'s wishlist</router-link>
           </div>
-          <p v-if="groupInfo.closed === 0">Names have not been drawn yet!</p>
         </div>
+
+        <h3>Group members:</h3>
+        <ul>
+          <li v-for="member in members" :key="member">{{ member }}</li>
+        </ul>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Loading from "./Loading.vue";
-import { mapActions, mapState } from "vuex";
-import { splitId } from "./utils/splitIdFunc.js";
-
 export default {
   name: "GroupPage",
-  components: {
-    Loading,
-  },
-  methods: {
-    ...mapActions("groups", [
-      "fetchGroupInfo",
-      "leaveGroup",
-      "getGroupInfo",
-      "fetchUserGroupInfo",
-      "drawNames",
-    ]),
+  created() {
+    if (this.$route.params.groupId === "dum813d0r3s4rmy") {
+      this.groupName = "Dumbledore's Army";
+      this.invitationId = "dum813d0r3s4rmy";
+      this.budget = this.dumbledoresArmy.budget;
+      this.exchange = this.dumbledoresArmy.exchange;
+      this.admin = true;
+      this.adminName = this.dumbledoresArmy.adminName;
+      this.namesDrawn = this.dumbledoresArmy.namesDrawn;
+      this.members = this.dumbledoresArmy.members;
+      this.buyingFor = this.dumbledoresArmy.buyingFor;
+    } else {
+      this.groupName = "Gryffindor Quidditch Team";
+      this.invitationId = "qu1dd1tch";
+      this.budget = this.gryffindorQuidditchTeam.budget;
+      this.exchange = this.gryffindorQuidditchTeam.exchange;
+      this.admin = false;
+      this.adminName = this.gryffindorQuidditchTeam.adminName;
+      this.namesDrawn = this.gryffindorQuidditchTeam.namesDrawn;
+      this.members = this.gryffindorQuidditchTeam.members;
+      this.buyingFor = this.gryffindorQuidditchTeam.buyingFor;
+    }
   },
   computed: {
     groupId() {
       return this.$route.params.groupId;
-    },
-    ...mapState("loggedIn", ["userId"]),
-    ...mapState("groups", [
-      "groupInfo",
-      "userGroupInfo",
-      "loadingDrawNames",
-      "loadingLeaveGroup",
-      "fetchedGroupInfo",
-      "fetchedUserGroupInfo",
-    ]),
-  },
-  created() {
-    this.fetchGroupInfo(this.groupId);
-    this.fetchUserGroupInfo({ userId: this.userId, groupId: this.groupId });
-    this.splitId = splitId(this.groupId);
+    }
   },
   data() {
     return {
-      splitId: "",
+      dumbledoresArmy: {
+        exchange: "10/12/95",
+        budget: "3 Galleons",
+        adminName: "Harry Potter",
+        buyingFor: "Luna Lovegood",
+        namesDrawn: true,
+        members: [
+          "Harry Potter",
+          "Padma Patil",
+          "Parvarti Patil",
+          "Hannah Abbott",
+          "Lavender Brown",
+          "Katie Bell",
+          "Susan Bones",
+          "Cho Chang",
+          "Colin Creevey",
+          "Marietta Edgecombe",
+          "Justin Finch-Fletchley",
+          "Hermione Granger",
+          "Angelina Johnson",
+          "Lee Jordan",
+          "Neville Longbottom",
+          "Luna Lovegood",
+          "Fred Weasley",
+          "George Weasley",
+          "Ginny Weasley",
+          "Ron Weasley"
+        ]
+      },
+      gryffindorQuidditchTeam: {
+        exchange: "15/12/91",
+        budget: "2 Galleons",
+        adminName: "Oliver Wood",
+        namesDrawn: false,
+        buyingFor: "Fred Weasley",
+        members: [
+          "Fred Weasley",
+          "George Weasley",
+          "Angelina Johnson",
+          "Alicia Spinnet",
+          "Harry Potter",
+          "Oliver Wood"
+        ]
+      }
     };
-  },
+  }
 };
 </script>
 

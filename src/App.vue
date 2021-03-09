@@ -1,61 +1,30 @@
 <template>
   <div id="app">
-    <Header />
-    <main id="main-signin-nav">
-      <SignIn v-if="!loggedIn" />
-      <router-view v-if="loggedIn">
+    <NavBar />
+    <main>
+      <router-view>
         <AllGroups />
         <Profile />
-        <CreateGroup />
-        <JoinGroup />
         <GroupPage />
-        <AdminEditGroup />
-        <MyWishlist />
-        <BuyingForWishlist />
       </router-view>
     </main>
   </div>
 </template>
 
 <script>
-import { Auth } from "aws-amplify";
-import { mapState, mapActions } from "vuex";
-import Header from "./components/Header.vue";
-import SignIn from "./components/SignIn.vue";
-import Profile from "./components/Profile.vue";
+import NavBar from "./components/NavBar.vue";
 import AllGroups from "./components/AllGroups.vue";
-import CreateGroup from "./components/CreateGroup.vue";
-import AdminEditGroup from "./components/AdminEditGroup.vue";
-import JoinGroup from "./components/JoinGroup.vue";
-import MyWishlist from "./components/MyWishlist.vue";
-import BuyingForWishlist from "./components/BuyingForWishlist.vue";
+import Profile from "./components/Profile.vue";
+import GroupPage from "./components/GroupPage.vue";
 
 export default {
   name: "App",
   components: {
-    Header,
-    SignIn,
-    Profile,
+    NavBar,
     AllGroups,
-    CreateGroup,
-    JoinGroup,
-    AdminEditGroup,
-    BuyingForWishlist,
-    MyWishlist,
-  },
-  computed: mapState("loggedIn", ["loggedIn"]),
-  methods: {
-    ...mapActions("profile", ["fetchUserProfile"]),
-    ...mapActions("loggedIn", ["logIn", "logOut", "isLoggedIn"]),
-  },
-  created() {
-    if (this.loggedIn) {
-      this.fetchUserProfile(this.userId);
-    } else {
-      this.isLoggedIn();
-    }
-    //document.addEventListener("beforeunload", this.logOut());
-  },
+    Profile,
+    GroupPage
+  }
 };
 </script>
 
@@ -65,13 +34,18 @@ html {
 }
 
 #app {
-  font-family: "Bubbleboddy Regular", sans-serif;
+  font-family: "Bubbleboddy Regular";
   font-size: 62.5%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
   margin-top: 3rem;
+}
+
+main {
+  font-size: 1.2rem;
+  font-family: "Quicksand", sans-serif;
 }
 
 a,
@@ -101,18 +75,17 @@ h1 {
   margin: 0.5rem;
 }
 
+.top-of-page {
+  margin-top: 5ch;
+}
+
 ul {
   list-style-type: none;
   padding: 0;
 }
 
-.top-of-page {
-  margin-top: 5ch;
-}
-
-#main-signin-nav {
-  font-size: 1.2rem;
-  font-family: "Quicksand", sans-serif;
+li {
+  margin: 1ch;
 }
 
 button {
@@ -138,47 +111,5 @@ button:disabled {
 
 button:disabled:hover {
   cursor: default;
-}
-
-input {
-  align-self: center;
-  height: 3ch;
-  font-size: 1rem;
-}
-
-input[type="checkbox"] {
-  transform: scale(1.5);
-  margin-right: 1ch;
-}
-
-.message {
-  margin-left: 30%;
-  margin-right: 30%;
-  font-weight: bold;
-  color: #a81111;
-}
-
-a.back-to {
-  margin-top: 1ch;
-  display: block;
-}
-
-@media (max-width: 900px) {
-  form {
-    display: block;
-    margin: 0;
-    margin: auto;
-    width: auto;
-  }
-
-  label {
-    text-align: center;
-    display: block;
-  }
-
-  a.router-link-active.back-to-home {
-    display: block;
-    margin: 2ch;
-  }
 }
 </style>

@@ -1,5 +1,9 @@
 <template>
   <div id="local-scope">
+    <header>
+      <img src="../assets/elf.svg" id="logo" width="100rem" />
+      <h1>Undercover Elf</h1>
+    </header>
     <nav>
       <ul>
         <li>
