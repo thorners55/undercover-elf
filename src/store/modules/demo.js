@@ -39,6 +39,22 @@ const state = {
         "Ginny Weasley",
         "Ron Weasley",
       ],
+      wishlist: [
+        {
+          comment: "Or you can get them at Weasley's Wizard Wheezes!",
+          description: "Extendable ears",
+          id: "bkeguvgfggaldchtbwbqtbsfkfwpihqassnq",
+          isEditing: false,
+          url: "https://harrypottershop.co.uk/products/extendable-ear",
+        },
+        {
+          comment: "Can be found at Quality Quidditch Supplies in Diagon Alley",
+          description: "Broomstick servicing kit",
+          id: "bgkqlhkeyghvmusafncnkeadnmvomnfejesfu",
+          isEditing: false,
+          url: "",
+        },
+      ],
       buyingForWishlist: [
         {
           comment: "Dervish and Banges in Hogsmeade sell them",
@@ -76,6 +92,7 @@ const state = {
         "Harry Potter",
         "Oliver Wood",
       ],
+      wishlist: [],
     },
   ],
 };
@@ -91,6 +108,11 @@ const getters = {
       (group) => group.adminName == state.profile.name
     );
     return adminFor;
+  },
+
+  getMyWishlist: (state) => (groupId) => {
+    let group = state.groups.find((group) => group.groupId == groupId);
+    return { wishlist: group.wishlist, group };
   },
 
   getBuyingForWishlist: (state) => (groupId) => {
@@ -123,6 +145,14 @@ const mutations = {
     router.push({ path: "/" });
     alert("Successfully left the group");
   },
+
+  setMyWishlist(state, { wishlist, groupName }) {
+    for (let i = 0; i < state.groups.length; i++) {
+      if (state.groups[i].name == groupName) {
+        state.groups[i].wishlist = wishlist;
+      }
+    }
+  },
 };
 
 const actions = {
@@ -139,6 +169,10 @@ const actions = {
     if (result) {
       commit("setLeaveGroup", groupId);
     }
+  },
+
+  updateWishlist({ commit }, { wishlist, groupName }) {
+    commit("setMyWishlist", { wishlist, groupName });
   },
 };
 
