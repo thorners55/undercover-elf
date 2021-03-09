@@ -2,9 +2,7 @@
   <div>
     <Loading v-if="loadingDrawNames" />
     <div v-if="!loadingDrawNames">
-      <router-link :to="`/groups/${groupInfo.pk}/profile`"
-        >Back to {{ groupInfo.groupName }} page</router-link
-      >
+      <router-link :to="`/groups/${groupInfo.pk}/profile`">Back to {{ groupInfo.groupName }} page</router-link>
       <div class="top-of-page">
         <h2>Edit group settings for {{ groupInfo.groupName }}</h2>
         <Loading v-if="loadingEditGroup" />
@@ -75,9 +73,7 @@
                   groupInfoToUpdate,
                 })
               "
-            >
-              Submit
-            </button>
+            >Submit</button>
           </div>
         </div>
       </div>
@@ -92,7 +88,7 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "AdminEdesitGroup",
   components: {
-    Loading,
+    Loading
   },
   methods: {
     ...mapActions("groups", ["updateGroup", "fetchGroupInfo"]),
@@ -100,7 +96,7 @@ export default {
       this.groupInfoToUpdate.groupName = this.groupInfo.groupName;
       this.groupInfoToUpdate.exchange = this.groupInfo.exchange;
       this.groupInfoToUpdate.budget = this.groupInfo.budget;
-    },
+    }
   },
   computed: {
     groupId() {
@@ -110,16 +106,16 @@ export default {
       "groupInfo",
       "groupInfoToUpdate",
       "loadingDrawNames",
-      "loadingEditGroup",
+      "loadingEditGroup"
     ]),
-    ...mapState("loggedIn", ["userId"]),
+    ...mapState("loggedIn", ["userId"])
   },
   created() {
-    this.fetchGroupInfo(this.groupId);
+    this.fetchGroupInfo({ groupId: this.groupId, editing: true });
   },
   data() {
     return {};
-  },
+  }
 };
 </script>
 

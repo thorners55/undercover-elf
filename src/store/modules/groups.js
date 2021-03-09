@@ -69,13 +69,24 @@ const mutations = {
     }
   },
 
-  setGroupInfo(state, groupInfo) {
+  setGroupInfo(state, { groupInfo, editing }) {
     const inviteId = splitId(groupInfo.pk);
+
     state.groupInfo = groupInfo;
     state.groupInfo.inviteId = inviteId;
     const groupInfoToUpdate = JSON.parse(JSON.stringify(groupInfo));
     state.groupInfoToUpdate = groupInfoToUpdate;
     state.fetchedGroupInfo = true;
+
+    if (!editing) {
+      const formattedDate = date.transform(
+        groupInfo.exchange,
+        "YYYY-MM-DD",
+        "DD-MM-YYYY"
+      );
+
+      groupInfo.exchange = formattedDate;
+    }
   },
 
   setCreatingGroup(state, error) {
@@ -212,13 +223,13 @@ const actions = {
     }
   },
 
-  fetchGroupInfo({ commit }, groupId) {
+  fetchGroupInfo({ commit }, { groupId, editing }) {
     commit("setLoading", { of: "EditGroup", to: true });
     const id = splitId(groupId);
 
     API.get("undercoverElfApi", `/groups?id=${id}`, {})
       .then(({ body }) => {
-        commit("setGroupInfo", body);
+        commit("setGroupInfo", { groupInfo: body, editing });
         commit("setLoading", { of: "EditGroup", to: false });
       })
       .catch((err) => {
@@ -246,14 +257,7 @@ const actions = {
 
     const userId = rootState.loggedIn.userId;
 
-    const tryDate = date.transform(
-      newGroupInfo.exchange,
-      "YYYY-MM-DD",
-      "DD-MM-YYYY"
-    );
-
     const groupId = uuidv4();
-    newGroupInfo.exchange = tryDate;
     newGroupInfo.pk = groupId;
     newGroupInfo.admin = rootState.loggedIn.name;
     newGroupInfo.members = [

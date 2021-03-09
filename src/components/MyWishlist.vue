@@ -198,10 +198,20 @@ export default {
   created() {
     this.fetchUserGroupInfo({ userId: this.userId, groupId: this.groupId });
   },
+  beforeDestroy() {
+    // need to set all items isEditing to false, otherwise the next time wishlist is loaded up, will already be open for editing
+    this.myWishlist.forEach(item => {
+      if (item.isEditing) {
+        item.isEditing = false;
+      }
+      return;
+    });
+  },
   methods: {
     ...mapActions("groups", ["fetchUserGroupInfo"]),
     ...mapActions("wishlists", ["updateWishlist", "editWishlist"]),
     editItem(index) {
+      // need to do this parsing because need to save originalItem as a string, otherwise copies the reference of the object and mutates original item
       this.originalItem = JSON.parse(JSON.stringify(this.myWishlist[index]));
     },
     updateItem(event, index, type) {
