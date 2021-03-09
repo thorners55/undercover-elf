@@ -1,18 +1,15 @@
 <template>
   <div>
-    <router-link class="back-to" :to="`/groups/${groupId}/profile`">Back to {{ groupName }}</router-link>
-    <Loading v-if="loadingWishlist" />
-    <div v-if="!loadingWishlist" class="top-of-page">
+    <router-link class="back-to" :to="`/groups/${groupId}/profile`">Back to {{ group }}</router-link>
+    <div class="top-of-page">
       <img src="../assets/sock.svg" id="logo" width="50rem" />
-      <h2>{{ name }}'s Wishlist</h2>
+      <h2>{{ buyingFor }}'s Wishlist</h2>
       <p>
-        <b>REMEMBER: You are the only person who can see {{ name }}'s wishlist!</b>
+        <b>REMEMBER: You are the only person who can see {{ buyingFor }}'s wishlist!</b>
       </p>
-      <p
-        v-if="buyingForWishlist.length < 1"
-      >{{ name }} has not added anything to their wishlist yet!</p>
+      <p v-if="wishlist.length < 1">{{ name }} has not added anything to their wishlist yet!</p>
       <ul>
-        <li v-for="item in buyingForWishlist" :key="item.id" class="wishlist-item-container">
+        <li v-for="item in wishlist" :key="item.id" class="wishlist-item-container">
           <div class="wishlist-item">
             <ul>
               <li class="description">{{ item.description }}</li>
@@ -29,33 +26,28 @@
 </template>
 
 <script>
-import Loading from "./Loading.vue";
-import { mapState, mapActions } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   name: "BuyingForWishlist",
-  components: {
-    Loading
-  },
-  methods: {
-    ...mapActions("wishlists", ["fetchWishlist"])
-  },
   computed: {
-    userId() {
-      return this.$route.params.userId;
-    },
     groupId() {
       return this.$route.query.groupId;
     },
-    ...mapState("wishlists", [
-      "name",
-      "groupName",
-      "buyingForWishlist",
-      "loadingWishlist"
-    ])
+    ...mapGetters("demo", ["getBuyingForWishlist"])
   },
   created() {
-    this.fetchWishlist({ userId: this.userId, groupId: this.groupId });
+    let buyingForInfo = this.getBuyingForWishlist(this.groupId);
+    this.wishlist = buyingForInfo.wishlist;
+    this.buyingFor = buyingForInfo.buyingFor;
+    this.group = buyingForInfo.group;
+  },
+  data() {
+    return {
+      wishlist: [],
+      buyingFor: "",
+      group: ""
+    };
   }
 };
 </script>

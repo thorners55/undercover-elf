@@ -7,6 +7,8 @@
         <Profile />
         <GroupPage />
         <AdminEditGroup />
+        <MyWishlist />
+        <BuyingForWishlist />
       </router-view>
     </main>
   </div>
@@ -18,6 +20,8 @@ import AllGroups from "./components/AllGroups.vue";
 import Profile from "./components/Profile.vue";
 import GroupPage from "./components/GroupPage.vue";
 import AdminEditGroup from "./components/AdminEditGroup.vue";
+import MyWishlist from "./components/MyWishlist.vue";
+import BuyingForWishlist from "./components/BuyingForWishlist.vue";
 
 export default {
   name: "App",
@@ -26,7 +30,9 @@ export default {
     AllGroups,
     Profile,
     GroupPage,
-    AdminEditGroup
+    AdminEditGroup,
+    MyWishlist,
+    BuyingForWishlist
   }
 };
 </script>

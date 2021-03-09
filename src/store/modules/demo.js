@@ -39,6 +39,25 @@ const state = {
         "Ginny Weasley",
         "Ron Weasley",
       ],
+      buyingForWishlist: [
+        {
+          comment: "Dervish and Banges in Hogsmeade sell them",
+          description: "Remembrall",
+          url: "",
+        },
+        {
+          comment: "",
+          description: "Bertie Botts Every Flavour Beans",
+          url:
+            "https://harrypottershop.co.uk/products/bertie-botts-every-flavour-beans",
+        },
+        {
+          comment: "",
+          description: "Chocolate frog",
+          url:
+            "https://harrypottershop.co.uk/products/chocolate-frog-with-authentic-film-packaging?_pos=13&_sid=12a48864d&_ss=r",
+        },
+      ],
     },
     {
       name: "Gryffindor Quidditch Team",
@@ -72,6 +91,15 @@ const getters = {
       (group) => group.adminName == state.profile.name
     );
     return adminFor;
+  },
+
+  getBuyingForWishlist: (state) => (groupId) => {
+    let group = state.groups.find((group) => group.groupId == groupId);
+    return {
+      wishlist: group.buyingForWishlist,
+      buyingFor: group.buyingFor,
+      group: group.name,
+    };
   },
 };
 
