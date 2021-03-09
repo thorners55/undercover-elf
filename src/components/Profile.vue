@@ -5,24 +5,50 @@
     <div>
       <p>
         <b>Name:</b>
-        Harry Potter
+        {{profile.name}}
       </p>
       <p>
         <b>Email:</b>
-        ilovehedwig@hogwarts.co.uk
+        {{profile.email}}
       </p>
 
       <h3>Group admin for:</h3>
       <ul>
-        <li>Dumbledore's Army</li>
-        <li>Gryffindor Quidditch Team</li>
+        <li v-for="group in adminFor" :key="group.groupId">
+          <router-link :to="`/groups/${group.groupId}/profile`">{{ group.name }}</router-link>
+          <button v-if="group.admin" v-on:click="$router.push(`/groups/edit?groupId=${groupId}`)">
+            <span>
+              <i class="fas fa-cog"></i>
+            </span>
+          </button>
+        </li>
       </ul>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState, mapGetters } from "vuex";
+
 export default {
-  name: "Profile"
+  name: "Profile",
+  computed: {
+    ...mapState("demo", ["profile"]),
+    ...mapGetters("demo", ["getAdminFor"])
+  },
+  created() {
+    this.adminFor = this.getAdminFor();
+  },
+  data() {
+    return {
+      adminFor: []
+    };
+  }
 };
 </script>
+
+<style scoped>
+button {
+  margin-left: 1ch;
+}
+</style>

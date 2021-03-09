@@ -3,6 +3,10 @@ import router from "../../router";
 const namespaced = true;
 
 const state = {
+  profile: {
+    name: "Harry Potter",
+    email: "ilovehedwig@hogwarts.co.uk",
+  },
   groups: [
     {
       name: "Dumbledore's Army",
@@ -61,6 +65,13 @@ const getters = {
   getGroup: (state) => (groupId) => {
     let groupToGet = state.groups.find((group) => group.groupId == groupId);
     return groupToGet;
+  },
+
+  getAdminFor: (state) => () => {
+    let adminFor = state.groups.filter(
+      (group) => group.adminName == state.profile.name
+    );
+    return adminFor;
   },
 };
 
