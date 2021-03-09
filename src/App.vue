@@ -6,6 +6,7 @@
         <AllGroups />
         <Profile />
         <GroupPage />
+        <AdminEditGroup />
       </router-view>
     </main>
   </div>
@@ -16,6 +17,7 @@ import NavBar from "./components/NavBar.vue";
 import AllGroups from "./components/AllGroups.vue";
 import Profile from "./components/Profile.vue";
 import GroupPage from "./components/GroupPage.vue";
+import AdminEditGroup from "./components/AdminEditGroup.vue";
 
 export default {
   name: "App",
@@ -23,7 +25,8 @@ export default {
     NavBar,
     AllGroups,
     Profile,
-    GroupPage
+    GroupPage,
+    AdminEditGroup
   }
 };
 </script>
@@ -111,5 +114,12 @@ button:disabled {
 
 button:disabled:hover {
   cursor: default;
+}
+
+.message {
+  margin-left: 30%;
+  margin-right: 30%;
+  font-weight: bold;
+  color: #a81111;
 }
 </style>

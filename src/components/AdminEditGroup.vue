@@ -1,125 +1,116 @@
 <template>
   <div>
-    <Loading v-if="loadingDrawNames" />
-    <div v-if="!loadingDrawNames">
-      <router-link :to="`/groups/${groupInfo.pk}/profile`"
-        >Back to {{ groupInfo.groupName }} page</router-link
-      >
-      <div class="top-of-page">
-        <h2>Edit group settings for {{ groupInfo.groupName }}</h2>
-        <Loading v-if="loadingEditGroup" />
-        <div v-if="!loadingEditGroup">
-          <p class="message">
-            <b>
-              IMPORTANT: Press "Submit" at the bottom of the page after making
-              changes!
-            </b>
-          </p>
+    <router-link :to="`/groups/${groupId}/profile`">Back to {{ groupInfo.name }} page</router-link>
+    <div class="top-of-page">
+      <h2>Edit group settings for {{ groupInfo.name }}</h2>
+      <p class="message">
+        <b>
+          IMPORTANT: Press "Submit" at the bottom of the page after making
+          changes!
+        </b>
+      </p>
 
-          <div class="info">
-            <h3>Group name:</h3>
-            <input
-              type="text"
-              v-model="groupInfoToUpdate.groupName"
-              v-on:keyup.enter="
+      <div class="info">
+        <h3>Group name:</h3>
+        <input
+          type="text"
+          v-model="groupInfoToUpdate.groupName"
+          v-on:keyup.enter="
                 updateGroup({
                   groupId,
                   groupInfoToUpdate,
                 })
               "
-            />
-          </div>
-          <h3>Group members:</h3>
-          <ul>
-            <li v-for="member in groupInfo.members" :key="member.pk">
-              <p v-if="member.pk === userId">{{ member.name }} (you)</p>
-              <p v-if="member.pk !== userId">{{ member.name }}</p>
-            </li>
-          </ul>
+        />
+      </div>
+      <h3>Group members:</h3>
+      <ul>
+        <li v-for="member in groupInfo.members" :key="member.pk">
+          <p>{{ member }}</p>
+        </li>
+      </ul>
 
-          <div class="info">
-            <h3>Exchange date:</h3>
-            <input
-              type="date"
-              v-model="groupInfoToUpdate.exchange"
-              v-on:keyup.enter="
+      <div class="info">
+        <h3>Exchange date:</h3>
+        <input
+          type="date"
+          v-model="groupInfoToUpdate.exchange"
+          v-on:keyup.enter="
                 updateGroup({
                   groupId,
                   groupInfoToUpdate,
                 })
               "
-            />
-          </div>
+        />
+      </div>
 
-          <div class="info">
-            <h3>Budget:</h3>
-            <input
-              type="text"
-              v-model="groupInfoToUpdate.budget"
-              v-on:keyup.enter="
+      <div class="info">
+        <h3>Budget:</h3>
+        <input
+          type="text"
+          v-model="groupInfoToUpdate.budget"
+          v-on:keyup.enter="
                 updateGroup({
                   groupId,
                   groupInfoToUpdate,
-                })
+                }),  updated = true;
               "
-              placeholder="e.g. £15"
-              size="5"
-            />
-          </div>
-          <div class="edit-group-buttons">
-            <button type="button" v-on:click="resetInfo">Reset fields</button>
-            <button
-              v-on:click="
+          placeholder="e.g. £15"
+          size="5"
+        />
+      </div>
+      <div class="edit-group-buttons">
+        <button type="button" v-on:click="resetInfo">Reset fields</button>
+        <button
+          v-on:click="
                 updateGroup({
                   groupId,
                   groupInfoToUpdate,
-                })
+                }), updated = true;
               "
-            >
-              Submit
-            </button>
-          </div>
-        </div>
+        >Submit</button>
+        <p v-if="updated" class="message">Changes saved!</p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Loading from "./Loading.vue";
-import { mapState, mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
-  name: "AdminEdesitGroup",
-  components: {
-    Loading,
-  },
+  name: "AdminEditGroup",
   methods: {
-    ...mapActions("groups", ["updateGroup", "fetchGroupInfo"]),
     resetInfo() {
-      this.groupInfoToUpdate.groupName = this.groupInfo.groupName;
+      this.groupInfoToUpdate.groupName = this.groupInfo.name;
       this.groupInfoToUpdate.exchange = this.groupInfo.exchange;
       this.groupInfoToUpdate.budget = this.groupInfo.budget;
     },
+    ...mapActions("demo", ["updateGroup"])
   },
   computed: {
     groupId() {
       return this.$route.query.groupId;
     },
-    ...mapState("groups", [
-      "groupInfo",
-      "groupInfoToUpdate",
-      "loadingDrawNames",
-      "loadingEditGroup",
-    ]),
-    ...mapState("loggedIn", ["userId"]),
+    ...mapGetters("demo", ["getGroup"])
   },
   created() {
-    this.fetchGroupInfo(this.groupId);
+    this.groupInfo = this.getGroup(this.groupId);
+    this.groupInfoToUpdate.groupName = this.groupInfo.name;
+    this.groupInfoToUpdate.exchange = this.groupInfo.exchange;
+    this.groupInfoToUpdate.budget = this.groupInfo.budget;
   },
   data() {
-    return {};
-  },
+    return {
+      groupInfo: {},
+      updated: false,
+      groupInfoToUpdate: {
+        groupName: "",
+        exchange: "",
+        budget: ""
+      }
+    };
+  }
 };
 </script>
 

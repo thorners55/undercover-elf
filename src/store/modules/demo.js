@@ -11,7 +11,7 @@ const state = {
     {
       name: "Dumbledore's Army",
       groupId: "dum813d0r3s4rmy",
-      exchange: "10/12/95",
+      exchange: "1995-12-15",
       budget: "3 Galleons",
       admin: true,
       adminName: "Harry Potter",
@@ -43,7 +43,7 @@ const state = {
     {
       name: "Gryffindor Quidditch Team",
       groupId: "qu1dd1tch",
-      exchange: "15/12/91",
+      exchange: "1991-12-15",
       budget: "2 Galleons",
       admin: false,
       adminName: "Oliver Wood",
@@ -75,8 +75,27 @@ const getters = {
   },
 };
 
-const mutations = {};
+const mutations = {
+  setUpdatedGroup(state, { groupId, groupInfoToUpdate }) {
+    const { budget, exchange, groupName } = groupInfoToUpdate;
+    console.log(groupId, groupInfoToUpdate);
+    for (let i = 0; i < state.groups.length; i++) {
+      if (state.groups[i].groupId === groupId) {
+        state.groups[i].budget = budget;
+        state.groups[i].exchange = exchange;
+        state.groups[i].name = groupName;
+      }
+    }
+  },
+};
 
-const actions = {};
+const actions = {
+  updateGroup({ commit }, { groupId, groupInfoToUpdate }) {
+    commit("setUpdatedGroup", {
+      groupId,
+      groupInfoToUpdate,
+    });
+  },
+};
 
 export default { state, getters, actions, mutations, namespaced };
