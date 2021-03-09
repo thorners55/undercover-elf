@@ -12,7 +12,11 @@
           <i class="fas fa-cog"></i>
         </span>
       </button>
-      <button id="leave-group-button" v-if="!group.admin && !group.closed">Leave group</button>
+      <button
+        id="leave-group-button"
+        v-if="!group.admin && !group.closed"
+        v-on:click="leaveGroup(groupId)"
+      >Leave group</button>
       <div id="invite-info" v-if="group.admin">
         <h3>Invitation ID:</h3>
         <p>{{ groupId }}</p>
@@ -60,7 +64,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 
 export default {
   name: "GroupPage",
@@ -70,6 +74,9 @@ export default {
     groupId() {
       return this.$route.params.groupId;
     }
+  },
+  methods: {
+    ...mapActions("demo", ["leaveGroup"])
   },
   created() {
     this.group = this.getGroup(this.groupId);

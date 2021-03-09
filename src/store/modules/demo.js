@@ -87,6 +87,14 @@ const mutations = {
       }
     }
   },
+
+  setLeaveGroup(state, groupId) {
+    state.groups = state.groups.filter((group) => {
+      return group.groupId !== groupId;
+    });
+    router.push({ path: "/" });
+    alert("Successfully left the group");
+  },
 };
 
 const actions = {
@@ -95,6 +103,14 @@ const actions = {
       groupId,
       groupInfoToUpdate,
     });
+  },
+
+  leaveGroup({ commit }, groupId) {
+    let result = confirm("Are you sure you want to leave this group?");
+
+    if (result) {
+      commit("setLeaveGroup", groupId);
+    }
   },
 };
 
