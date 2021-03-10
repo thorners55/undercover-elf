@@ -2,62 +2,70 @@
   <div>
     <div class="top-of-page">
       <img src="../assets/gift-bag.svg" id="logo" width="50rem" />
-      <h2>{{ group.name }}</h2>
-      <button
-        class="settings"
-        v-if="group.admin"
-        v-on:click="$router.push(`/groups/edit?groupId=${groupId}`)"
-      >
-        <span>
-          <i class="fas fa-cog"></i>
-        </span>
-      </button>
-      <button
-        id="leave-group-button"
-        v-if="!group.admin && !group.closed"
-        v-on:click="leaveGroup(groupId)"
-      >Leave group</button>
-      <div id="invite-info" v-if="group.admin">
-        <h3>Invitation ID:</h3>
-        <p>{{ groupId }}</p>
+      <p v-if="doesNotExist">
+        <b>Error: The group you are trying to view does not exist</b>
+      </p>
+      <div v-if="!doesNotExist">
+        <h2>{{ group.name }}</h2>
+        <button
+          class="settings"
+          v-if="group.admin"
+          v-on:click="$router.push(`/groups/edit?groupId=${groupId}`)"
+        >
+          <span>
+            <i class="fas fa-cog"></i>
+          </span>
+        </button>
+        <button
+          id="leave-group-button"
+          v-if="!group.admin && !group.closed"
+          v-on:click="leaveGroup(groupId)"
+        >Leave group</button>
+        <div class="invite-info" v-if="group.admin">
+          <h3>Invitation ID:</h3>
+          <p>{{ groupId }}</p>
 
-        <h3>Invitation link:</h3>
-        <p>{{ `https://undercover-elf-demo.com/groups/join?id=${groupId}` }}</p>
-      </div>
+          <h3>Invitation link:</h3>
+          <p>{{ `https://demo-pretend-link/groups/join?id=${groupId}` }}</p>
+        </div>
 
-      <router-link
-        id="view-my-wishlist"
-        :to="`/my-wishlist?groupId=${groupId}`"
-      >View my wishlist for this group</router-link>
-      <div id="group-info">
         <div>
-          <h3>Exchange date:</h3>
-          <p>{{ group.exchange }}</p>
+          <router-link
+            id="view-my-wishlist"
+            :to="`/my-wishlist?groupId=${groupId}`"
+          >View my wishlist for this group</router-link>
         </div>
-        <div>
-          <h3>Budget:</h3>
-          <p>{{ group.budget }}</p>
-        </div>
-        <div>
-          <h3>Group admin:</h3>
-          <p>{{ group.adminName }}</p>
-        </div>
-        <div>
-          <h3>You are buying for:</h3>
+
+        <div id="group-info">
           <div>
-            <p v-if="group.closed">{{ group.buyingFor }}</p>
-            <p v-if="!group.closed">Names have not been drawn yet</p>
-            <router-link
-              :to="`/wishlist/r2888e66cla9?groupId=${groupId}`"
-              v-if="group.closed"
-            >View {{ group.buyingFor }}'s wishlist</router-link>
+            <h3>Exchange date:</h3>
+            <p>{{ group.exchange }}</p>
+          </div>
+          <div>
+            <h3>Budget:</h3>
+            <p>{{ group.budget }}</p>
+          </div>
+          <div>
+            <h3>Group admin:</h3>
+            <p>{{ group.adminName }}</p>
+          </div>
+
+          <h3>Group members:</h3>
+          <ul>
+            <li v-for="member in group.members" :key="member">{{ member }}</li>
+          </ul>
+          <div>
+            <h3>You are buying for:</h3>
+            <div>
+              <p v-if="group.closed">{{ group.buyingFor }}</p>
+              <p v-if="!group.closed">Names have not been drawn yet</p>
+              <router-link
+                :to="`/wishlist/r2888e66cla9?groupId=${groupId}`"
+                v-if="group.closed"
+              >View {{ group.buyingFor }}'s wishlist</router-link>
+            </div>
           </div>
         </div>
-
-        <h3>Group members:</h3>
-        <ul>
-          <li v-for="member in group.members" :key="member">{{ member }}</li>
-        </ul>
       </div>
     </div>
   </div>
@@ -81,10 +89,14 @@ export default {
   },
   created() {
     this.group = this.getGroup({ groupId: this.groupId, editing: false });
+    if (this.group) {
+      this.doesNotExist = false;
+    }
   },
   data() {
     return {
-      group: {}
+      group: {},
+      doesNotExist: true
     };
   }
 };
@@ -116,6 +128,10 @@ img {
   background-color: #c067db;
 }
 
+#view-my-wishlist {
+  margin-top: 2rem;
+}
+
 ul {
   margin: 1ch;
 }
@@ -127,10 +143,6 @@ li {
 a {
   display: block;
   margin: 1ch;
-}
-
-#view-my-wishlist {
-  margin-bottom: 3ch;
 }
 
 p {
@@ -151,17 +163,13 @@ p {
   border: 2px solid red;
 }
 
-#invite-info {
-  margin-top: 3ch;
-}
-
 #invite-info > p {
   width: 100%;
   word-wrap: break-word;
 }
 
 #group-info {
-  margin-bottom: 4rem;
+  margin-top: 2rem;
 }
 
 #group-info > div > h3,
@@ -187,9 +195,6 @@ p {
   margin-top: 0;
 }
 
-#invite-info {
-  margin-top: 3ch;
-}
 #invite-info > p {
   width: 100%;
   word-wrap: break-word;

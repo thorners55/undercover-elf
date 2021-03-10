@@ -3,6 +3,11 @@
     <router-link :to="`/groups/${groupId}/profile`">Back to {{ groupInfo.name }} page</router-link>
     <div class="top-of-page">
       <h2>Edit group settings for {{ groupInfo.name }}</h2>
+      <div class="demo-message">
+        <p>
+          <b>Please note:</b> Any changes you make will be lost when the app is refreshed.
+        </p>
+      </div>
       <p class="message">
         <b>
           IMPORTANT: Press "Submit" at the bottom of the page after making
@@ -14,7 +19,7 @@
         <h3>Group name:</h3>
         <input
           type="text"
-          v-model="groupInfoToUpdate.groupName"
+          v-model="groupInfoToUpdate.name"
           v-on:keyup.enter="
                 updateGroup({
                   groupId,
@@ -76,7 +81,7 @@ export default {
   name: "AdminEditGroup",
   methods: {
     resetInfo() {
-      this.groupInfoToUpdate.groupName = this.groupInfo.name;
+      this.groupInfoToUpdate.name = this.groupInfo.name;
       this.groupInfoToUpdate.exchange = this.groupInfo.exchange;
       this.groupInfoToUpdate.budget = this.groupInfo.budget;
     },
@@ -90,16 +95,14 @@ export default {
   },
   created() {
     this.groupInfo = this.getGroup({ groupId: this.groupId, editing: true });
-    this.groupInfoToUpdate.groupName = this.groupInfo.name;
-    this.groupInfoToUpdate.exchange = this.groupInfo.exchange;
-    this.groupInfoToUpdate.budget = this.groupInfo.budget;
+    this.groupInfoToUpdate = JSON.parse(JSON.stringify(this.groupInfo));
   },
   data() {
     return {
       groupInfo: {},
       updated: false,
       groupInfoToUpdate: {
-        groupName: "",
+        name: "",
         exchange: "",
         budget: ""
       }

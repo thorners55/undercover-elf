@@ -131,4 +131,23 @@ button:disabled:hover {
   font-weight: bold;
   color: #a81111;
 }
+
+.demo-message {
+  border: solid 3px red;
+  border-radius: 0.5rem;
+  background: pink;
+  width: 60%;
+  margin: auto;
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.invite-info {
+  border: solid 2px #2c3e50;
+  border-radius: 0.5rem;
+  width: 60%;
+  margin: auto;
+  margin-top: 3ch;
+  padding: 1rem;
+}
 </style>

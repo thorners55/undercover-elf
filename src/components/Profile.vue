@@ -16,7 +16,10 @@
       <ul>
         <li v-for="group in adminFor" :key="group.groupId">
           <router-link :to="`/groups/${group.groupId}/profile`">{{ group.name }}</router-link>
-          <button v-if="group.admin" v-on:click="$router.push(`/groups/edit?groupId=${groupId}`)">
+          <button
+            v-if="group.admin"
+            v-on:click="$router.push(`/groups/edit?groupId=${group.groupId}`)"
+          >
             <span>
               <i class="fas fa-cog"></i>
             </span>
@@ -48,7 +51,12 @@ export default {
 </script>
 
 <style scoped>
+h3 {
+  margin: 0;
+}
+
 button {
   margin-left: 1ch;
+  margin-top: 0;
 }
 </style>

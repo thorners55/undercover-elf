@@ -24,22 +24,27 @@
       >Create group</button>
     </div>
     <div v-if="creatingGroup">
-      <p>Group successfully created!</p>
+      <p
+        class="demo-message"
+      >NOTE: Because this is a demo site, the above invite link will not work and new members cannot be invited.</p>
+
       <div id="created-group-instructions">
-        <p>
-          Group ID for {{ newGroup.groupName }} is:
-          <b>{{ newGroup.createdGroupId }}</b>
-        </p>
-        <p>
-          Invitation link for {{ newGroup.groupName }} is:
-          <b>
-            <a :href="`#`">
-              {{
-              `https://demo-pretend-link/groups/join?id=${newGroup.createdGroupId}`
-              }}
-            </a>
-          </b>
-        </p>
+        <div class="invite-info">
+          <p>
+            Group ID for {{ newGroup.groupName }} is:
+            <b>{{ newGroup.createdGroupId }}</b>
+          </p>
+          <p>
+            Invitation link for {{ newGroup.groupName }} is:
+            <b>
+              <a :href="`#`">
+                {{
+                `https://demo-pretend-link/groups/join?id=${newGroup.createdGroupId}`
+                }}
+              </a>
+            </b>
+          </p>
+        </div>
         <p>
           To invite people to this group, you can send them the group ID that
           has been generated for you, to be pasted into the search by that
@@ -48,9 +53,6 @@
           <br />
           <br />The group invitation ID can be found in the group settings.
         </p>
-        <p
-          class="message"
-        >NOTE: This is only an example of what happens in the working app. Because this is a demo site, the above invite link will not work and new members cannot be invited..</p>
       </div>
       <router-link :to="`/groups/${newGroup.createdGroupId}/profile`">View group page</router-link>
     </div>

@@ -28,11 +28,7 @@ const state = {
         "Susan Bones",
         "Cho Chang",
         "Colin Creevey",
-        "Marietta Edgecombe",
-        "Justin Finch-Fletchley",
         "Hermione Granger",
-        "Angelina Johnson",
-        "Lee Jordan",
         "Neville Longbottom",
         "Luna Lovegood",
         "Fred Weasley",
@@ -101,18 +97,23 @@ const state = {
 const getters = {
   getGroup: (state) => ({ groupId, editing }) => {
     let groupToGet = state.groups.find((group) => group.groupId == groupId);
-    console.log(groupToGet);
-    if (!editing) {
-      let formattedDate = date.transform(
-        groupToGet.exchange,
-        "YYYY-MM-DD",
-        "DD-MM-YYYY"
-      );
-      console.log(formattedDate);
 
-      groupToGet.exchange = formattedDate;
+    if (!groupToGet) {
+      return;
+    } else {
+      let group = JSON.parse(JSON.stringify(groupToGet));
+
+      if (!editing) {
+        let formattedDate = date.transform(
+          group.exchange,
+          "YYYY-MM-DD",
+          "DD-MM-YYYY"
+        );
+
+        group.exchange = formattedDate;
+      }
+      return group;
     }
-    return groupToGet;
   },
 
   getAdminFor: (state) => () => {
@@ -124,7 +125,12 @@ const getters = {
 
   getMyWishlist: (state) => (groupId) => {
     let group = state.groups.find((group) => group.groupId == groupId);
-    return { wishlist: group.wishlist, group };
+
+    if (!group) {
+      return;
+    } else {
+      return { wishlist: group.wishlist, group };
+    }
   },
 
   getBuyingForWishlist: (state) => (groupId) => {
@@ -139,18 +145,13 @@ const getters = {
 
 const mutations = {
   setCreatedGroup(state, newGroup) {
-    const formattedDate = date.transform(
-      newGroup.exchange,
-      "YYYY-MM-DD",
-      "DD-MM-YYYY"
-    );
-
     let group = {
       name: newGroup.groupName,
       groupId: newGroup.createdGroupId,
-      exchange: formattedDate,
+      exchange: newGroup.exchange,
       budget: newGroup.budget,
       admin: true,
+      adminName: state.profile.name,
       closed: false,
       buyingFor: "",
       members: [state.profile.name],
