@@ -6,11 +6,7 @@
     <div v-if="!loadingJoinGroup">
       <div v-show="findingGroup">
         <!-- hides the input fields once have submitted the groupId-->
-        <form
-          id="find-group"
-          v-on:keyup.enter="findGroup({ groupId, groups })"
-          v-on:submit.prevent
-        >
+        <form id="find-group" v-on:keyup.enter="findGroup({ groupId, groups })" v-on:submit.prevent>
           <label for="groupId">Invitation ID:</label>
           <input
             type="text"
@@ -24,9 +20,7 @@
           type="submit"
           for="find-group"
           v-on:click="findGroup({ groupId, groups })"
-        >
-          Find group
-        </button>
+        >Find group</button>
 
         <!-- if group isn't found, shows this message -->
         <div v-show="groupNotFound">
@@ -55,12 +49,10 @@
         <button
           v-if="foundGroupClosed === 0"
           v-on:click="
-            joinGroup({ name, userId, groupId, foundGroupName });
+            joinGroup({ name, userId, groupId, foundGroupName, groups });
             groupId = '';
           "
-        >
-          Join group
-        </button>
+        >Join group</button>
         <p v-if="foundGroupClosed === 1" class="message">
           Cannot join group - this group has already drawn names and is closed
           to new members.
@@ -71,9 +63,7 @@
             resetState();
             groupId = '';
           "
-        >
-          Search again
-        </button>
+        >Search again</button>
       </div>
     </div>
   </div>
@@ -86,7 +76,7 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "JoinGroup",
   components: {
-    Loading,
+    Loading
   },
   computed: {
     ...mapState("loggedIn", ["userId", "name"]),
@@ -98,12 +88,12 @@ export default {
       "foundGroupClosed",
       "findingGroup",
       "groupNotFound",
-      "loadingJoinGroup",
-    ]),
+      "loadingJoinGroup"
+    ])
   },
   methods: {
     ...mapActions("groups", ["joinGroup", "findGroup", "resetState"]),
-    ...mapActions("profile", ["fetchUserProfile"]),
+    ...mapActions("profile", ["fetchUserProfile"])
   },
   created() {
     if (this.$route.query.id && this.userId) {
@@ -117,9 +107,9 @@ export default {
   },
   data() {
     return {
-      groupId: "",
+      groupId: ""
     };
-  },
+  }
 };
 </script>
 

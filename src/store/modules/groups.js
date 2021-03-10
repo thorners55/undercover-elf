@@ -38,6 +38,7 @@ const state = {
   // creating new group
   createGroupSuccess: false,
   createdGroupId: "",
+  loadingCreatingGroup: false,
 };
 
 const getters = {};
@@ -68,18 +69,36 @@ const mutations = {
     }
   },
 
-  setGroupInfo(state, groupInfo) {
+  setGroupInfo(state, { groupInfo, editing }) {
     const inviteId = splitId(groupInfo.pk);
+
     state.groupInfo = groupInfo;
     state.groupInfo.inviteId = inviteId;
     const groupInfoToUpdate = JSON.parse(JSON.stringify(groupInfo));
     state.groupInfoToUpdate = groupInfoToUpdate;
     state.fetchedGroupInfo = true;
+
+    if (!editing) {
+      const formattedDate = date.transform(
+        groupInfo.exchange,
+        "YYYY-MM-DD",
+        "DD-MM-YYYY"
+      );
+
+      groupInfo.exchange = formattedDate;
+    }
+  },
+
+  setCreatingGroup(state, error) {
+    if (error) {
+      state.loadingCreatingGroup = false;
+    } else state.loadingCreatingGroup = true;
   },
 
   setCreatedGroupId(state, groupId) {
     state.createGroupSuccess = true;
     state.createdGroupId = groupId;
+    state.loadingCreatingGroup = false;
   },
 
   resetCreatedGroupId(state) {
@@ -92,8 +111,8 @@ const mutations = {
     for (let i = 0; i < namesAssigned.length; i++) {
       if (namesAssigned[i].pk === `user_${userId}`) {
         state.groupInfo.closed = 1;
-        state.groupInfo.buyingForName = namesAssigned[i].buyingForName;
-        state.groupInfo.buyingForUserId = namesAssigned[i].buyingForUserId;
+        state.userGroupInfo.buyingForName = namesAssigned[i].buyingForName;
+        state.userGroupInfo.buyingForUserId = namesAssigned[i].buyingForUserId;
         break;
       } else continue;
     }
@@ -133,11 +152,11 @@ const actions = {
   },
 
   // join a group that user has previously searched for
-  joinGroup(
-    { commit, rootState },
+  async joinGroup(
+    { commit },
     { name, userId, groupId, foundGroupName, groups }
   ) {
-    const alreadyMember = isAlreadyMember({ groupId, groups });
+    const alreadyMember = isAlreadyMember(groupId, groups);
     if (alreadyMember) {
       alert(
         "You are already a member of this group! Please search for another group."
@@ -159,8 +178,22 @@ const actions = {
         admin: 0,
       };
 
-      const updatedGroupArray = rootState.profile.groups;
-      updatedGroupArray.push(newGroup);
+      // get existing user groups from database first, then make an updated array including new group
+      let existingGroupsArray;
+
+      try {
+        const getGroups = await API.get(
+          "undercoverElfApi",
+          `/users/${userId}/profile`,
+          {}
+        );
+        existingGroupsArray = getGroups;
+      } catch (error) {
+        console.log(error);
+        commit("setCreatingGroup", error);
+      }
+
+      const updatedGroupArray = [...existingGroupsArray.body.groups, newGroup];
 
       API.post(
         "undercoverElfApi",
@@ -190,13 +223,13 @@ const actions = {
     }
   },
 
-  fetchGroupInfo({ commit }, groupId) {
+  fetchGroupInfo({ commit }, { groupId, editing }) {
     commit("setLoading", { of: "EditGroup", to: true });
     const id = splitId(groupId);
 
     API.get("undercoverElfApi", `/groups?id=${id}`, {})
       .then(({ body }) => {
-        commit("setGroupInfo", body);
+        commit("setGroupInfo", { groupInfo: body, editing });
         commit("setLoading", { of: "EditGroup", to: false });
       })
       .catch((err) => {
@@ -219,15 +252,12 @@ const actions = {
       });
   },
 
-  postGroup({ commit, rootState }, newGroupInfo) {
-    const tryDate = date.transform(
-      newGroupInfo.exchange,
-      "YYYY-MM-DD",
-      "DD-MM-YYYY"
-    );
+  async postGroup({ commit, rootState }, newGroupInfo) {
+    commit("setCreatingGroup");
+
+    const userId = rootState.loggedIn.userId;
 
     const groupId = uuidv4();
-    newGroupInfo.exchange = tryDate;
     newGroupInfo.pk = groupId;
     newGroupInfo.admin = rootState.loggedIn.name;
     newGroupInfo.members = [
@@ -237,12 +267,29 @@ const actions = {
       },
     ];
 
-    const updatedGroupArray = rootState.profile.groups;
-    updatedGroupArray.push({
-      groupId: `group_${groupId}`,
-      groupName: newGroupInfo.groupName,
-      admin: 1,
-    });
+    // get existing user groups from database first, then make an updated array including new group
+    let existingGroupsArray;
+
+    try {
+      const getGroups = await API.get(
+        "undercoverElfApi",
+        `/users/${userId}/profile`,
+        {}
+      );
+      existingGroupsArray = getGroups;
+    } catch (error) {
+      console.log(error);
+      commit("setCreatingGroup", error);
+    }
+
+    const updatedGroupArray = [
+      ...existingGroupsArray.body.groups,
+      {
+        groupId: `group_${groupId}`,
+        groupName: newGroupInfo.groupName,
+        admin: 1,
+      },
+    ];
 
     API.post("undercoverElfApi", "/groups", {
       body: {

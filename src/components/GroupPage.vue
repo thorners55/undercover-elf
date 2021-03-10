@@ -1,7 +1,11 @@
 <template>
   <div>
     <Loading
-      v-if="loadingLeaveGroup || loadingDrawNames || !fetchedGroupInfo && !fetchedUserGroupInfo"
+      v-if="
+        loadingLeaveGroup ||
+          loadingDrawNames ||
+          (!fetchedGroupInfo && !fetchedUserGroupInfo)
+      "
     />
     <div
       class="top-of-page"
@@ -45,11 +49,15 @@
         <p>{{ groupInfo.inviteId }}</p>
 
         <h3>Invitation link:</h3>
-        <p>
+        <a
+          :href="
+            `https://master.dngg2cj4n9n4p.amplifyapp.com/#/groups/join?id=${splitId}`
+          "
+        >
           {{
           `https://master.dngg2cj4n9n4p.amplifyapp.com/#/groups/join?id=${splitId}`
           }}
-        </p>
+        </a>
       </div>
 
       <router-link
@@ -96,6 +104,7 @@
 import Loading from "./Loading.vue";
 import { mapActions, mapState } from "vuex";
 import { splitId } from "./utils/splitIdFunc.js";
+import date from "date-and-time";
 
 export default {
   name: "GroupPage",
@@ -126,7 +135,7 @@ export default {
     ])
   },
   created() {
-    this.fetchGroupInfo(this.groupId);
+    this.fetchGroupInfo({ groupId: this.groupId, editing: false });
     this.fetchUserGroupInfo({ userId: this.userId, groupId: this.groupId });
     this.splitId = splitId(this.groupId);
   },
