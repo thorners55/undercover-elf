@@ -25,9 +25,9 @@
           "
         >Create group</button>
       </div>
+
       <div v-if="createGroupSuccess">
-        <p>Group successfully created!</p>
-        <div id="created-group-instructions">
+        <div class="invite-info">
           <p>
             Group ID for {{ newGroup.groupName }} is:
             <b>{{ createdGroupId }}</b>
@@ -46,6 +46,8 @@
               </a>
             </b>
           </p>
+        </div>
+        <div id="created-group-instructions">
           <p>
             To invite people to this group, you can send them the group ID that
             has been generated for you, to be pasted into the search by that

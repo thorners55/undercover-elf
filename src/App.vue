@@ -41,12 +41,12 @@ export default {
     JoinGroup,
     AdminEditGroup,
     BuyingForWishlist,
-    MyWishlist,
+    MyWishlist
   },
   computed: mapState("loggedIn", ["loggedIn"]),
   methods: {
     ...mapActions("profile", ["fetchUserProfile"]),
-    ...mapActions("loggedIn", ["logIn", "logOut", "isLoggedIn"]),
+    ...mapActions("loggedIn", ["logIn", "logOut", "isLoggedIn"])
   },
   created() {
     if (this.loggedIn) {
@@ -55,7 +55,7 @@ export default {
       this.isLoggedIn();
     }
     //document.addEventListener("beforeunload", this.logOut());
-  },
+  }
 };
 </script>
 
@@ -77,10 +77,15 @@ html {
 a,
 a:visited {
   color: #2c3e50;
+  word-wrap: break-word;
 }
 
 a:hover {
   color: #fefefa;
+}
+
+p {
+  word-wrap: break-word;
 }
 
 @font-face {
@@ -161,6 +166,15 @@ input[type="checkbox"] {
 a.back-to {
   margin-top: 1ch;
   display: block;
+}
+
+.invite-info {
+  border: solid 2px #2c3e50;
+  border-radius: 0.5rem;
+  width: 60%;
+  margin: auto;
+  margin-top: 3ch;
+  padding: 1rem;
 }
 
 @media (max-width: 900px) {
