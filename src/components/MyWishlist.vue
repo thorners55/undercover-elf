@@ -359,7 +359,6 @@ textarea {
 p {
   width: 60%;
   margin: 2rem auto;
-  word-wrap: break-word;
 }
 
 .wishlist-item {
@@ -445,7 +444,6 @@ button:hover {
 
   .wishlist-item > div > p {
     width: 70%;
-    word-wrap: break-word;
   }
 
   .wishlist-item-container {

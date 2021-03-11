@@ -19,8 +19,6 @@ Users can securely create their own accounts using AWS Cognito, with the ability
 *  DynamoDB
 *  CSS
 
-
 ## Project setup
 
 While this repository is public, it has not been my intention for others to clone it for personal use. However, if you  have any questions about this project, please feel free to [get in touch with me on Twitter](https://twitter.com/stephaniethorns) or my [portfolio site](https://stephanie-thornley.netlify.app).
-

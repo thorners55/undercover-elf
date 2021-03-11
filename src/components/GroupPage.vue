@@ -44,7 +44,7 @@
           })
         "
       >Leave group</button>
-      <div id="invite-info" v-if="userGroupInfo.admin === 1 && groupInfo.closed === 0">
+      <div class="invite-info" v-if="userGroupInfo.admin === 1 && groupInfo.closed === 0">
         <h3>Invitation ID:</h3>
         <p>{{ groupInfo.inviteId }}</p>
 
@@ -208,16 +208,13 @@ p {
   border: 2px solid red;
 }
 
-#invite-info {
-  margin-top: 3ch;
-}
-
-#invite-info > p {
+.invite-info > p {
   width: 100%;
   word-wrap: break-word;
 }
 
 #group-info {
+  margin-top: 2rem;
   margin-bottom: 4rem;
 }
 
@@ -242,14 +239,6 @@ p {
 
 #leave-group-button {
   margin-top: 0;
-}
-
-#invite-info {
-  margin-top: 3ch;
-}
-#invite-info > p {
-  width: 100%;
-  word-wrap: break-word;
 }
 
 #draw-names-button {
